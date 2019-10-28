@@ -1,0 +1,17 @@
+lb-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.70
+m1-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.71
+m2-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.72
+m3-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.73
+n1-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.74
+i1-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.75
+n2-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.76
+i2-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.77
+n3-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.78
+i3-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.79
+nfs-ocp7.iicparis.fr.ibm.com.   IN      A       172.16.187.88
+ctl-ocp7.iicparis.fr.ibm.com.   IN      A       172.16.187.89
+*.apps-ocp7.iicparis.fr.ibm.com.        IN      CNAME   apps-ocp7.iicparis.fr.ibm.com.
+apps-ocp7.iicparis.fr.ibm.com.  IN      A       172.16.187.75
+apps-ocp7.iicparis.fr.ibm.com.  IN      A       172.16.187.77
+apps-ocp7.iicparis.fr.ibm.com.  IN      A       172.16.187.79
+

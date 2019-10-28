@@ -1,0 +1,13 @@
+70.187.16.172.in-addr.arpa.     IN      PTR     lb-ocp7.iicparis.fr.ibm.com.
+71.187.16.172.in-addr.arpa.     IN      PTR     m1-ocp7.iicparis.fr.ibm.com.
+72.187.16.172.in-addr.arpa.     IN      PTR     m2-ocp7.iicparis.fr.ibm.com.
+73.187.16.172.in-addr.arpa.     IN      PTR     m3-ocp7.iicparis.fr.ibm.com.
+74.187.16.172.in-addr.arpa.     IN      PTR     n1-ocp7.iicparis.fr.ibm.com.
+75.187.16.172.in-addr.arpa.     IN      PTR     i1-ocp7.iicparis.fr.ibm.com.
+76.187.16.172.in-addr.arpa.     IN      PTR     n2-ocp7.iicparis.fr.ibm.com.
+77.187.16.172.in-addr.arpa.     IN      PTR     i2-ocp7.iicparis.fr.ibm.com.
+78.187.16.172.in-addr.arpa.     IN      PTR     n3-ocp7.iicparis.fr.ibm.com.
+79.187.16.172.in-addr.arpa.     IN      PTR     i3-ocp7.iicparis.fr.ibm.com.
+88.187.16.172.in-addr.arpa.     IN      PTR     nfs-ocp7.iicparis.fr.ibm.com.
+89.187.16.172.in-addr.arpa.     IN      PTR     ctl-ocp7.iicparis.fr.ibm.com.
+

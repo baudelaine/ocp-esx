@@ -1,0 +1,591 @@
+    1  cat >> /etc/sysctl.conf << EOF
+    2  net.ipv4.ip_local_port_range = 2048 65000
+    3  net.core.rmem_default = 262144
+    4  net.core.wmem_default = 262144
+    5  net.core.wmem_max = 33554432
+    6  net.core.rmem_max = 33554432
+    7  net.core.netdev_max_backlog = 5000
+    8  net.ipv4.tcp_no_metrics_save = 1
+    9  net.ipv4.tcp_rmem = 4096 16777216 33554432
+   10  net.ipv4.tcp_wmem = 4096 16777216 33554432
+   11  net.core.optmem_max = 40960
+   12  EOF
+   13  vi /etc/sysctl.conf
+   14  mkdir -p /mnt/iicbackup/produits
+   15  vi /etc/fstab 
+   16  mount /mnt/iicbackup/produits
+   17  swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
+   18  vi /etc/fstab 
+   19  echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+   20  echo "kernel.sem = 250 1024000 32 4096" >> /etc/sysctl.conf
+   21  sysctl -p
+   22  echo "root    hard    nofile  65535" >> /etc/security/limits.conf && echo "root    soft    nofile  65535" >> /etc/security/limits.conf
+   23  pwd
+   24  cp -v /mnt/iicbackup/produits/ISO/icp-docker-18.03.1_x86_64.bin .
+   25  chmod +x icp-docker-18.03.1_x86_64.bin 
+   26  ./icp-docker-18.03.1_x86_64.bin --install
+   27  docker pull ubuntu
+   28  docker run -tdi --name test0 ubuntu
+   29  dicker start test0
+   30  docker start test0
+   31  docker attach test0
+   32  df -h
+   33  vi /etc/fstab 
+   34  mount
+   35  vi /etc/fstab 
+   36  mount
+   37  vi /etc/fstab 
+   38  umount /media/cdrom/
+   39  mount /media/cdrom/
+   40  yum repolist
+   41  reboot
+   42  df -h
+   43  lvdisplay 
+   44  ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+   45  timedatectl list-timezones | grep -i Paris
+   46  timedatectl set-timezone Europe/Paris
+   47  localectl status
+   48  localectl list-keymaps | grep -i fr
+   49  localectl set-keymap fr
+   50  localectl --no-convert set-x11-keymap fr
+   51  systemctl list-unit-files | grep Network
+   52  systemctl list-unit-files 
+   53  systemctl stop firewalld
+   54  systemctl disable firewalld
+   55  setenforce 0
+   56  sed -i -e 's/^SELINUX=\w*/SELINUX=disabled/' /etc/selinux/config
+   57  hostnamectl set-hostname w14.iicparis.fr.ibm.com
+   58  systemctl stop NetworkManager
+   59  systemctl disable NetworkManager
+   60  mkdir /media/cdrom
+   61  mount -t iso9660 /dev/sr0 /media/cdrom
+   62  vi /etc/yum.repos.d/local.repo
+   63  yum repolist
+   64  yum install -y screen
+   65  screen -r ADM
+   66  screen -mdS ADM
+   67  screen -r ADM
+   68  docker ps -a
+   69  docker start test0
+   70  docker attach test0
+   71  mount /mnt/iicbackup/produits/
+   72  cd /mnt/iicbackup/produits/ISO/
+   73  l
+   74  vi ~/.bashrc 
+   75  . ~/.bashrc 
+   76  l
+   77  rm -rf \[datastore1\]/
+   78  l
+   79  chmod +x ICP4D_ENT_Req_ICP_x86_V2.1.0.1.bin
+   80  ./ICP4D_ENT_Req_ICP_x86_V2.1.0.1.bin 
+   81  l
+   82  chmod +x ICP4D_ENT_INC_ICP_x86_V2.1.0.2.bin
+   83  ./ICP4D_ENT_INC_ICP_x86_V2.1.0.2.bin
+   84  l /ibm/icp4d
+   85  l
+   86  vi ICP4D_ENT_INC_ICP_x86_V2.1.0.2.bin
+   87  ./ICP4D_ENT_INC_ICP_x86_V2.1.0.2.bin
+   88  l /ibm/icp4d
+   89  l
+   90  vi ICP4D_ENT_INC_ICP_x86_V2.1.0.2.bin
+   91  poweroff
+   92  systemctl enable docker
+   93  systemctl start docker
+   94  screen -mdS ADM
+   95  screen -r ADM
+   96  hostnamectl set-hostname m11.iicparis.fr.ibm.com
+   97  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+   98  x!
+   99  poweroff
+  100  mount /media/cdrom/
+  101  yum repolist
+  102  sed -i -e 's/^SELINUX=\w*/SELINUX=permissive/' /etc/selinux/config
+  103  cat << EOF > /etc/yum.repos.d/extras.repo
+  104  [extras]
+  105  name=Extras
+  106  baseurl=http://mirror.centos.org/centos/7/extras/x86_64/
+  107  enabled=1
+  108  gpgcheck=0
+  109  EOF
+  110  yum repolist
+  111  yum install rsync -y
+  112  df -h
+  113  poweroff
+  114  hostnamectl set-hostname m11.iicparis.fr.ibm.com
+  115  hostnamectl set-hostname minishift70.iicparis.fr.ibm.com
+  116  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  117  reboot
+  118  l
+  119  ./icp-docker-18.03.1_x86_64.bin --uninstall
+  120  screen -mdS ADM
+  121  screen -r ADM
+  122  vgdisplay 
+  123  vgrename /dev/rhel_w14 /dev/vg
+  124  sed -i 's/rhel_w14/vg/g' /etc/fstab
+  125  vi /etc/fstab 
+  126  umount /mnt/iicbackup/rhel75/
+  127  rmdir /mnt/iicbackup/rhel75/
+  128  vi /etc/yum.repos.d/local.repo 
+  129  rm /etc/yum.repos.d/local.repo 
+  130  rm /etc/yum.repos.d/extras.repo 
+  131  grep rhel_w14 /boot/grub2/grub.cfg
+  132  sed -i 's/rhel_w14/vg/g' /boot/grub2/grub.cfg
+  133  grep vg /boot/grub2/grub.cfg
+  134  vgchange -ay
+  135  lvchange /dev/vg/root --refresh
+  136  lvchange /dev/vg/swap --refresh
+  137  ls -l /boot/initramfs-3.10.0-862.el7.x86_64.img
+  138  uname -r
+  139  cp /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r).img.$(date +%m-%d-%H%M%S).bak
+  140  l /boot/
+  141  mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+  142  reboot
+  143  lvdisplay 
+  144  pvdisplay 
+  145  vgdisplay 
+  146  screen -r
+  147  screen -mdS ADM
+  148  screen -r
+  149  cd /etc/systemd/
+  150  l
+  151  vi /etc/sysconfig/network
+  152  vi /etc/sysconfig/network-scripts/ifcfg-ens192
+  153  systemctl status NetworkManager
+  154  screen -r
+  155  subscription-manager register
+  156  subscription-manager refresh
+  157  yum repolist
+  158  subscription-manager repos     --enable="rhel-7-server-rpms"     --enable="rhel-7-server-extras-rpms"
+  159  subscription-manager list --available
+  160  subscription-manager attach --pool=8a85f99c6d6e1b00016d6e1ec2f900cc
+  161  yum repolist
+  162  yum provides */openvpn
+  163  yum install epel-release
+  164  yum-config-manager --enable epel
+  165  yum provides */yum-config-manager:
+  166  wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  167  curl -LO https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  168  l
+  169  yum install -y ./epel-release-latest-7.noarch.rpm
+  170  yum provides *bin/openvpn
+  171  yum repolist
+  172  subscription-manager repos     --enable="rhel-7-server-rpms"     --enable="rhel-7-server-extras-rpms"     --enable="rhel-7-server-ose-3.11-rpms"     --enable="rhel-7-server-ansible-2.6-rpms"
+  173  yum repolist
+  174  yum install -y wget git net-tools bind-utils yum-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct sshpass
+  175  yum update
+  176  reboot
+  177  yum install atomic
+  178  screen -mdS ADM
+  179  screen -r
+  180  yum install openshift-ansible
+  181  df -h
+  182  atomic host upgrade
+  183  yum -y install docker-1.13.1
+  184  rpm -V docker-1.13.1
+  185  docker version
+  186  systemctl status docker
+  187  systemctl start docker
+  188  systemctl status docker
+  189  docker version
+  190  systemctl status docker
+  191  systemctl enable docker
+  192  systemctl status docker
+  193  df -h
+  194  cat /etc/sysconfig/docker-storage
+  195  lvs
+  196  docker pull heelo-world
+  197  docker pull hello-world
+  198  docker images
+  199  docker ps -a
+  200  docker rmi ubuntu
+  201  docker run -ti --name test docker.io/hello-world
+  202  docker run -it ubuntu bash
+  203  docker ps -a
+  204  docker run -it ubuntu bash
+  205  docker ps -a
+  206  docker rm 3ad23aac53ad
+  207  docker rm f69585b6436d
+  208  docker images
+  209  docker run -it ubuntu --name test0 bash
+  210  docker run -it --name test0 ubuntu bash
+  211  docker ps -a
+  212  docker rm 88d73a90a7f9 c4ed5e997d7f
+  213  docker ps -a
+  214  docker rm 69f83cc450b1
+  215  docker ps -a
+  216  docker images
+  217  docker rmi docker.io/hello-world
+  218  docker rmi hello-world
+  219  docker ps -a
+  220  docker rm e020f3ddf3af
+  221  docker rmi hello-world
+  222  docker ps -a
+  223  docker images
+  224  df -h
+  225  vi /etc/networks 
+  226  vi /etc/hosts
+  227  hostnamectl set-hostname localhost.localdomain
+  228  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  229  reboot
+  230  l
+  231  ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
+  232  poweroff
+  233  ip addr show
+  234  cat /etc/resolv.conf 
+  235  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  236  vi /etc/sysconfig/docker
+  237  setenforce 1
+  238  vi /etc/selinux/config 
+  239  systemctl status NetworkManager
+  240  systemctl enable NetworkManager
+  241  systemctl start NetworkManager
+  242  systemctl restart NetworkManager
+  243  cat /etc/resolv.conf 
+  244  l
+  245  rm icp-docker-18.03.1_x86_64.bin epel-release-latest-7.noarch.rpm
+  246  ip addr show
+  247  cat /etc/resolv.conf 
+  248  dig yahoo.fr +short
+  249  dig -x 98.136.103.24 +short
+  250  dig iicbackup +short +search
+  251  dig -x 172.16.160.10 +short
+  252  getenforce 
+  253  vi /etc/selinux/config 
+  254  cat /etc/sysconfig/docker
+  255  systemctl status NetworkManager
+  256  systemctl status firewalld
+  257  mount /mnt/iicbackup/produits/
+  258  pwd
+  259  cp -v /mnt/iicbackup/produits/ISO/*.sh .
+  260  vi ./pre_install_check.sh
+  261  rm ./pre_install_check.sh
+  262  l
+  263  df -h
+  264  l
+  265  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  266  cd /etc/sysconfig/network-scripts/
+  267  l
+  268  rm .ifcfg-ens192.swp
+  269  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  270  reboot
+  271  ip addr show 
+  272  systemctl restart NetworkManager
+  273  cat /etc/resolv.conf 
+  274  ip addr show
+  275  systemctl restart NetworkManager
+  276  ip addr show
+  277  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  278  systemctl restart NetworkManager
+  279  ip addr show
+  280  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  281  ip addr show
+  282  poweroff
+  283  mount
+  284  mount /dev/sr0 /media/cdrom/
+  285  cd /media/cdrom/
+  286  l
+  287  tar xvzf VMwareTools-10.0.6-3560309.tar.gz -C /tmp
+  288  cd /tmp/vmware-tools-distrib/
+  289  l
+  290  ./vmware-install.pl 
+  291  poweroff
+  292  yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && export SSHPASS=spcspc && export IP_HEAD=172.16.187. && for i in $(seq 50 61); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
+  293  yum install -y atomic-openshift-utils
+  294  vi hosts-ocp5
+  295  ansible -i hosts-ocp5 OSEv3 -m ping
+  296  ansible -i hosts-ocp5 OSEv3 -m date
+  297  ansible -i hosts-ocp5 nodes -a "date"
+  298  ansible -i hosts-ocp5 nodes -a "pvcreate /dev/sdb"
+  299  vi hosts-ocp5 
+  300  ansible -i hosts-ocp5 nfs -a "pvcreate /dev/sdb"
+  301  ansible -i hosts-ocp5 lb -a "pvcreate /dev/sdb"
+  302  ansible -i hosts-ocp5 nodes nfs -m "date"
+  303  ansible -i hosts-ocp5 nodes nfs -a "date"
+  304  ansible -i hosts-ocp5 nodes -m "date"
+  305  ansible -i hosts-ocp5 nodes -a "date"
+  306  vi hosts-ocp5 
+  307  ansible -i hosts-ocp5 lb -a "pvcreate /dev/sdb"
+  308  ansible -i hosts-ocp5 nodes -a "vgextend root /dev/sdb"
+  309  vgdisplay 
+  310  yum install jq -y
+  311  netstat
+  312  df -h
+  313  l
+  314  rm addDisk.sh 
+  315  vi extendVG.sh 
+  316  l /
+  317  l /tmp
+  318  du -h /tmp/vmware-tools-distrib
+  319  rm -rf /tmp/vmware-tools-distrib
+  320  reboot
+  321  df -h
+  322  vgrename /dev/vg /dev/root
+  323  sed -i 's/vg/root/g' /etc/fstab
+  324  vi /etc/fstab 
+  325  grep vg /boot/grub2/grub.cfg
+  326  sed -i 's/vg/root/g' /boot/grub2/grub.cfg
+  327  vi /boot/grub2/grub.cfg
+  328  vgchange -ay
+  329  lvchange /dev/root/root --refresh
+  330  lvchange /dev/root/swap --refresh
+  331  ls -l /boot/initramfs-3.10.0-862.el7.x86_64.img
+  332  l /boot/*.bak
+  333  rm /boot/initramfs-3.10.0-862.el7.x86_64.img.09-27-142858.bak
+  334  mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+  335  reboot
+  336  l
+  337  vgdisplay 
+  338  hostnamectl set-hostname localhost.localdomain
+  339  vi /etc/hosts
+  340  vi /etc/sysconfig/network-scripts/ifcfg-ens192 
+  341  reboot
+  342  ip addr show
+  343  poweroff
+  344  l
+  345  ./setHostAndIP.sh 
+  346  ./setHostAndIP.sh ctl-ocp5
+  347  systemctl restart NetworlManager
+  348  systemctl restart NetworkManager
+  349  reboot
+  350  l
+  351  vi vms
+  352  for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
+  353  l
+  354  vi vms
+  355  for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
+  356  export SSHPASS=spcspc && for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e scp -o StrictHostKeyChecking=no setHostAndIP.sh extendVG.sh root@$ip:/root; done
+  357  export SSHPASS=spcspc && for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
+  358  cat vms
+  359  vi vms 
+  360  export SSHPASS=spcspc && for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
+  361  for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
+  362  vi vms
+  363  export SSHPASS=spcspc && for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
+  364  ssh 172.16.191.250
+  365  ping 172.16.191.250
+  366  ssh 172.16.191.250
+  367  ssh 172.16.191.247
+  368  ssh 172.16.191.16
+  369  ssh 172.16.191.250
+  370  ssh 172.16.191.16
+  371  ssh 172.16.191.250
+  372  ssh 172.16.187.60
+  373  ssh 172.16.187.51
+  374  l
+ansible -i hosts-ocp5 OSEv3 -m ping
+ansible -i hosts-ocp5 nodes -a 'pvcreate /dev/sdb'
+ansible -i hosts-ocp5 nodes -a 'vgextend root /dev/sdb'
+ansible -i hosts-ocp5 nodes -a 'lvextend /dev/root/root -l 100%VG -r /dev/sdb'
+ansible -i hosts-ocp5 nodes -a 'df -hT /'
+ansible -i hosts-ocp5 nodes -a 'lvs'
+  385  ansible -i hosts-ocp5 nodes -a "ls /dev/sdb*"
+  386  ansible -i hosts-ocp5 nodes -a "ls /dev/sd*"
+  387  ansible -i hosts-ocp5 nodes -a "ls /dev/sda"
+  388  ansible -i hosts-ocp5 nodes -a "ls /dev/sd*"
+  389  ansible -i hosts-ocp5 nodes -a "ls /dev/sdb"
+  390  ansible -i hosts-ocp5 nodes -a "ls /dev/sdc"
+  391  df -hT /
+  392  pvcreate /dev/sdb
+  393  vgextend root /dev/sdb
+  394  lvextend /dev/root/root -l 100%VG -r /dev/sdb
+  395  df -hT /
+  396  ansible -i hosts-ocp5 nfs -a "ls /dev/sdc"
+  397  ansible -i hosts-ocp5 nfs -a "ls /dev/sdb"
+  398  vi hosts-ocp5"
+  399  q
+  400  vi hosts-ocp5
+  401  ansible -i hosts-ocp5 OSEv3 -m ping
+  402  ansible -i hosts-ocp5 nfs -a "ls /dev/sdb"
+  403  ansible -i hosts-ocp5 nfs -a "pvcreate /dev/sdb"
+  404  ansible -i hosts-ocp5 nfs -a "vgcreate exports /dev/sdb"
+  405  ansible -i hosts-ocp5 nfs -a "lvcreate -n exports -l 100%VG exports"
+  406  ansible -i hosts-ocp5 nfs -a "lvdisplay"
+  407  vi hosts-ocp5 
+  408  ansible -i hosts-ocp5 nfs -a "mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/exports/exports"
+  409  ansible -i hosts-ocp5 nfs -a "mkdir /exports"
+  410  ansible -i hosts-ocp5 nfs -m lineinfile -a 'path=/etc/fstab line="/dev/exports/exports  /exports  xfs defaults,noatime 1 2"'
+  411  ansible -i hosts-ocp5 nfs -a "cat /etc/fstab"
+  412  ssh nfs-ocp5
+
+ansible -i hosts-ocp5 nodes -a 'systemctl stop docker'
+ansible -i hosts-ocp5 nodes -a 'systemctl is-active docker'
+export IP_HEAD=172.16.187. && for i in $(seq 51 59); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
+ansible -i hosts-ocp5 nodes -a 'du -h /var/lib/docker'
+ansible -i hosts-ocp5 nodes -a 'pvcreate /dev/sdc'
+ansible -i hosts-ocp5 nodes -a 'vgcreate docker /dev/sdc'
+ansible -i hosts-ocp5 nodes -a 'pvs'
+ansible -i hosts-ocp5 nodes -a 'vgs'
+ansible -i hosts-ocp5 nodes -a 'lvcreate -n docker -l 100%VG docker'
+ansible -i hosts-ocp5 nodes -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/docker/docker'
+ansible -i hosts-ocp5 nodes -m lineinfile -a 'path=/etc/fstab line="/dev/docker/docker  /var/lib/docker  xfs defaults,noatime 1 2"'
+ansible -i hosts-ocp5 nodes -a 'mount /var/lib/docker'
+ansible -i hosts-ocp5 nodes -a 'systemctl start docker'
+ansible -i hosts-ocp5 nodes -a 'systemctl is-active docker'
+
+ansible -i hosts-ocp5 nodes -m lineinfile -a 'path=/etc/sysconfig/docker-storage-setup line="VG=docker"'
+ansible -i hosts-ocp5 nodes -a 'docker-storage-setup'
+
+
+ansible -i hosts-ocp5 nodes -a 'docker info'
+docker login registry.access.redhat.com -u iicparis
+  
+#export IP_HEAD=172.16.187. && for i in $(seq 50 61); do ssh root@$IP_HEAD$i 'yes y | lvremove docker'; done
+  
+ansible -i hosts-ocp5 nodes -a 'pvcreate /dev/sdd'
+ansible -i hosts-ocp5 nodes -a 'vgcreate origin /dev/sdd'
+ansible -i hosts-ocp5 nodes -a 'pvdisplay /dev/sdd'
+ansible -i hosts-ocp5 nodes -a 'vgs'
+ansible -i hosts-ocp5 nodes -a 'lvcreate -n origin -l 100%VG origin'
+ansible -i hosts-ocp5 nodes -a 'mkdir /var/lib/origin'
+ansible -i hosts-ocp5 nodes -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
+ansible -i hosts-ocp5 nodes -m lineinfile -a 'path=/etc/fstab line="/dev/origin/origin  /var/lib/origin  xfs defaults,noatime 1 2"'
+ansible -i hosts-ocp5 nodes -a 'mount /var/lib/origin'
+ansible -i hosts-ocp5 nodes -a 'lvs'
+
+screen -mdS ADM && screen -r  
+ansible-playbook -i hosts-ocp5 /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml  
+ansible-playbook -i hosts-ocp5 /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml  
+  
+  417  ansible -i hosts-ocp5 nodes -a "lvdelete -n docker "
+  418  ansible -i hosts-ocp5 nodes -a "lvremove -n docker "
+  419  ansible -i hosts-ocp5 nodes -a "lvremove docker "
+  420  ssh m1-ocp1
+  421  ssh m1-ocp5
+  422  ansible -i hosts-ocp5 nodes -a "yes y | lvremove docker "
+  423  ssh m2-ocp5
+  424  ssh m3-ocp5
+  425  yes y | ssh n1-ocp5
+  426  yes y | lvremove docker
+  427* 
+  428  ansible-playbook -i /root/hosts-ocp5 playbooks/prerequisites.yml
+  429  ansible-playbook -i /root/hosts-ocp5 playbooks/deploy_cluster.yml 
+  430  vi /root/openshift-ansible.log 
+  431  vi /root/hosts-ocp5 
+  432  vi /root/openshift-ansible.log 
+  433  vi /root/hosts-ocp5 
+  434  vi /root/openshift-ansible.log 
+  435  vi /root/hosts-ocp5 
+  436  vi /root/openshift-ansible.log 
+  437  ansible-playbook -i /root/hosts-ocp5 playbooks/openshift-hosted/config.yml
+  438  vi /root/hosts-ocp5 
+  439  vi /root/openshift-ansible.log 
+  440  vi /usr/share/ansible/openshift-ansible/roles/openshift_persistent_volumes/tasks/pv.yml
+  441  vi /root/openshift-ansible.log 
+  442  which ansible
+  443  ansible -v
+  444  ansible --version
+  445  ansible-playbook --version
+  446  find / -type f -name persistent-volume.yml.j2
+  447  vi /usr/share/ansible/openshift-ansible/roles/openshift_persistent_volumes/templates/persistent-volume.yml.j2
+  448  ansible-playbook -i /root/hosts-ocp5 playbooks/openshift-hosted/config.yml
+  449  oc login -u system:admin
+  450  vi /root/hosts-ocp5 
+  451  cd /root/
+  452  git clone https://github.com/IBM-Cloud/terraform-ibm-openshift.git
+  453  l
+  454  cd terraform-ibm-openshift/
+  455  l
+  456  vi variables.tf 
+  457  make rhn_username=iicparis rhn_password="Spc5pc$pc" infrastructure
+  458  cd ..
+  459  rm -rf terraform-ibm-openshift/
+  460  docker pull ibmterraform/terraform-provider-ibm-docker
+  461  wget -c https://releases.hashicorp.com/terraform/0.12.12/terraform_0.12.12_linux_amd64.zip
+  462  l
+  463  wget -c https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
+  464  l
+  465  echo $PATH
+  466  l /
+  467  l /usr/local/
+  468  echo $PATH
+  469  tar tvzc go1.13.3.linux-amd64.tar.gz 
+  470  tar tvzf go1.13.3.linux-amd64.tar.gz 
+  471  tar xvzf go1.13.3.linux-amd64.tar.gz  -C /usr/local
+  472  vi ~./bashrc
+  473  vi ~/.bashrc
+  474  . ~/.bashrc
+  475  go
+  476  mkdir -p $GOPATH/src/github.com/IBM-Cloud; cd $GOPATH/src/github.com/IBM-Cloud
+  477  l
+  478  pwd
+  479  rm -rf /src/github.com/IBM-Cloud
+  480  cd ~
+  481  l
+  482  df -h
+  483  l
+  484  go env GOPATH
+  485  export GOPATH=$(go env GOPATH)
+  486  echo $GOPATH 
+  487  mkdir -p $GOPATH/src/github.com/IBM-Cloud; cd $GOPATH/src/github.com/IBM-Cloud
+  488  pwd
+  489  git clone git@github.com:IBM-Cloud/terraform-provider-ibm.git
+  490  git clone git@github.com/IBM-Cloud/terraform-provider-ibm.git
+  491  cd ~
+  492  l
+  493  unzip -t terraform_0.12.12_linux_amd64.zip
+  494  yum install -y unzip
+  495  unzip -t terraform_0.12.12_linux_amd64.zip
+  496  echo $PATH
+  497  l /usr/local/bin
+  498  unzip terraform_0.12.12_linux_amd64.zip /usr/local/bin
+  499  unzip terraform_0.12.12_linux_amd64.zip -d /usr/local/bin
+  500  terraform 
+  501  wget -c https://github.com/IBM-Cloud/terraform-provider-ibm/releases/download/v0.17.6/linux_amd64.zip
+  502  l
+  503  unzip -t linux_amd64.zip
+  504  mkdir ~/.terraform.d/plugins
+  505  mkdir  -p ~/.terraform.d/plugins
+  506  unzip linux_amd64.zip -d ~/.terraform.d/plugins
+  507  terraform plan
+  508  export IC_API_KEY="AV8trCuS8YsnehPVpVW1G_h3S3vZrfsdi5kpdM4Cn1Js"
+  509  pwd
+  510  l
+  511  ansible-playbook -i hosts-ocp5 /usr/share/ansible/openshift-ansible/playbooks/adhoc/uninstall.yml
+  512  yum install glusterfs-fuse
+  513  subscription-manager repos --enable=rh-gluster-3-client-for-rhel-7-server-rpms
+  514  yum update glusterfs-fuse
+  515  l
+  516  vi hosts-latest
+  517  htpasswd -b admin admin
+  518  htpasswd -nb admin admin
+  519  htpasswd -n admin
+  520  vi hosts-latest
+  521  htpasswd -nb developer developer
+  522  vi hosts-latest
+  523  mount /mnt/iicbackup/produits/
+  524  cp -v hosts-latest /mnt/iicbackup/produits/ISO/ocp/hosts-latest 
+  525  umount /mnt/iicbackup/produits/
+  526  ansible -i hosts-latest nodes -a 'date'
+  527  vi hosts-latest 
+  528  ansible -i hosts-latest nodes -a 'date'
+  529  ansible -i hosts-latest lb -a 'date'
+  530  ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+  531  vi hosts-latest 
+  532  ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+  533  ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml 
+  534  ansible -i hosts-latest lb -a 'uptime'
+  535  ansible -i hosts-latest nodes -a 'uptime'
+  536  ansible -i hosts-latest nodes -a 'cat /etc/origin/master/master.env'
+  537  ansible -i hosts-latest masters -a 'cat /etc/origin/master/master.env'
+  538  ansible -i hosts-latest nodes -a 'cat /etc/sysconfig/atomic-openshift-node'
+  539  ansible -i hosts-latest masters -a 'cat /etc/sysconfig/atomic-openshift-node'
+  540  ansible -i hosts-latest masters -a 'cat /etc/origin/master/master.env'
+  541  vi hosts-latest 
+  542  ansible-playbook -i hosts-latest     /usr/share/ansible/openshift-ansible/playbooks/adhoc/uninstall.yml
+  543  ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+  544* ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/
+  545  ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+  546  ansible-playbook -i hosts-latest /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml 
+  547  curl -k https://lb-ocp5.iicparis.fr.ibm.com:8443/healthz
+  548  l
+  549  rm ~/.ssh/known_hosts 
+  550  vi vms
+  551  export SSHPASS=spcspc && for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e scp -o StrictHostKeyChecking=no setHostAndIP.sh extendVG.sh root@$ip:/root; done
+  552  export SSHPASS=spcspc && for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no 'date'; done
+  553  export SSHPASS=spcspc && for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done 
+  554  for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
+  555  yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && export SSHPASS=spcspc && export IP_HEAD=172.16.187. && for i in $(seq 50 61); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
+  556  export IP_HEAD=172.16.187. && for i in $(seq 50 61); do sshpass -e ssh root@$IP_HEAD$i 'hostname -f; date'; done
+  557  history 
+  558  mount /mnt/iicbackup/produits/
+  559  history > /mnt/iicbackup/produits/ISO/ocp/history-ctl

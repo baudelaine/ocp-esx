@@ -1,0 +1,10 @@
+{
+	"auths": {
+		"https://index.docker.io/v1/": {
+			"auth": "aWljcGFyaXM6U3BjNXBjJHBj"
+		},
+		"registry.redhat.io": {
+			"auth": "aWljcGFyaXM6U3BjNXBjJHBj"
+		}
+	}
+}

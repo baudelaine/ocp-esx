@@ -39,16 +39,16 @@ service bind9 restart
 # On a client
 
 dig @172.16.160.100 +short lb-ocp1.iicparis.fr.ibm.com
->> 172.16.187.10
+# 172.16.187.10
 
 dig @172.16.160.100 +short -x 172.16.187.10
->> lb-ocp1.iicparis.fr.ibm.com.
+# lb-ocp1.iicparis.fr.ibm.com.
 
 dig @172.16.160.100 +short *.apps-ocp1.iicparis.fr.ibm.com
->> apps-ocp1.iicparis.fr.ibm.com.
-172.16.187.17
-172.16.187.19
-172.16.187.15
+# apps-ocp1.iicparis.fr.ibm.com.
+# 172.16.187.17
+# 172.16.187.19
+# 172.16.187.15
 
 # On the esxi
 

@@ -239,6 +239,7 @@ vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd v
 
 # On NFS server
 
+cat > installNFSServer.sh << EOF
 pvcreate /dev/sdb
 vgcreate exports /dev/sdb
 lvcreate -n exports -l 100%VG exports
@@ -252,6 +253,10 @@ echo "/exports *(rw,sync,no_root_squash)" >> /etc/exports
 systemctl restart nfs
 showmount -e
 systemctl enable nfs
+EOF
+
+chmod +x installNFSServer.sh
+./installNFSServer.sh
 
 # on first master
 

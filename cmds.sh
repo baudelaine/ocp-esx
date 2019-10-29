@@ -232,12 +232,21 @@ oc delete project validate
 
 # On esx
 ## Make a snapshot
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
 vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPInstalled"}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
+## If necessary revert snapshot
 
+#SNAPID=1
+
+#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 # On NFS server
 
+cat > installNFSServer.sh << EOF
 pvcreate /dev/sdb
 vgcreate exports /dev/sdb
 lvcreate -n exports -l 100%VG exports
@@ -251,6 +260,10 @@ echo "/exports *(rw,sync,no_root_squash)" >> /etc/exports
 systemctl restart nfs
 showmount -e
 systemctl enable nfs
+EOF
+
+chmod +x installNFSServer.sh
+./installNFSServer.sh
 
 # on first master
 
@@ -270,11 +283,12 @@ mount /mnt/iicbackup/produits/
 cd /root
 tar xvfz /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
 
-oc login -u system:admin
+oc login -u admin -p admin
 oc new-project storage
 cd /root/nfs-client/
 NAMESPACE=$(oc project -q)
 sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" ./deploy/rbac.yaml
+oc create -f deploy/rbac.yaml
 oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner
 vi /root/nfs-client/deploy/deployment.yaml
 vi /root/nfs-client/deploy/class.yaml
@@ -283,14 +297,14 @@ oc create -f deploy/deployment.yaml
 oc create -f deploy/class.yaml
 
 oc get pods
-oc logs
+oc logs $(oc get pods | awk 'NR>1 {print $1}')
 
 oc create -f deploy/test-claim.yaml
 
 ### should display bound state
 oc get pvc
 
-oc create -f test-pod.yaml
+oc create -f deploy/test-pod.yaml
 
 # On NFS server
 
@@ -313,9 +327,10 @@ vim-cmd vmsvc/getallvms | awk '$2 ~"-ocp" {print "vim-cmd vmsvc/snapshot.get " $
 
 SNAPID=1
 
-vim-cmd vmsvc/getallvms | awk '$2 ~"-ocp" {print "vim-cmd vmsvc/snapshot.remove " $1 " " '$SNAPID'}' | sh
-
-vim-cmd vmsvc/getallvms | awk '$2 ~"-ocp" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.remove " $1 " " '$SNAPID'}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 
 

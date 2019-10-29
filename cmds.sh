@@ -276,7 +276,7 @@ mount /mnt/iicbackup/produits/
 cd /root
 tar xvfz /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
 
-oc login -u system:admin
+oc login -u admin -p admin
 oc new-project storage
 cd /root/nfs-client/
 NAMESPACE=$(oc project -q)

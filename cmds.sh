@@ -297,14 +297,14 @@ oc create -f deploy/deployment.yaml
 oc create -f deploy/class.yaml
 
 oc get pods
-oc logs
+oc logs $(oc get pods | awk 'NR>1 {print $1}')
 
 oc create -f deploy/test-claim.yaml
 
 ### should display bound state
 oc get pvc
 
-oc create -f test-pod.yaml
+oc create -f deploy/test-pod.yaml
 
 # On NFS server
 

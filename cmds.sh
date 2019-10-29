@@ -288,6 +288,7 @@ oc new-project storage
 cd /root/nfs-client/
 NAMESPACE=$(oc project -q)
 sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" ./deploy/rbac.yaml
+oc create -f deploy/rbac.yaml
 oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner
 vi /root/nfs-client/deploy/deployment.yaml
 vi /root/nfs-client/deploy/class.yaml

@@ -85,7 +85,7 @@ vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd v
 vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ## get other VM ip address and copy them to ctl
-$WORK_DIR/getVMAddress.sh | sed '/ctl-ocp/d' | tee $WORK_DIR/vms 
+$WORK_DIR/getVMAddress.sh | sed '/ctl-ocp/d' | tee $WORK_DIR/vms
 scp $WORK_DIR/vms root@ctl-$OCP:/root
 
 # On ctl
@@ -94,7 +94,7 @@ export OCP=ocp1
 export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=10 && export LAST=19
 
 ## set other vm ip address and hostname known in DNS
-for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done 
+for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
 
 ## reboot cluster vms
 for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
@@ -134,30 +134,39 @@ for i in $(seq $FIRST $LAST); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environm
 for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
 
 ### Check all vm can access each other without being prompt for a password
-export IP_HEAD=172.16.187. && for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
+for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
 
 #ansible & ssh setup
 
 ## copy inventory file to default ansible file
 sed 's/-ocp./-'$OCP'/g' /root/hosts-cluster > /etc/ansible/hosts
 
-## check 
+## check
 grep -e '-ocp.' /etc/ansible/hosts
 
 ## check ansible can speak with every nodes in the cluster
 ansible OSEv3 -m ping
 
-## extend root vg 
+## extend root vg
+cat > extendRootVG.sh << EOF
 ansible nodes -a 'pvcreate /dev/sdb'
 ansible nodes -a 'vgextend root /dev/sdb'
 ansible nodes -a 'lvextend /dev/root/root -l 100%VG -r /dev/sdb'
 ansible nodes -a 'df -hT /'
 ansible nodes -a 'lvs'
+EOF
+
+chmod +x extendRootVG.sh
+./extendRootVG.sh
 
 ## set Docker storage
-ansible nodes -a 'systemctl stop docker'
-ansible nodes -a 'systemctl is-active docker'
-export IP_HEAD=172.16.187. && export FIRST=90 && export LAST=99 && for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
+ansible nodes -a 'systemctl stop docker' && ansible nodes -a 'systemctl is-active docker'
+
+for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
+
+ansible nodes -a 'du -h /var/lib/docker/'
+
+cat > setDockerStorage.sh << EOF
 ansible nodes -a 'du -h /var/lib/docker'
 ansible nodes -a 'pvcreate /dev/sdc'
 ansible nodes -a 'vgcreate docker /dev/sdc'
@@ -169,8 +178,13 @@ ansible nodes -a 'df -hT /var/lib/docker'
 ansible nodes -a 'lvs'
 ansible nodes -a 'systemctl start docker'
 ansible nodes -a 'systemctl is-active docker'
+EOF
+
+chmod +x setDockerStorage.sh
+./setDockerStorage.sh
 
 ## set OCP storage
+cat > setOCPStorage.sh << EOF
 ansible nodes -a 'pvcreate /dev/sdd'
 ansible nodes -a 'vgcreate origin /dev/sdd'
 ansible nodes -a 'lvcreate -n origin -l 100%VG origin'
@@ -180,12 +194,16 @@ ansible nodes -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin 
 ansible nodes -a 'mount /var/lib/origin'
 ansible nodes -a 'df -hT /var/lib/origin'
 ansible nodes -a 'lvs'
+EOF
+
+chmod +x setOCPStorage.sh
+./setOCPStorage.sh
 
 screen -mdS ADM
 screen -r ADM
 cd /usr/share/ansible/openshift-ansible
 ansible-playbook playbooks/prerequisites.yml
-ansible-playbook playbooks/deploy_cluster.yml 
+ansible-playbook playbooks/deploy_cluster.yml
 
 # On first master
 
@@ -210,6 +228,13 @@ curl -I -v $(oc get routes | awk 'NR>1 {print $2}')
 oc delete project validate
 
 ## Check further with instructions here:  Check install https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html
+
+
+# On esx
+## Make a snapshot
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPInstalled"}' | sh
+
+
 
 # On NFS server
 
@@ -243,7 +268,7 @@ umount /mnt/test && rmdir /mnt/test/
 mount /mnt/iicbackup/produits/
 
 cd /root
-tar xvfz /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz 
+tar xvfz /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
 
 oc login -u system:admin
 oc new-project storage
@@ -252,13 +277,13 @@ NAMESPACE=$(oc project -q)
 sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" ./deploy/rbac.yaml
 oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner
 vi /root/nfs-client/deploy/deployment.yaml
-vi /root/nfs-client/deploy/class.yaml 
+vi /root/nfs-client/deploy/class.yaml
 
 oc create -f deploy/deployment.yaml
 oc create -f deploy/class.yaml
 
 oc get pods
-oc logs 
+oc logs
 
 oc create -f deploy/test-claim.yaml
 
@@ -340,4 +365,3 @@ oc delete pod --all -n openshift-console
 https://docs.openshift.com/container-platform/3.11/getting_started/configure_openshift.html#getting-started-configure-openshift
 
 https://docs.okd.io/latest/minishift/getting-started/quickstart.html
-

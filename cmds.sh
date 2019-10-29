@@ -1,60 +1,61 @@
 # On DNS
 
 cat >> /var/lib/bind/iicparis.fr.ibm.com.hosts << EOF
-lb-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.10
-m1-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.11
-m2-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.12
-m3-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.13
-n1-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.14
-i1-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.15
-n2-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.16
-i2-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.17
-n3-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.18
-i3-ocp1.iicparis.fr.ibm.com.    IN      A       172.16.187.19
-nfs-ocp1.iicparis.fr.ibm.com.   IN      A       172.16.187.28
-ctl-ocp1.iicparis.fr.ibm.com.   IN      A       172.16.187.29
-*.apps-ocp1.iicparis.fr.ibm.com.        IN      CNAME   apps-ocp1.iicparis.fr.ibm.com.
-apps-ocp1.iicparis.fr.ibm.com.  IN      A       172.16.187.15
-apps-ocp1.iicparis.fr.ibm.com.  IN      A       172.16.187.17
-apps-ocp1.iicparis.fr.ibm.com.  IN      A       172.16.187.19
+lb-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.90
+m1-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.91
+m2-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.92
+m3-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.93
+n1-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.94
+i1-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.95
+n2-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.96
+i2-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.97
+n3-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.98
+i3-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.99
+nfs-ocp9.iicparis.fr.ibm.com.   IN      A       172.16.187.108
+ctl-ocp9.iicparis.fr.ibm.com.   IN      A       172.16.187.109
+*.apps-ocp9.iicparis.fr.ibm.com.        IN      CNAME   apps-ocp9.iicparis.fr.ibm.com.
+apps-ocp9.iicparis.fr.ibm.com.  IN      A       172.16.187.95
+apps-ocp9.iicparis.fr.ibm.com.  IN      A       172.16.187.97
+apps-ocp9.iicparis.fr.ibm.com.  IN      A       172.16.187.99
 EOF
 
 cat >> /var/lib/bind/172.16.rev << EOF
-10.187.16.172.in-addr.arpa.     IN      PTR     lb-ocp1.iicparis.fr.ibm.com.
-11.187.16.172.in-addr.arpa.     IN      PTR     m1-ocp1.iicparis.fr.ibm.com.
-12.187.16.172.in-addr.arpa.     IN      PTR     m2-ocp1.iicparis.fr.ibm.com.
-13.187.16.172.in-addr.arpa.     IN      PTR     m3-ocp1.iicparis.fr.ibm.com.
-14.187.16.172.in-addr.arpa.     IN      PTR     n1-ocp1.iicparis.fr.ibm.com.
-15.187.16.172.in-addr.arpa.     IN      PTR     i1-ocp1.iicparis.fr.ibm.com.
-16.187.16.172.in-addr.arpa.     IN      PTR     n2-ocp1.iicparis.fr.ibm.com.
-17.187.16.172.in-addr.arpa.     IN      PTR     i2-ocp1.iicparis.fr.ibm.com.
-18.187.16.172.in-addr.arpa.     IN      PTR     n3-ocp1.iicparis.fr.ibm.com.
-19.187.16.172.in-addr.arpa.     IN      PTR     i3-ocp1.iicparis.fr.ibm.com.
-28.187.16.172.in-addr.arpa.     IN      PTR     nfs-ocp1.iicparis.fr.ibm.com.
-29.187.16.172.in-addr.arpa.     IN      PTR     ctl-ocp1.iicparis.fr.ibm.com.
+90.187.16.172.in-addr.arpa.     IN      PTR     lb-ocp9.iicparis.fr.ibm.com.
+91.187.16.172.in-addr.arpa.     IN      PTR     m1-ocp9.iicparis.fr.ibm.com.
+92.187.16.172.in-addr.arpa.     IN      PTR     m2-ocp9.iicparis.fr.ibm.com.
+93.187.16.172.in-addr.arpa.     IN      PTR     m3-ocp9.iicparis.fr.ibm.com.
+94.187.16.172.in-addr.arpa.     IN      PTR     n1-ocp9.iicparis.fr.ibm.com.
+95.187.16.172.in-addr.arpa.     IN      PTR     i1-ocp9.iicparis.fr.ibm.com.
+96.187.16.172.in-addr.arpa.     IN      PTR     n2-ocp9.iicparis.fr.ibm.com.
+97.187.16.172.in-addr.arpa.     IN      PTR     i2-ocp9.iicparis.fr.ibm.com.
+98.187.16.172.in-addr.arpa.     IN      PTR     n3-ocp9.iicparis.fr.ibm.com.
+99.187.16.172.in-addr.arpa.     IN      PTR     i3-ocp9.iicparis.fr.ibm.com.
+108.187.16.172.in-addr.arpa.     IN      PTR     nfs-ocp9.iicparis.fr.ibm.com.
+109.187.16.172.in-addr.arpa.     IN      PTR     ctl-ocp9.iicparis.fr.ibm.com.
 EOF
 
 service bind9 restart
 
 # On a client
 
-dig @172.16.160.100 +short lb-ocp1.iicparis.fr.ibm.com
->> 172.16.187.10
+dig @172.16.160.100 +short lb-ocp9.iicparis.fr.ibm.com
 
-dig @172.16.160.100 +short -x 172.16.187.10
->> lb-ocp1.iicparis.fr.ibm.com.
+dig @172.16.160.100 +short -x 172.16.187.90
 
-dig @172.16.160.100 +short *.apps-ocp1.iicparis.fr.ibm.com
->> apps-ocp1.iicparis.fr.ibm.com.
-172.16.187.17
-172.16.187.19
-172.16.187.15
+dig @172.16.160.100 +short *.apps-ocp9.iicparis.fr.ibm.com
+
+export ESX=172.16.161.139
+
+git clone -b ocp9 --single-branch https://github.com/bpshparis/ocp-esx
+
+scp * root@$ESX:/vmfs/volumes/datastore1/vmdk/
 
 # On the esxi
 
-export OCP=ocp1
+export OCP=ocp9
 export DS_PATH=/vmfs/volumes/V7000F-Volume-10TB
 export WORK_DIR=/vmfs/volumes/datastore1/vmdk
+alias l='ls -Alhtr'
 
 mkdir -p $DS_PATH/$OCP
 
@@ -70,7 +71,7 @@ $WORK_DIR/getVMAddress.sh | grep ctl
 
 # On ctl
 
-export OCP=ocp1
+export OCP=ocp9
 /root/extendRootVG.sh
 /root/setHostAndIP.sh ctl-$OCP
 reboot
@@ -90,8 +91,8 @@ scp $WORK_DIR/vms root@ctl-$OCP:/root
 
 # On ctl
 
-export OCP=ocp1
-export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=10 && export LAST=19
+export OCP=ocp9
+export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=90 && export LAST=99
 
 ## set other vm ip address and hostname known in DNS
 for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
@@ -107,8 +108,8 @@ $WORK_DIR/getVMAddress.sh
 
 ##Key exchange
 
-export OCP=ocp1
-export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=10 && export LAST=19
+export OCP=ocp9
+export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=90 && export LAST=99
 
 ### Clean ssh env on cluster vm
 for i in $(seq $FIRST $LAST); do sshpass -e ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
@@ -122,11 +123,13 @@ for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; date'; done
 
 ### create key pair and exchange public key between cluster vm (PermitUserEnvironment must enabled in target /etc/ssh/sshd_config)
 
+for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
+
 cat > ssh-env << EOF
 SSHPASS=spcspc
 IP_HEAD=172.16.187.
-FIRST=10
-LAST=19
+FIRST=90
+LAST=99
 EOF
 
 for i in $(seq $FIRST $LAST); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
@@ -156,8 +159,7 @@ ansible nodes -a 'df -hT /'
 ansible nodes -a 'lvs'
 EOF
 
-chmod +x extendRootVG.sh
-./extendRootVG.sh
+chmod +x extendRootVG.sh && ./extendRootVG.sh
 
 ## set Docker storage
 ansible nodes -a 'systemctl stop docker' && ansible nodes -a 'systemctl is-active docker'
@@ -180,8 +182,7 @@ ansible nodes -a 'systemctl start docker'
 ansible nodes -a 'systemctl is-active docker'
 EOF
 
-chmod +x setDockerStorage.sh
-./setDockerStorage.sh
+chmod +x setDockerStorage.sh && ./setDockerStorage.sh
 
 ## set OCP storage
 cat > setOCPStorage.sh << EOF
@@ -196,8 +197,7 @@ ansible nodes -a 'df -hT /var/lib/origin'
 ansible nodes -a 'lvs'
 EOF
 
-chmod +x setOCPStorage.sh
-./setOCPStorage.sh
+chmod +x setOCPStorage.sh && ./setOCPStorage.sh
 
 screen -mdS ADM
 screen -r ADM
@@ -256,7 +256,7 @@ systemctl enable nfs
 
 ## Test nfs access
 
-export OCP=ocp1
+export OCP=ocp9
 
 mkdir /mnt/test
 mount -t nfs nfs-$OCP:/exports /mnt/test

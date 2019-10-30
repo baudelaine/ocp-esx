@@ -154,18 +154,21 @@ for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-k
 ### Check all vm can access each other without being prompt for a password
 for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
 
-#ansible & ssh setup
+### Get inventory template
+curl -LO http://github.com/bpshparis/ocp-esx/archive/$OCP.zip
+unzip -j -o -d /root $OCP.zip ocp-esx-$OCP/hosts-aio ocp-esx-$OCP/hosts-cluster
+yes | rm -f $OCP.zip
 
-## copy inventory file to default ansible file
+### copy inventory file to default ansible file
 sed 's/-ocp./-'$OCP'/g' /root/hosts-cluster > /etc/ansible/hosts
 
-## check
+### check
 grep -e '-ocp.' /etc/ansible/hosts
 
-## check ansible can speak with every nodes in the cluster
+### check ansible can speak with every nodes in the cluster
 ansible OSEv3 -m ping
 
-## extend root vg
+### extend root vg
 cat > extendRootVG.sh << EOF
 ansible nodes -a 'pvcreate /dev/sdb'
 ansible nodes -a 'vgextend root /dev/sdb'
@@ -176,8 +179,8 @@ EOF
 
 chmod +x extendRootVG.sh && ./extendRootVG.sh
 
-## set Docker storage
-ansible nodes -a 'systemctl stop docker' && ansible nodes -a 'systemctl is-active docker'
+### set Docker storage
+ansible nodes -a 'systemctl stop docker'
 
 for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
 
@@ -199,7 +202,7 @@ EOF
 
 chmod +x setDockerStorage.sh && ./setDockerStorage.sh
 
-## set OCP storage
+### set OCP storage
 cat > setOCPStorage.sh << EOF
 ansible nodes -a 'pvcreate /dev/sdd'
 ansible nodes -a 'vgcreate origin /dev/sdd'
@@ -214,8 +217,20 @@ EOF
 
 chmod +x setOCPStorage.sh && ./setOCPStorage.sh
 
-screen -mdS ADM
-screen -r ADM
+# On esx
+
+## Make a snapshot
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
+# On ctl
+
+### check ansible can speak with every nodes in the cluster
+ansible OSEv3 -m ping
+
+## Launch OCP installation
+screen -mdS ADM && screen -r ADM
 cd /usr/share/ansible/openshift-ansible
 ansible-playbook playbooks/prerequisites.yml
 ansible-playbook playbooks/deploy_cluster.yml
@@ -281,9 +296,9 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 
 # on first master
 
-## Test nfs access
+export OCP=ocp7
 
-export OCP=ocp9
+## Test nfs access
 
 mkdir /mnt/test && mount -t nfs nfs-$OCP:/exports /mnt/test
 touch /mnt/test/a && echo "RC="$? && ls /mnt/test/a && yes | rm /mnt/test/a && echo "RC="$?

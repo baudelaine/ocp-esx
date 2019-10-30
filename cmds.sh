@@ -68,7 +68,7 @@ export OCP=ocp7
 #git clone -b ocp7 --single-branch https://github.com/bpshparis/ocp-esx
 curl -LO http://github.com/bpshparis/ocp-esx/archive/$OCP.zip
 unzip -j -o -d /root $OCP.zip ocp-esx-$OCP/setHostAndIP.sh ocp-esx-$OCP/extendVG.sh ocp-esx-$OCP/cmds.sh
-cd ocp7
+yes | rm -f $OCP.zip
 
 /root/extendRootVG.sh
 /root/setHostAndIP.sh ctl-$OCP
@@ -90,7 +90,7 @@ dig @172.16.160.100 +short -x 172.16.187.70
 ## Test alias
 dig @172.16.160.100 +short *.apps-ocp7.iicparis.fr.ibm.com
 
-# On esx
+# On esxi
 
 ## start other vm
 vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
@@ -108,9 +108,9 @@ scp $WORK_DIR/vms root@ctl-$OCP:/root
 export OCP=ocp7 && export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=70 && export LAST=79
 
 ## Copy /root/extendRootVG.sh and /root/setHostAndIP.sh
-for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e scp -o StrictHostKeyChecking=no /root/extendRootVG.sh /root/setHostAndIP.sh root@$ip:/root; done
+for ip in $(awk -F ";" '{print $3}' vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no /root/extendRootVG.sh /root/setHostAndIP.sh root@$ip:/root; done
 
-## set other vm ip address and hostname known in DNS
+## set cluster vms with ip address and hostname known in DNS
 for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
 
 ## reboot cluster vms
@@ -122,10 +122,9 @@ $WORK_DIR/getVMAddress.sh
 
 # On ctl
 
-##Key exchange
+export OCP=ocp7 && export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=70 && export LAST=79
 
-export OCP=ocp9
-export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=90 && export LAST=99
+##Key exchange
 
 ### Clean ssh env on cluster vm
 for i in $(seq $FIRST $LAST); do sshpass -e ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
@@ -144,8 +143,8 @@ for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#P
 cat > ssh-env << EOF
 SSHPASS=spcspc
 IP_HEAD=172.16.187.
-FIRST=90
-LAST=99
+FIRST=70
+LAST=79
 EOF
 
 for i in $(seq $FIRST $LAST); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done

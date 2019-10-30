@@ -1,0 +1,41 @@
+#bare minimum hostfile
+
+[OSEv3:children]
+masters
+nodes
+etcd
+
+[OSEv3:vars]
+# if your target hosts are Fedora uncomment this
+#ansible_python_interpreter=/usr/bin/python3
+#openshift_deployment_type=origin
+ansible_user=root
+openshift_deployment_type=openshift-enterprise
+oreg_auth_user=iicparis
+oreg_auth_password=Spc5pc$pc
+openshift_portal_net=172.30.0.0/16
+# localhost likely doesn't meet the minimum requirements
+openshift_disable_check=disk_availability,memory_availability
+
+openshift_node_groups=[{'name': 'node-config-all-in-one', 'labels': ['node-role.kubernetes.io/master=true', 'node-role.kubernetes.io/infra=true', 'node-role.kubernetes.io/compute=true']}]
+
+openshift_release="3.11"
+
+openshift_master_identity_providers=[{'name': 'allow_all', 'login': 'true', 'challenge': 'true', 'kind': 'AllowAllPasswordIdentityProvider'}]
+
+# default subdomain to use for exposed routes, you should have wildcard dns
+# for *.apps.example.com that points at your infra nodes which will run
+# your router
+openshift_master_default_subdomain=apps.ocp76.iicparis.fr.ibm.com
+
+os_firewall_use_firewalld=True
+
+[masters]
+ocp76.iicparis.fr.ibm.com ansible_connection=local
+
+[etcd]
+ocp76.iicparis.fr.ibm.com ansible_connection=local
+
+[nodes]
+# openshift_node_group_name should refer to a dictionary with matching key of name in list openshift_node_groups.
+ocp76.iicparis.fr.ibm.com ansible_connection=local openshift_node_group_name="node-config-all-in-one"

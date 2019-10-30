@@ -1,0 +1,11 @@
+127.0.0.1	localhost
+127.0.1.1	fr054721-T520.mlv.fr.ibm.com	fr054721-T520
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+127.0.0.1 screenshots.firefox.com
+172.16.187.55	apps.ocp5.iicparis.fr.ibm.com
+172.16.187.57	apps.ocp5.iicparis.fr.ibm.com

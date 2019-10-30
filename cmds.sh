@@ -1,80 +1,94 @@
-# On DNS
+#On DNS
 
+## Add records to master zone
 cat >> /var/lib/bind/iicparis.fr.ibm.com.hosts << EOF
-lb-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.90
-m1-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.91
-m2-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.92
-m3-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.93
-n1-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.94
-i1-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.95
-n2-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.96
-i2-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.97
-n3-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.98
-i3-ocp9.iicparis.fr.ibm.com.    IN      A       172.16.187.99
-nfs-ocp9.iicparis.fr.ibm.com.   IN      A       172.16.187.108
-ctl-ocp9.iicparis.fr.ibm.com.   IN      A       172.16.187.109
-*.apps-ocp9.iicparis.fr.ibm.com.        IN      CNAME   apps-ocp9.iicparis.fr.ibm.com.
-apps-ocp9.iicparis.fr.ibm.com.  IN      A       172.16.187.95
-apps-ocp9.iicparis.fr.ibm.com.  IN      A       172.16.187.97
-apps-ocp9.iicparis.fr.ibm.com.  IN      A       172.16.187.99
+lb-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.70
+m1-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.71
+m2-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.72
+m3-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.73
+n1-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.74
+i1-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.75
+n2-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.76
+i2-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.77
+n3-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.78
+i3-ocp7.iicparis.fr.ibm.com.    IN      A       172.16.187.79
+nfs-ocp7.iicparis.fr.ibm.com.   IN      A       172.16.187.88
+ctl-ocp7.iicparis.fr.ibm.com.   IN      A       172.16.187.89
+*.apps-ocp7.iicparis.fr.ibm.com.        IN      CNAME   apps-ocp7.iicparis.fr.ibm.com.
+apps-ocp7.iicparis.fr.ibm.com.  IN      A       172.16.187.75
+apps-ocp7.iicparis.fr.ibm.com.  IN      A       172.16.187.77
+apps-ocp7.iicparis.fr.ibm.com.  IN      A       172.16.187.79
 EOF
 
+## Add records to reverse zone
 cat >> /var/lib/bind/172.16.rev << EOF
-90.187.16.172.in-addr.arpa.     IN      PTR     lb-ocp9.iicparis.fr.ibm.com.
-91.187.16.172.in-addr.arpa.     IN      PTR     m1-ocp9.iicparis.fr.ibm.com.
-92.187.16.172.in-addr.arpa.     IN      PTR     m2-ocp9.iicparis.fr.ibm.com.
-93.187.16.172.in-addr.arpa.     IN      PTR     m3-ocp9.iicparis.fr.ibm.com.
-94.187.16.172.in-addr.arpa.     IN      PTR     n1-ocp9.iicparis.fr.ibm.com.
-95.187.16.172.in-addr.arpa.     IN      PTR     i1-ocp9.iicparis.fr.ibm.com.
-96.187.16.172.in-addr.arpa.     IN      PTR     n2-ocp9.iicparis.fr.ibm.com.
-97.187.16.172.in-addr.arpa.     IN      PTR     i2-ocp9.iicparis.fr.ibm.com.
-98.187.16.172.in-addr.arpa.     IN      PTR     n3-ocp9.iicparis.fr.ibm.com.
-99.187.16.172.in-addr.arpa.     IN      PTR     i3-ocp9.iicparis.fr.ibm.com.
-108.187.16.172.in-addr.arpa.     IN      PTR     nfs-ocp9.iicparis.fr.ibm.com.
-109.187.16.172.in-addr.arpa.     IN      PTR     ctl-ocp9.iicparis.fr.ibm.com.
+70.187.16.172.in-addr.arpa.     IN      PTR     lb-ocp7.iicparis.fr.ibm.com.
+71.187.16.172.in-addr.arpa.     IN      PTR     m1-ocp7.iicparis.fr.ibm.com.
+72.187.16.172.in-addr.arpa.     IN      PTR     m2-ocp7.iicparis.fr.ibm.com.
+73.187.16.172.in-addr.arpa.     IN      PTR     m3-ocp7.iicparis.fr.ibm.com.
+74.187.16.172.in-addr.arpa.     IN      PTR     n1-ocp7.iicparis.fr.ibm.com.
+75.187.16.172.in-addr.arpa.     IN      PTR     i1-ocp7.iicparis.fr.ibm.com.
+76.187.16.172.in-addr.arpa.     IN      PTR     n2-ocp7.iicparis.fr.ibm.com.
+77.187.16.172.in-addr.arpa.     IN      PTR     i2-ocp7.iicparis.fr.ibm.com.
+78.187.16.172.in-addr.arpa.     IN      PTR     n3-ocp7.iicparis.fr.ibm.com.
+79.187.16.172.in-addr.arpa.     IN      PTR     i3-ocp7.iicparis.fr.ibm.com.
+88.187.16.172.in-addr.arpa.     IN      PTR     nfs-ocp7.iicparis.fr.ibm.com.
+89.187.16.172.in-addr.arpa.     IN      PTR     ctl-ocp7.iicparis.fr.ibm.com.
 EOF
 
+## Restart DNS
 service bind9 restart
-
-# On a client
-
-dig @172.16.160.100 +short lb-ocp9.iicparis.fr.ibm.com
-
-dig @172.16.160.100 +short -x 172.16.187.90
-
-dig @172.16.160.100 +short *.apps-ocp9.iicparis.fr.ibm.com
-
-export ESX=172.16.161.139
-
-git clone -b ocp9 --single-branch https://github.com/bpshparis/ocp-esx
-
-scp * root@$ESX:/vmfs/volumes/datastore1/vmdk/
 
 # On the esxi
 
-export OCP=ocp9
+export OCP=ocp7
 export DS_PATH=/vmfs/volumes/V7000F-Volume-10TB
 export WORK_DIR=/vmfs/volumes/datastore1/vmdk
 alias l='ls -Alhtr'
+
+if ( [ ! -f $WORK_DIR/rhel.vmdk ] || [ ! -f $WORK_DIR/rhel-flat.vmdk ] ); then echo "!!! ERROR: Please copy rhel.vmdk and rhel-flat.vmdk in $WORK_DIR before going further !!!"; fi
 
 mkdir -p $DS_PATH/$OCP
 
 chmod +x $WORK_DIR/*.sh
 
-$WORK_DIR/createVMs.sh $OCP
+## Create ctl vm
+$WORK_DIR/createVMs.sh $OCP ctl
 
-## start ctl
+## Start ctl vm
 vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-'$OCP'" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-## get ctl dhcp address
+## Wait for ctl vm to be up and get ctl dhcp address
 $WORK_DIR/getVMAddress.sh | grep ctl
 
 # On ctl
 
-export OCP=ocp9
+export OCP=ocp7
+
+#git clone -b ocp7 --single-branch https://github.com/bpshparis/ocp-esx
+curl -LO http://github.com/bpshparis/ocp-esx/archive/$OCP.zip
+unzip -j -o -d /root $OCP.zip ocp-esx-$OCP/setHostAndIP.sh ocp-esx-$OCP/extendVG.sh ocp-esx-$OCP/cmds.sh
+cd ocp7
+
 /root/extendRootVG.sh
 /root/setHostAndIP.sh ctl-$OCP
 reboot
+
+# On esxi
+
+## Create cluster vms
+$WORK_DIR/createVMs.sh $OCP
+
+# On ctl
+
+## Test master zone
+dig @172.16.160.100 +short lb-ocp7.iicparis.fr.ibm.com
+
+## Test reverse zone
+dig @172.16.160.100 +short -x 172.16.187.70
+
+## Test alias
+dig @172.16.160.100 +short *.apps-ocp7.iicparis.fr.ibm.com
 
 # On esx
 
@@ -82,17 +96,19 @@ reboot
 vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ## In case cluster VM need to reboot e.g. dhcp address lost
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-## get other VM ip address and copy them to ctl
+## Wait for all cluster vm to be up, get their ip address and copy them to ctl
 $WORK_DIR/getVMAddress.sh | sed '/ctl-ocp/d' | tee $WORK_DIR/vms
 scp $WORK_DIR/vms root@ctl-$OCP:/root
 
 # On ctl
 
-export OCP=ocp9
-export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=90 && export LAST=99
+export OCP=ocp7 && export SSHPASS=spcspc && export IP_HEAD=172.16.187. && export FIRST=70 && export LAST=79
+
+## Copy /root/extendRootVG.sh and /root/setHostAndIP.sh
+for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e scp -o StrictHostKeyChecking=no /root/extendRootVG.sh /root/setHostAndIP.sh root@$ip:/root; done
 
 ## set other vm ip address and hostname known in DNS
 for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done

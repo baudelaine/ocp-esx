@@ -275,38 +275,55 @@ done
 }
 
 createVm (){
-	createCtlVm
+	#createCtlVm
 	createMasterVm
 	createNodeVm
 	createInfraVm
 	createLbVm
-	createNfsVm
+	#createNfsVm
 }
 
 createVmdk (){
-	createCtlVmdk
+	#createCtlVmdk
 	createMasterVmdk
 	createNodeVmdk
 	createInfraVmdk
 	createLbVmdk
-	createNfsVmdk
+	#createNfsVmdk
 }
 
 addVmdk (){
-	addCtlVmdk
+	#addCtlVmdk
 	addMasterVmdk
 	addNodeVmdk
 	addInfraVmdk
 	addLbVmdk
-	addNfsVmdk
+	#addNfsVmdk
 }
 
-createVm
-createVmdk
-addVmdk
+case $2 in
 
-#createNfsVm
-#createNfsVmdk
-#addNfsVmdk
+	ctl)
+		echo "Create ctl-$OCP..."
+		createCtlVm
+		createCtlVmdk
+		addCtlVmdk
+		;;
+
+	nfs)
+		echo "Create nfs-$OCP..."
+		createNfsVm
+		createNfsVmdk
+		addNfsVmdk
+		;;
+
+	*)
+		echo "Create $OCP cluster..."
+		createVm
+		createVmdk
+		addVmdk
+		;;
+
+esac
 
 exit 0;

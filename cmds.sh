@@ -279,20 +279,20 @@ umount /mnt/test && rmdir /mnt/test/
 mount /mnt/iicbackup/produits/
 
 cd /root
-tar xvfz /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
+tar xvzf /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
+
 
 oc login -u admin -p admin
 oc new-project storage
 cd /root/nfs-client/
 NAMESPACE=$(oc project -q)
-sed -i'' "s/namespace:.*/namespace: $NAMESPACE/g" ./deploy/rbac.yaml
+sed -i -e 's/namespace:.*/namespace: '$NAMESPACE'/g' ./deploy/rbac.yaml
 oc create -f deploy/rbac.yaml
 oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner
-vi /root/nfs-client/deploy/deployment.yaml
-vi /root/nfs-client/deploy/class.yaml
+sed -i -e 's/<NFS_HOSTNAME>/nfs-'$OCP'/g' deploy/deployment.yaml
 
-oc create -f deploy/deployment.yaml
 oc create -f deploy/class.yaml
+oc create -f deploy/deployment.yaml
 
 oc get pods
 oc logs $(oc get pods | awk 'NR>1 {print $1}')

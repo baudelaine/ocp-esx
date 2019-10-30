@@ -262,8 +262,7 @@ showmount -e
 systemctl enable nfs
 EOF
 
-chmod +x installNFSServer.sh
-./installNFSServer.sh
+chmod +x installNFSServer.sh && ./installNFSServer.sh
 
 # on first master
 
@@ -271,9 +270,8 @@ chmod +x installNFSServer.sh
 
 export OCP=ocp9
 
-mkdir /mnt/test
-mount -t nfs nfs-$OCP:/exports /mnt/test
-touch /mnt/test/a && ls /mnt/test/a && rm /mnt/test/a
+mkdir /mnt/test && mount -t nfs nfs-$OCP:/exports /mnt/test
+touch /mnt/test/a && echo "RC="$? && ls /mnt/test/a && yes | rm /mnt/test/a && echo "RC="$?
 umount /mnt/test && rmdir /mnt/test/
 
 ## Add storage class managed-nfs-storage for NFS Persistent Volume Claim

@@ -3,6 +3,8 @@
 NEW_HOSTNAME=$1
 DOMAIN="iicparis.fr.ibm.com"
 DNS="172.16.160.100"
+GATEWAY="172.16.186.17"
+MASK="19"
 IFCFG="/etc/sysconfig/network-scripts/ifcfg-ens192"
 HOSTNAME=$(hostname -f | awk -F"." '{print $1}')
 
@@ -28,11 +30,16 @@ if [ "$DHCP" -eq 1 ] && [ ! -z "$NEW_IPADDR" ]; then
 	echo "Set static address to" $NEW_IPADDR
 	sed -i 's/\(^bootproto="dhcp"\)/#\1/gI' $IFCFG
 	sed -i 's/^#\(bootproto="none"\)/\1/gI' $IFCFG
-	sed -i 's/^#ipaddr.*$/IPADDR="'$NEW_IPADDR'"/gI' $IFCFG
-	sed -i 's/^#\(prefix.*$\)/\1/gI' $IFCFG
-	sed -i 's/^#\(gateway.*$\)/\1/gI' $IFCFG
-	sed -i 's/^#\(dns1.*$\)/\1/gI' $IFCFG
-	sed -i 's/^#\(domain.*$\)/\1/gI' $IFCFG
+	# sed -i 's/^#ipaddr.*$/IPADDR="'$NEW_IPADDR'"/gI' $IFCFG
+	# sed -i 's/^#\(prefix.*$\)/\1/gI' $IFCFG
+	# sed -i 's/^#\(gateway.*$\)/\1/gI' $IFCFG
+	# sed -i 's/^#\(dns1.*$\)/\1/gI' $IFCFG
+	# sed -i 's/^#\(domain.*$\)/\1/gI' $IFCFG
+	echo 'IPADDR="'$NEW_IPADDR'"' >> $IFCFG
+	echo 'PREFIX="'$MASK'"' >> $IFCFG
+	echo 'GATEWAY="'$GATEWAY'"' >> $IFCFG
+	echo 'DNS1="'$DNS'"' >> $IFCFG
+	echo 'DOMAIN="'$DOMAIN'"' >> $IFCFG
 
 else
 

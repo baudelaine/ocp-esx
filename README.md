@@ -1,5 +1,7 @@
 ## Prerequisites
 
+Ask Redhat for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect)
+
 In your ESX datastore you should have copied:
 
 - A vmdk file which host  a minimal and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 

@@ -306,11 +306,10 @@ umount /mnt/test && rmdir /mnt/test/
 
 ## Add storage class managed-nfs-storage for NFS Persistent Volume Claim
 
-mount /mnt/iicbackup/produits/
-
-cd /root
-tar xvzf /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
-
+curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
+unzip -j -o -d /root master.zip ocp-esx-master/nfs-client.zip
+yes | rm -f master.zip
+unzip -o -d /root nfs-client.zip
 
 oc login -u admin -p admin
 oc new-project storage
@@ -325,7 +324,7 @@ oc create -f deploy/class.yaml
 oc create -f deploy/deployment.yaml
 
 oc get pods
-oc logs $(oc get pods | awk 'NR>1 {print $1}')
+oc logs $(oc get pods | awk 'NR>2 {print $1}')
 
 oc create -f deploy/test-claim.yaml
 

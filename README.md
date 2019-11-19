@@ -1,10 +1,10 @@
 ## Prerequisites
 
-Ask Redhat for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect)
+Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect) to get access to Openshift packages.
 
 In your ESX datastore you should have copied:
 
-- A vmdk file which host  a minimal and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
+- A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
 
 
@@ -13,7 +13,7 @@ In your ESX datastore you should have copied:
 
 ### Set ESX environment variables
 
-> :warning: Allowed characters are [A-Z] [a-z] [0-9] [-/]
+> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
 
 - **OCP** for cluster-name.
 - **DATASTORE_PATH** for path where vms will be created.
@@ -38,7 +38,7 @@ e.g.
 
 ### Set DNS environment variables
 
-> :warning: Allowed characters are [A-Z] [a-z] [0-9] [-/]
+> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
 
 - **OCP** for cluster-name.
 - **MASTER_IP_HEAD** for cluster ip head in master zone.
@@ -143,7 +143,7 @@ service bind9 restart
 
 ### Set environment variables
 
-> :warning: Allowed characters are [A-Z] [a-z] [0-9] [-/]
+> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
 
 - **OCP** for cluster-name.
 
@@ -177,7 +177,7 @@ e.g.
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-> :bulb: (Optional) In case cluster vms need to reboot because of dhcp address lost.
+> :bulb: (Optional) In case cluster vms need to be reboot because of dhcp address lost.
 > You may reboot cluster vms with the following command.
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh && vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
@@ -299,7 +299,14 @@ EOF
 
 chmod +x extendRootVG.sh && ./extendRootVG.sh
 
+
+### set etcd storage
+
+todo
+
+
 ### set Docker storage
+
 ansible nodes -a 'systemctl stop docker'
 
 for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done

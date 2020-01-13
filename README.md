@@ -7,7 +7,7 @@ In your ESX datastore you should have copied:
 - A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
 
-
+> :bulb: Unregister a RHEL with subscription-manager **unregister**
 
 ## On ESX
 
@@ -302,7 +302,7 @@ chmod +x extendRootVG.sh && ./extendRootVG.sh
 
 ### set etcd storage
 
-todo
+to be done
 
 
 ### set Docker storage
@@ -362,27 +362,41 @@ cd /usr/share/ansible/openshift-ansible
 ansible-playbook playbooks/prerequisites.yml
 ansible-playbook playbooks/deploy_cluster.yml
 
+
+
 # On first master
 
-## Check install
+## Give admin cluster-admin role
 
 oc login -u system:admin
 
 oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --user=admin
 
-oc login -u admin -p admin
 
-oc new-project validate
 
-oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+# On ctl
 
-oc logs -f bc/ruby-ex
+## Install oc Client Tools
 
-oc expose svc/ruby-ex
+Download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz) and copy **oc** and **kubectl** in your $PATH
 
-curl -I -v $(oc get routes | awk 'NR>1 {print $2}')
 
-oc delete project validate
+
+## Check install
+
+	oc login https://lb-$OCP:8443 -u admin -p admin
+	
+	oc new-project validate
+	
+	oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+	
+	oc logs -f bc/ruby-ex
+	
+	oc expose svc/ruby-ex
+	
+	curl -I -v $(oc get routes | awk 'NR>1 {print $2}')
+	
+	oc delete project validate
 
 ## Check further with instructions here:  Check install https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html
 

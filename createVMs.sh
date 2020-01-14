@@ -1,22 +1,29 @@
 #!/bin/sh
 
-[ "$1" != "" ] && echo || { echo "USAGE: give ocp cluster name as first parmeter e.g. ./createVM.sh ocp9. Exiting..."; exit 1; }
+[ "$1" != "" ] && echo || { echo "USAGE: give ocp cluster name as first parmeter e.g. ./createVMs.sh ocp9. Exiting..."; exit 1; }
 
 OCP=$1
-DATASTORE_PATH="/vmfs/volumes/V7000F-Volume-10TB/$OCP"
+DATASTORE_PATH=$DATASTORE_PATH"/$OCP"
+
+[ ! -d "$DATASTORE_PATH" ] && { echo -n "Creating" $DATASTORE_PATH"..."; mkdir $DATASTORE_PATH; echo " RC=" $?; } || { echo ; }
+
+[ $? -ne 0 ] && { echo "ERROR:" $DATASTORE_PATH "not created successfully. Exiting..."; exit 1; }
+
+[ -f "$VMDK" ] && echo || { echo "ERROR:" $VMDK "not found. Exiting..."; exit 1; }
+
 CTL_VM="ctl-$OCP"
 LB_VM="lb-$OCP"
 MASTER_VM="m1-$OCP m2-$OCP m3-$OCP"
 NODE_VM="n1-$OCP n2-$OCP n3-$OCP"
 INFRA_VM="i1-$OCP i2-$OCP i3-$OCP"
 NFS_VM="nfs-$OCP"
-ROOT0_DISK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
-MASTER_VMX="/vmfs/volumes/datastore1/vmdk/master.vmx"
-INFRA_VMX="/vmfs/volumes/datastore1/vmdk/infra.vmx"
-NODE_VMX="/vmfs/volumes/datastore1/vmdk/node.vmx"
-LB_VMX="/vmfs/volumes/datastore1/vmdk/lb.vmx"
-NFS_VMX="/vmfs/volumes/datastore1/vmdk/nfs.vmx"
-CTL_VMX="/vmfs/volumes/datastore1/vmdk/ctl.vmx"
+ROOT0_DISK=$VMDK
+MASTER_VMX=$WORKDIR"/master.vmx"
+INFRA_VMX=$WORKDIR"/infra.vmx"
+NODE_VMX=$WORKDIR"/node.vmx"
+LB_VMX=$WORKDIR"/lb.vmx"
+NFS_VMX=$WORKDIR"/nfs.vmx"
+CTL_VMX=$WORKDIR"/ctl.vmx"
 
 createCtlVmdk (){
 
@@ -301,12 +308,29 @@ addVmdk (){
 	addNfsVmdk
 }
 
-createVm
-createVmdk
-addVmdk
+case $2 in
 
-#createNfsVm
-#createNfsVmdk
-#addNfsVmdk
+	ctl)
+		echo "Create ctl-$OCP..."
+		createCtlVm
+		createCtlVmdk
+		addCtlVmdk
+		;;
+
+	nfs)
+		echo "Create nfs-$OCP..."
+		createNfsVm
+		createNfsVmdk
+		addNfsVmdk
+		;;
+
+	*)
+		echo "Create $OCP cluster..."
+		createVm
+		createVmdk
+		addVmdk
+		;;
+
+esac
 
 exit 0;

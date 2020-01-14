@@ -242,37 +242,37 @@ e.g.
 
 #### Clean ssh env on all cluster vms
 
-	for i in $(seq $FIRST $LAST); do sshpass -e ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do sshpass -e ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
 #### Generate ssh key pair and copy public key on all cluster vms
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
 	
-	for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
 
 
 #### Check  controller can access all cluster vm without being prompt for a password
 
-	for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; date'; done
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; date'; done
 
 
 ### create key pair and exchange public key between cluster vm (PermitUserEnvironment must enabled in target /etc/ssh/sshd_config)
 
-for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
 
 cat > ssh-env << EOF
 SSHPASS=spcspc
 IP_HEAD=172.16.187.
-FIRST=70
-LAST=79
+FIRST=110
+LAST=119
 EOF
 
-for i in $(seq $FIRST $LAST); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
 
-for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
 
 ### Check all vm can access each other without being prompt for a password
-for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
 
 ### Get inventory template
 curl -LO http://github.com/bpshparis/ocp-esx/archive/$OCP.zip

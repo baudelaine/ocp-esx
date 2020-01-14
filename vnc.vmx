@@ -1,0 +1,4 @@
+RemoteDisplay.vnc.enabled = "True"
+RemoteDisplay.vnc.port = "5901"  	 
+RemoteDisplay.vnc.password = "spcspc"
+RemoteDisplay.vnc.keymap = "fr"

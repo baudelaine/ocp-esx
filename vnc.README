@@ -1,0 +1,4 @@
+!!!!!!!!!!!! for vnc to work !!!!!!!!!!!!!!!!!!!
+in vsphere client / configuration / security profile / firewall properties / gdbserver has to be checked
+esxcli network firewall ruleset set -e true -r gdbserver
+!!!!!!!!!!!! for vnc to work !!!!!!!!!!!!!!!!!!!

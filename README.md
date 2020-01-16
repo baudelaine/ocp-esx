@@ -245,7 +245,7 @@ source ~/.bashrc
 
 ### Wait for all cluster vms to be up with static ip address
 
-	$WORK_DIR/getVMAddress.sh
+	$WORKDIR/getVMAddress.sh
 
 ## On  controller
 

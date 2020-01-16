@@ -64,7 +64,7 @@ i[1:3]-ocp5.iicparis.fr.ibm.com
 n[1:3]-ocp5.iicparis.fr.ibm.com
 
 # host group for infra and compute
-[infra-compute]
+[infracompute]
 i[1:3]-ocp5.iicparis.fr.ibm.com
 n[1:3]-ocp5.iicparis.fr.ibm.com
 

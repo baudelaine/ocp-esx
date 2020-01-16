@@ -9,32 +9,6 @@ In your ESX datastore you should have copied:
 
 > :bulb: Unregister a RHEL with subscription-manager **unregister**
 
-## On ESX
-
-### Set ESX environment variables
-
-> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
-
-- **OCP** for cluster-name.
-- **DATASTORE** for path where vms will be created.
-- **VMDK** for full path of minimal and prepared RHEL7 vmdk file.
-- **WORKDIR** for path where bundle was extracted.
-
-
-
-e.g.
-
-	export OCP=ocp3
-	export DATASTORE="/vmfs/volumes/V7000F-Volume-10TB"
-	export VMDK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
-	export WORKDIR="/vmfs/volumes/datastore1/ocp-esx-master"
-
-### Create VMs
-
-	cd $WORKDIR && ./createVMs.sh $OCP
-
-> It will take several minutes so [lets add records in DNS](#on-dns)
-
 
 
 ## On DNS
@@ -130,7 +104,25 @@ service bind9 restart
 
 ## On ESX
 
-> :warning: If session is new, please [set ESX environment variables](#set-esx-environment-variables) first.
+### Set ESX environment variables
+
+> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
+
+- **OCP** for cluster-name.
+- **DATASTORE** for path where vms will be created.
+- **VMDK** for full path of minimal and prepared RHEL7 vmdk file.
+- **WORKDIR** for path where bundle was extracted.
+
+e.g.
+
+	export OCP=ocp3
+	export DATASTORE="/vmfs/volumes/V7000F-Volume-10TB"
+	export VMDK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
+	export WORKDIR="/vmfs/volumes/datastore1/ocp-esx-master"
+
+### Create VMs
+
+	cd $WORKDIR && ./createVMs.sh $OCP
 
 ### Start ctl vm
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-'$OCP'" {print "vim-cmd vmsvc/power.on " $1}' | sh
@@ -493,12 +485,16 @@ vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd v
 ### Set snapshot id
 
 	SNAPID=1
-	
+
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
-	
+
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
-	
+
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
 
 # On NFS server
 

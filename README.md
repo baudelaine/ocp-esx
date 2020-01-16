@@ -153,9 +153,7 @@ echo "export OCP=ocp3" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-
 ### Get tools to manage storage and setup hostname and ip address from DNS
-
 
 ```
 curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip

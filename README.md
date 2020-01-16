@@ -374,7 +374,7 @@ EOF
 	chmod +x setOCPStorage.sh && ./setOCPStorage.sh
 
 
-#### set etcd storage
+#### Set ETCD storage
 
 ```
 cat > setETCDStorage.sh << EOF
@@ -421,7 +421,8 @@ EOF
 
 	ansible OSEv3 -m ping
 
-#### Launch OCP installation
+
+#### Launch OCP installation
 
 :bulb: To avoid network failure, launch installation on ** locale console** or in a **screen**
 

@@ -27,7 +27,6 @@ In your ESX datastore you should have copied:
 - **REVERSE_CTL_IP** for  controller ip in reverse zone.
 
 
-
 e.g.
 
 	export OCP=ocp3
@@ -146,6 +145,7 @@ e.g.
 - **OCP** for cluster-name.
 
 
+e.g.
 
 ```
 echo "" >> ~/.bashrc
@@ -215,6 +215,8 @@ source ~/.bashrc
 
 - **LAST_IP_TAIL** for ip tail of third infra node (i3). 
 
+
+e.g.
 
 ```
 echo "export SSHPASS=spcspc" >> ~/.bashrc

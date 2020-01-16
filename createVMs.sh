@@ -7,7 +7,7 @@ LBLUE="\033[0;34m"
 GREEN="\033[0;32m"
 NC="\033[0m"
 
-[ ! -z "$1" ] && OCP=$1 || { echo "$YELLOW USAGE: give ocp cluster name as first parameter e.g. $ME ocp1. Exiting... $NC"; exit 1; }
+[ ! -z "$1" or "$1" == "" ] && OCP=$1 || { echo "$YELLOW USAGE: give ocp cluster name as first parameter e.g. $ME ocp1. Exiting... $NC"; exit 1; }
 
 [ -f "$VMDK" ] && echo || { echo "$RED ERROR: VMDK file not found. Exiting... $NC"; exit 1; }
 

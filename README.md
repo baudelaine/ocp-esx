@@ -147,23 +147,25 @@ service bind9 restart
 
 - **OCP** for cluster-name.
 
-e.g.
 
-	export OCP=ocp3
+	echo "" >> ~/.bashrc
+	echo "export OCP=ocp3" >> ~/.bashrc
+	source ~/.bashrc
 
 ### Get tools to manage storage, setup hostname and ip address from DNS
 
 	curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
-	unzip -j -o -d /root master.zip ocp-esx-master/setHostAndIP.sh ocp-esx-master/extendRootLV.sh
-	yes | rm -f master.zip
+	unzip master.zip
+	echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
+	source ~/.bashrc
 
 ### Extend root logical volume
 
-	/root/extendRootLV.sh && lvs
+	$WORKDIR/extendRootLV.sh && lvs
 
 ### Setup hostname and ip address from DNS
 
-	/root/setHostAndIP.sh ctl-$OCP
+	$WORKDIR/setHostAndIP.sh ctl-$OCP
 
 ### Reboot for change to take effect
 
@@ -201,22 +203,25 @@ e.g.
 > :warning: Allowed characters are [A-Z] [a-z] [0-9] [-/]
 
 - **OCP** for cluster-name.
+
 - **SSHPASS** for root password of cluster vms.
+
 - **IP_HEAD** for ip head of all cluster vms.
+
 - **FIRST_IP_TAIL** for ip tail of load balancer (lb). 
+
 - **LAST_IP_TAIL** for ip tail of third infra node (i3). 
 
-e.g.
 
-	export OCP=ocp3
-	export SSHPASS=spcspc
-	export IP_HEAD=172.16.187.
-	export FIRST_IP_TAIL=30
-	export LAST_IP_TAIL=39
+	echo "export SSHPASS=spcspc" >> ~/.bashrc
+	echo "export IP_HEAD=172.16.187." >> ~/.bashrc
+	echo "export FIRST_IP_TAIL=30" >> ~/.bashrc
+	echo "export LAST_IP_TAIL=39" >> ~/.bashrc
+	source ~/.bashrc
 
-### Copy /root/extendRootLV.sh and /root/setHostAndIP.sh to all cluster vms
+### Copy extendRootLV.sh and setHostAndIP.sh to all cluster vms
 
-	for ip in $(awk -F ";" '{print $3}' vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no /root/extendRootVG.sh /root/setHostAndIP.sh root@$ip:/root; done
+	for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
 
 ### Set all cluster vms with ip address and hostname known in DNS
 
@@ -235,8 +240,6 @@ e.g.
 
 ## On  controller
 
-> :warning: If session is new, please [set  controller environment variables](#set- controller-environment-variables) first.
-
 
 ### Exchange ssh public key with all cluster vms
 
@@ -247,72 +250,78 @@ e.g.
 #### Generate ssh key pair and copy public key on all cluster vms
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
-	
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
 
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
 
 #### Check  controller can access all cluster vm without being prompt for a password
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; date'; done
+:bulb: use this command to sync time among cluster members
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
+
+### Create key pair and exchange public key between cluster vms
+
+> PermitUserEnvironment must enabled in target /etc/ssh/sshd_config
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
 
 
-### create key pair and exchange public key between cluster vm (PermitUserEnvironment must enabled in target /etc/ssh/sshd_config)
+:warning: Set **FIRST** and **LAST** variables acordingly
 
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
-
+```
 cat > ssh-env << EOF
 SSHPASS=spcspc
 IP_HEAD=172.16.187.
-FIRST=110
-LAST=119
+FIRST=30
+LAST=39
 EOF
+```
 
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
-
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
-
-### Check all vm can access each other without being prompt for a password
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
-
-### Get inventory template
-curl -LO http://github.com/bpshparis/ocp-esx/archive/$OCP.zip
-unzip -j -o -d /root $OCP.zip ocp-esx-$OCP/hosts-aio ocp-esx-$OCP/hosts-cluster
-yes | rm -f $OCP.zip
-
-### copy inventory file to default ansible file
-sed 's/-ocp./-'$OCP'/g' /root/hosts-cluster > /etc/ansible/hosts
-
-### check
-grep -e '-ocp.' /etc/ansible/hosts
-
-### check ansible can speak with every nodes in the cluster
-ansible OSEv3 -m ping
-
-### extend root vg
-cat > extendRootVG.sh << EOF
-ansible nodes -a 'pvcreate /dev/sdb'
-ansible nodes -a 'vgextend root /dev/sdb'
-ansible nodes -a 'lvextend /dev/root/root -l 100%VG -r /dev/sdb'
-ansible nodes -a 'df -hT /'
-ansible nodes -a 'lvs'
-EOF
-
-chmod +x extendRootVG.sh && ./extendRootVG.sh
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
 
 
-### set etcd storage
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
 
-to be done
+#### Check all vm can access each other without being prompt for a password
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
 
 
-### set Docker storage
 
-ansible nodes -a 'systemctl stop docker'
+### Prepare to install OCP
 
-for i in $(seq $FIRST $LAST); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
+#### Copy inventory file to default ansible file
 
-ansible nodes -a 'du -h /var/lib/docker/'
+	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
 
+#### Check hosts 
+
+	grep -e '-ocp.' /etc/ansible/hosts
+
+#### Extend root vg
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; /root/extendRootLV.sh'; done
+
+#### Check ansible can speak with every nodes in the cluster
+
+	ansible OSEv3 -m ping
+
+#### Set Docker storage
+
+	ansible nodes -a 'systemctl stop docker'
+	ansible lb -a 'systemctl stop docker'
+
+
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
+
+
+	ansible nodes -a 'du -h /var/lib/docker/'
+	ansible lb -a 'du -h /var/lib/docker/'
+
+
+```
 cat > setDockerStorage.sh << EOF
 ansible nodes -a 'du -h /var/lib/docker'
 ansible nodes -a 'pvcreate /dev/sdc'
@@ -326,42 +335,93 @@ ansible nodes -a 'lvs'
 ansible nodes -a 'systemctl start docker'
 ansible nodes -a 'systemctl is-active docker'
 EOF
+```
 
-chmod +x setDockerStorage.sh && ./setDockerStorage.sh
+	chmod +x setDockerStorage.sh && ./setDockerStorage.sh
 
-### set OCP storage
+#### Set OCP storage
+
+```
 cat > setOCPStorage.sh << EOF
-ansible nodes -a 'pvcreate /dev/sdd'
-ansible nodes -a 'vgcreate origin /dev/sdd'
-ansible nodes -a 'lvcreate -n origin -l 100%VG origin'
-ansible nodes -a 'mkdir /var/lib/origin'
-ansible nodes -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
-ansible nodes -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
-ansible nodes -a 'mount /var/lib/origin'
-ansible nodes -a 'df -hT /var/lib/origin'
-ansible nodes -a 'lvs'
+ansible infra-compute -a 'pvcreate /dev/sdd'
+ansible infra-compute -a 'vgcreate origin /dev/sdd'
+ansible infra-compute -a 'lvcreate -n origin -l 100%VG origin'
+ansible infra-compute -a 'mkdir /var/lib/origin'
+ansible infra-compute -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
+ansible infra-compute -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
+ansible infra-compute -a 'mount /var/lib/origin'
+ansible infra-compute -a 'df -hT /var/lib/origin'
+ansible infra-compute -a 'lvs'
 EOF
+```
 
-chmod +x setOCPStorage.sh && ./setOCPStorage.sh
+	chmod +x setOCPStorage.sh && ./setOCPStorage.sh
+
+#### set etcd storage
+
+```
+cat > setETCDStorage.sh << EOF
+ansible etcd -a 'pvcreate /dev/sdd'
+ansible etcd -a 'vgcreate etcd /dev/sdd'
+ansible etcd -a 'lvcreate -n etcd -l 100%VG etcd'
+ansible etcd -a 'mkdir /var/lib/etcd'
+ansible etcd -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/etcd/etcd'
+ansible etcd -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/etcd-etcd  /var/lib/etcd  xfs defaults,noatime 1 2"'
+ansible etcd -a 'mount /var/lib/etcd'
+ansible etcd -a 'df -hT /var/lib/etcd'
+ansible etcd -a 'lvs'
+EOF
+```
+
+	chmod +x setETCDStorage.sh && ./setETCDStorage.sh
+
+
 
 # On esx
 
-## Make a snapshot
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+### Make a snapshot
+
+#### Power cluster vms off
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+
+#### Make a snapshot called beforeInstallingOCP
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
+
+#### Power cluster vms on
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
+
 
 # On ctl
 
-### check ansible can speak with every nodes in the cluster
-ansible OSEv3 -m ping
+### Install OCP
 
-## Launch OCP installation
-screen -mdS ADM && screen -r ADM
-cd /usr/share/ansible/openshift-ansible
-ansible-playbook playbooks/prerequisites.yml
-ansible-playbook playbooks/deploy_cluster.yml
+#### Check ansible can speak with every nodes in the cluster
 
+	ansible OSEv3 -m ping
+
+#### Launch OCP installation
+
+:bulb: To avoid network failure, launch installation on ** locale console** or in a **screen**
+
+	screen -mdS ADM && screen -r ADM
+
+
+	cd /usr/share/ansible/openshift-ansible
+
+
+	ansible-playbook playbooks/prerequisites.yml
+
+
+	ansible-playbook playbooks/deploy_cluster.yml
+
+:bulb: Leave screen with **Ctrl + a +d**
+:bulb: Come back with
+
+	screen -r ADM
 
 
 # On first master

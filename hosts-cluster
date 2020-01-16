@@ -55,6 +55,19 @@ m[1:3]-ocp5.iicparis.fr.ibm.com
 [etcd]
 m[1:3]-ocp5.iicparis.fr.ibm.com
 
+# host group for infra
+[infra]
+i[1:3]-ocp5.iicparis.fr.ibm.com
+
+# host group for compute
+[compute]
+n[1:3]-ocp5.iicparis.fr.ibm.com
+
+# host group for infra and compute
+[infra-compute]
+i[1:3]-ocp5.iicparis.fr.ibm.com
+n[1:3]-ocp5.iicparis.fr.ibm.com
+
 # Specify load balancer host
 [lb]
 lb-ocp5.iicparis.fr.ibm.com

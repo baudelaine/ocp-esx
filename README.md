@@ -154,7 +154,7 @@ source ~/.bashrc
 ```
 
 
-### Get tools to manage storage and setup hostname and ip address from DNS
+### Get tools to manage storage and setup hostname and ip address from DNS
 
 
 ```

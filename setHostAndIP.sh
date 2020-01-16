@@ -1,12 +1,13 @@
 #!/bin/sh
 
+ME=${0##*/}
 RED="\033[0;31m"
 YELLOW="\033[0;33m"
 LBLUE="\033[0;34m"
 GREEN="\033[0;32m"
 NC="\033[0m"
 
-[ ! -z "$1" ] && NEW_HOSTNAME=$1 || { echo "$YELLOW USAGE: give short hostname as first parmeter e.g. ${0##*/} host0. Exiting... $NC"; exit 1; }
+[ ! -z "$1" ] && NEW_HOSTNAME=$1 || { echo "$YELLOW USAGE: give short hostname as first parameter e.g. $ME host0. Exiting... $NC"; exit 1; }
 
 DIG=$(command -v dig)
 
@@ -26,24 +27,21 @@ DOMAIN="iicparis.fr.ibm.com"
 DNS="172.16.160.100"
 GATEWAY="172.16.186.17"
 MASK="19"
-#IFCFG="/etc/sysconfig/network-scripts/ifcfg-ens192"
-IFCFG="ifcfg-ens192"
+IFCFG="/etc/sysconfig/network-scripts/ifcfg-ens192"
 HOSTNAME=$(hostname -f | awk -F"." '{print $1}')
 
 changeHostname (){
 
-if [ "$HOSTNAME" != "$NEW_HOSTNAME" ]; then
+	if [ "$HOSTNAME" != "$NEW_HOSTNAME" ]; then
 
-	hostnamectl set-hostname $NEW_HOSTNAME.$DOMAIN 
-	[ $? -ne 0 ] && { echo "$RED !!! ERROR: changing hostname failed. Exiting..." $NC; exit 1; } || echo "$GREEN Hostname changed to" $NEW_HOSTNAME.$DOMAIN $NC
+		hostnamectl set-hostname $NEW_HOSTNAME.$DOMAIN 
+		[ $? -ne 0 ] && { echo "$RED !!! ERROR: changing hostname failed. Exiting..." $NC; exit 1; } || echo "$GREEN Hostname changed to" $NEW_HOSTNAME.$DOMAIN $NC
 
-fi
+	fi
 }
 
 clean (){
-
-		sed -i '/^#.*$/d' $IFCFG
-
+	sed -i '/^#.*$/d' $IFCFG
 }
 
 setDynamicIPAddr (){

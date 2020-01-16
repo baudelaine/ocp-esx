@@ -1,15 +1,25 @@
 #!/bin/sh
 
-[ "$1" != "" ] && echo || { echo "USAGE: give ocp cluster name as first parmeter e.g. ./createVMs.sh ocp9. Exiting..."; exit 1; }
+ME=${0##*/}
+RED="\033[0;31m"
+YELLOW="\033[0;33m"
+LBLUE="\033[0;34m"
+GREEN="\033[0;32m"
+NC="\033[0m"
 
-OCP=$1
-DATASTORE_PATH=$DATASTORE_PATH"/$OCP"
+[ ! -z "$1" ] && OCP=$1 || { echo "$YELLOW USAGE: give ocp cluster name as first parameter e.g. $ME ocp1. Exiting... $NC"; exit 1; }
 
-[ ! -d "$DATASTORE_PATH" ] && { echo -n "Creating" $DATASTORE_PATH"..."; mkdir $DATASTORE_PATH; echo " RC=" $?; } || { echo ; }
+[ -f "$VMDK" ] && echo || { echo "$RED ERROR: VMDK file not found. Exiting... $NC"; exit 1; }
 
-[ $? -ne 0 ] && { echo "ERROR:" $DATASTORE_PATH "not created successfully. Exiting..."; exit 1; }
+[ -d "$WORKDIR" ] && echo || { echo "$RED ERROR: WORKDIR directory not found. Exiting... $NC"; exit 1; }
 
-[ -f "$VMDK" ] && echo || { echo "ERROR:" $VMDK "not found. Exiting..."; exit 1; }
+[ -d "$DATASTORE" ] && echo || { echo "$RED ERROR: DATASTORE directory not found. Exiting... $NC"; exit 1; }
+
+DATASTORE_PATH=$DATASTORE"/$OCP"
+
+[ ! -d "$DATASTORE_PATH" ] && { echo -n "$BLUE Creating $DATASTORE_PATH... $NC"; mkdir $DATASTORE_PATH; echo "$BLUE RC=$? $NC"; } || { echo ; }
+
+[ $? -ne 0 ] && { echo "$RED ERROR: $DATASTORE_PATH not created successfully. Exiting... $NC"; exit 1; }
 
 CTL_VM="ctl-$OCP"
 LB_VM="lb-$OCP"
@@ -308,7 +318,35 @@ addVmdk (){
 	addNfsVmdk
 }
 
+createClusterVm (){
+	createMasterVm
+	createNodeVm
+	createInfraVm
+	createLbVm
+}
+
+createClusterVmdk (){
+	createMasterVmdk
+	createNodeVmdk
+	createInfraVmdk
+	createLbVmdk
+}
+
+addClusterVmdk (){
+	addMasterVmdk
+	addNodeVmdk
+	addInfraVmdk
+	addLbVmdk
+}
+
 case $2 in
+
+	cluster)
+		echo "Create $OCP cluster..."
+		createClusterVm
+		createClusterVmdk
+		addClusterVmdk
+		;;
 
 	ctl)
 		echo "Create ctl-$OCP..."
@@ -325,7 +363,7 @@ case $2 in
 		;;
 
 	*)
-		echo "Create $OCP cluster..."
+		echo "Create ctl-$OCP, $OCP cluster and nfs-$OCP..."
 		createVm
 		createVmdk
 		addVmdk

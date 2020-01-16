@@ -16,14 +16,14 @@ In your ESX datastore you should have copied:
 > :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
 
 - **OCP** for cluster-name.
-- **DATASTORE_PATH** for path where vms will be created.
+- **DATASTORE** for path where vms will be created.
 - **VMDK** for full path of minimal and prepared RHEL7 vmdk file.
 - **WORKDIR** for path where bundle was extracted.
 
 e.g.
 
 	export OCP=ocp3
-	export DATASTORE_PATH="/vmfs/volumes/V7000F-Volume-10TB"
+	export DATASTORE="/vmfs/volumes/V7000F-Volume-10TB"
 	export VMDK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
 	export WORKDIR="/vmfs/volumes/datastore1/ocp-esx-master"
 
@@ -380,11 +380,13 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 
 Download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz) and copy **oc** and **kubectl** in your $PATH
 
-
+	rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz .
+	
+	tar xvzf openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz --strip-components 1 -C /usr/local/sbin
 
 ## Check install
 
-	oc login https://lb-$OCP:8443 -u admin -p admin
+	oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 	
 	oc new-project validate
 	
@@ -409,11 +411,21 @@ vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd v
 
 ## If necessary revert snapshot
 
-#SNAPID=1
+### Get snapshot id
 
-#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
-#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
-#vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+:bulb: Get snapshot state with
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh
+
+### Set snapshot id
+
+	SNAPID=1
+	
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+	
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+	
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 # On NFS server
 
@@ -549,3 +561,9 @@ oc delete pod --all -n openshift-console
 https://docs.openshift.com/container-platform/3.11/getting_started/configure_openshift.html#getting-started-configure-openshift
 
 https://docs.okd.io/latest/minishift/getting-started/quickstart.html
+
+
+
+
+
+https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry

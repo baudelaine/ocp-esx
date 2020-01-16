@@ -424,7 +424,7 @@ EOF
 
 #### Launch OCP installation
 
-:bulb: To avoid network failure, launch installation on ** locale console** or in a **screen**
+> :bulb: To avoid network failure, launch installation on **locale console** or in a **screen**
 
 	screen -mdS ADM && screen -r ADM
 
@@ -437,10 +437,9 @@ EOF
 
 	ansible-playbook playbooks/deploy_cluster.yml
 
-:bulb: Leave screen with **Ctrl + a +d**
-:bulb: Come back with
+>:bulb: Leave screen with **Ctrl + a +d**
 
-	screen -r ADM
+>:bulb: Come back with **screen -r ADM**
 
 
 # On first master

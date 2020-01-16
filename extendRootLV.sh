@@ -1,7 +1,7 @@
 #!/bin/sh
 DISK=/dev/sdb
 PART=/dev/sdb1
-VG=vg
+VG=root
 LV=root
 
 which vim-cmd > /dev/null 2>&1

@@ -124,10 +124,10 @@ e.g.
 
 	cd $WORKDIR && ./createVMs.sh $OCP
 
-### Start ctl vm
+### Start controller vm
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-'$OCP'" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-### Get ctl dhcp address
+### Get controller dhcp address
 
 > :bulb: Wait for ctl vm to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
@@ -153,7 +153,7 @@ echo "export OCP=ocp3" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### Get tools to manage storage, setup hostname and ip address from DNS
+### Get tools to manage storage and setup hostname and ip address from DNS
 
 ```
 curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip

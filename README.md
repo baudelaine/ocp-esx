@@ -426,16 +426,24 @@ EOF
 
 > :bulb: To avoid network failure, launch installation on **locale console** or in a **screen**
 
-	screen -mdS ADM && screen -r ADM
+```
+screen -mdS ADM && screen -r ADM
+```
 
 
-	cd /usr/share/ansible/openshift-ansible
+```
+cd /usr/share/ansible/openshift-ansible
+```
 
 
-	ansible-playbook playbooks/prerequisites.yml
+```
+ansible-playbook playbooks/prerequisites.yml
+```
 
 
-	ansible-playbook playbooks/deploy_cluster.yml
+```
+ansible-playbook playbooks/deploy_cluster.yml
+```
 
 >:bulb: Leave screen with **Ctrl + a +d**
 

@@ -216,11 +216,13 @@ source ~/.bashrc
 - **LAST_IP_TAIL** for ip tail of third infra node (i3). 
 
 
+```
 	echo "export SSHPASS=spcspc" >> ~/.bashrc
 	echo "export IP_HEAD=172.16.187." >> ~/.bashrc
 	echo "export FIRST_IP_TAIL=30" >> ~/.bashrc
 	echo "export LAST_IP_TAIL=39" >> ~/.bashrc
 	source ~/.bashrc
+```
 
 
 ### Copy extendRootLV.sh and setHostAndIP.sh to all cluster vms

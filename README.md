@@ -287,11 +287,15 @@ LAST=39
 EOF
 ```
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
+
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
+```
 
 
-
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
+```
 
 
 #### Check all vm can access each other without being prompt for a password
@@ -447,7 +451,7 @@ ansible-playbook playbooks/prerequisites.yml
 ansible-playbook playbooks/deploy_cluster.yml
 ```
 
->:bulb: Leave screen with **Ctrl + a +d**
+>:bulb: Leave screen with **Ctrl + a + d**
 
 >:bulb: Come back with **screen -r ADM**
 

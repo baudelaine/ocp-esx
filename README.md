@@ -20,6 +20,8 @@ In your ESX datastore you should have copied:
 - **VMDK** for full path of minimal and prepared RHEL7 vmdk file.
 - **WORKDIR** for path where bundle was extracted.
 
+
+
 e.g.
 
 	export OCP=ocp3
@@ -32,6 +34,7 @@ e.g.
 	cd $WORKDIR && ./createVMs.sh $OCP
 
 > It will take several minutes so [lets add records in DNS](#on-dns)
+
 
 
 ## On DNS
@@ -48,6 +51,8 @@ e.g.
 - **REVERSE_IP_TAIL** for cluster ip tail in reverse zone.
 - **REVERSE_NFS_IP** for nfs server ip in reverse zone.
 - **REVERSE_CTL_IP** for  controller ip in reverse zone.
+
+
 
 e.g.
 
@@ -152,6 +157,7 @@ service bind9 restart
 	echo "export OCP=ocp3" >> ~/.bashrc
 	source ~/.bashrc
 
+
 ### Get tools to manage storage, setup hostname and ip address from DNS
 
 	curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
@@ -219,6 +225,7 @@ service bind9 restart
 	echo "export LAST_IP_TAIL=39" >> ~/.bashrc
 	source ~/.bashrc
 
+
 ### Copy extendRootLV.sh and setHostAndIP.sh to all cluster vms
 
 	for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
@@ -256,7 +263,7 @@ service bind9 restart
 
 #### Check  controller can access all cluster vm without being prompt for a password
 
-:bulb: use this command to sync time among cluster members
+:bulb: Use this command to sync time among cluster members
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
 
@@ -281,12 +288,13 @@ EOF
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
 
 
+
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
+
 
 #### Check all vm can access each other without being prompt for a password
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
-
 
 
 ### Prepare to install OCP
@@ -299,7 +307,7 @@ EOF
 
 	grep -e '-ocp.' /etc/ansible/hosts
 
-#### Extend root vg
+#### Extend root Volume Group on all cluster vms
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; /root/extendRootLV.sh'; done
 

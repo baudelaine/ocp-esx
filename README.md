@@ -150,20 +150,25 @@ service bind9 restart
 
 > :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
 
+
 - **OCP** for cluster-name.
 
 
-	echo "" >> ~/.bashrc
-	echo "export OCP=ocp3" >> ~/.bashrc
-	source ~/.bashrc
 
+```
+echo "" >> ~/.bashrc
+echo "export OCP=ocp3" >> ~/.bashrc
+source ~/.bashrc
+```
 
 ### Get tools to manage storage, setup hostname and ip address from DNS
 
-	curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
-	unzip master.zip
-	echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
-	source ~/.bashrc
+```
+curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
+unzip master.zip
+echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
+source ~/.bashrc
+```
 
 ### Extend root logical volume
 

@@ -217,11 +217,12 @@ source ~/.bashrc
 
 
 ```
-	echo "export SSHPASS=spcspc" >> ~/.bashrc
-	echo "export IP_HEAD=172.16.187." >> ~/.bashrc
-	echo "export FIRST_IP_TAIL=30" >> ~/.bashrc
-	echo "export LAST_IP_TAIL=39" >> ~/.bashrc
-	source ~/.bashrc
+echo "export SSHPASS=spcspc" >> ~/.bashrc
+echo "export IP_HEAD=172.16.187." >> ~/.bashrc
+echo "export FIRST_IP_TAIL=30" >> ~/.bashrc
+echo "export LAST_IP_TAIL=39" >> ~/.bashrc
+source ~/.bashrc
+
 ```
 
 
@@ -316,16 +317,21 @@ EOF
 
 #### Set Docker storage
 
-	ansible nodes -a 'systemctl stop docker'
-	ansible lb -a 'systemctl stop docker'
+```
+ansible nodes -a 'systemctl stop docker'
+ansible lb -a 'systemctl stop docker'
+```
 
 
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
+```
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
 
-
-	ansible nodes -a 'du -h /var/lib/docker/'
-	ansible lb -a 'du -h /var/lib/docker/'
+```
+ansible nodes -a 'du -h /var/lib/docker/'
+ansible lb -a 'du -h /var/lib/docker/'
+```
 
 
 ```
@@ -344,7 +350,9 @@ ansible nodes -a 'systemctl is-active docker'
 EOF
 ```
 
+
 	chmod +x setDockerStorage.sh && ./setDockerStorage.sh
+
 
 #### Set OCP storage
 
@@ -362,7 +370,9 @@ ansible infra-compute -a 'lvs'
 EOF
 ```
 
+
 	chmod +x setOCPStorage.sh && ./setOCPStorage.sh
+
 
 #### set etcd storage
 
@@ -379,6 +389,7 @@ ansible etcd -a 'df -hT /var/lib/etcd'
 ansible etcd -a 'lvs'
 EOF
 ```
+
 
 	chmod +x setETCDStorage.sh && ./setETCDStorage.sh
 

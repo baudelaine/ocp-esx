@@ -364,15 +364,15 @@ EOF
 
 ```
 cat > setOCPStorage.sh << EOF
-ansible infra-compute -a 'pvcreate /dev/sdd'
-ansible infra-compute -a 'vgcreate origin /dev/sdd'
-ansible infra-compute -a 'lvcreate -n origin -l 100%VG origin'
-ansible infra-compute -a 'mkdir /var/lib/origin'
-ansible infra-compute -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
-ansible infra-compute -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
-ansible infra-compute -a 'mount /var/lib/origin'
-ansible infra-compute -a 'df -hT /var/lib/origin'
-ansible infra-compute -a 'lvs'
+ansible infracompute -a 'pvcreate /dev/sdd'
+ansible infracompute -a 'vgcreate origin /dev/sdd'
+ansible infracompute -a 'lvcreate -n origin -l 100%VG origin'
+ansible infracompute -a 'mkdir /var/lib/origin'
+ansible infracompute -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
+ansible infracompute -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
+ansible infracompute -a 'mount /var/lib/origin'
+ansible infracompute -a 'df -hT /var/lib/origin'
+ansible infracompute -a 'lvs'
 EOF
 ```
 
@@ -398,6 +398,10 @@ EOF
 
 
 	chmod +x setETCDStorage.sh && ./setETCDStorage.sh
+
+#### Check nodes logical volume
+
+	ansible nodes -a 'lvs'
 
 
 

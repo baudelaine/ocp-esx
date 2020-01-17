@@ -15,7 +15,7 @@ openshift_deployment_type=openshift-enterprise
 openshift_release=v3.11
 #oreg_url=registry.access.redhat.com/openshift3/ose-${component}:v3.11
 oreg_auth_user=iicparis
-oreg_auth_password=Spc5pc$pc
+oreg_auth_password=
 
 # htpasswd auth
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]

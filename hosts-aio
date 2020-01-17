@@ -12,7 +12,7 @@ etcd
 ansible_user=root
 openshift_deployment_type=openshift-enterprise
 oreg_auth_user=iicparis
-oreg_auth_password=Spc5pc$pc
+oreg_auth_password=
 openshift_portal_net=172.30.0.0/16
 # localhost likely doesn't meet the minimum requirements
 openshift_disable_check=disk_availability,memory_availability

@@ -556,7 +556,7 @@ ansible-playbook playbooks/deploy_cluster.yml
 :checkered_flag::checkered_flag::checkered_flag:
 
 
-> :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log
+> :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log**
 
 
 

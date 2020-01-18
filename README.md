@@ -208,7 +208,7 @@ e.g.
 
 
 
-## On  controller
+## On Ccontroller
 
 ### Set environment variables
 
@@ -270,7 +270,7 @@ source ~/.bashrc
 	scp $WORK_DIR/vms root@ctl-$OCP:/root
 
 
-## On  controller
+## On  Controller
 
 ### Set  controller environment variables
 
@@ -312,7 +312,7 @@ source ~/.bashrc
 	for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
 
 
-## On esx
+## On ESX
 
 ### Wait for all cluster vms to be up with static ip address
 
@@ -321,7 +321,7 @@ source ~/.bashrc
 
 	$WORKDIR/getVMAddress.sh
 
-## On  controller
+## On  Controller
 
 ### Exchange ssh public key with all cluster vms
 
@@ -342,7 +342,8 @@ source ~/.bashrc
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
 
-### Prepare to install OCP
+
+# Prepare to install OCP
 
 #### Copy inventory file to default ansible file
 
@@ -410,7 +411,6 @@ EOF
 
 #### Set OCP storage
 
-
 ```
 for node in n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/origin ] && rm -rf /var/lib/origin/* || mkdir /var/lib/origin; du -h /var/lib/origin'; done
 ```
@@ -462,9 +462,9 @@ EOF
 
 
 
-# On esx
+# Make a beforeInstallingOCP snapshot
 
-### Make a snapshot
+## On ESX
 
 #### Power cluster vms off
 
@@ -480,9 +480,9 @@ EOF
 
 
 
-# On ctl
+# Install openshift
 
-### Install OCP
+## On Controller
 
 #### Check ansible can speak with every nodes in the cluster
 
@@ -512,16 +512,13 @@ screen -mdS ADM && screen -r ADM
 
 ```
 
-
 ```
 cd /usr/share/ansible/openshift-ansible
 ```
 
-
 ```
 ansible-playbook playbooks/prerequisites.yml
 ```
-
 
 ```
 ansible-playbook playbooks/deploy_cluster.yml
@@ -535,16 +532,15 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 >:bulb: Come back with **screen -r ADM**
 
-
 > :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log**
 
 
 
 
 
+# Check Openshift Installation
 
-
-# On first master
+## On first master
 
 #### Give admin cluster-admin role
 
@@ -557,7 +553,7 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 ```
 
 
-# On ctl
+## On Controller
 
 #### Install oc Client Tools
 
@@ -588,7 +584,9 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
 
 
-# On esx
+# Make a OCPinstalled snapshot
+
+## On ESX
 
 ### Make a snapshot
 
@@ -598,32 +596,31 @@ proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 #### Make a snapshot called beforeInstallingOCP
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
 
 #### Power cluster vms on
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
-## If necessary revert snapshot
 
-### Get snapshot id
+### If necessary revert snapshot
 
-:bulb: Get snapshot state with
-
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh
-
-### Set snapshot id
-
-	SNAPID=1
-
+#### Power cluster vms off
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
 
+### Get last snapshot id from first master
+
+	export SNAPID=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp"  && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}')
+
+### Revert to latest snapshot
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
 
+#### Power cluster vms on
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
+<!--
 
 # On NFS server
 
@@ -760,11 +757,9 @@ https://docs.openshift.com/container-platform/3.11/getting_started/configure_ope
 
 https://docs.okd.io/latest/minishift/getting-started/quickstart.html
 
-
-
-
-
 https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry
+
+-->
 
 # Annexes
 

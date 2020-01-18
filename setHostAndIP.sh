@@ -7,7 +7,7 @@ LBLUE="\e[34m"
 GREEN="\e[32m"
 NC="\e[0m"
 
-[ ! -z "$1" ] && NEW_HOSTNAME=$1 || {echo -e "$YELLOW USAGE: give short hostname as first parameter e.g. $ME host0. Exiting... $NC"; exit 1; }
+[ ! -z "$1" ] && NEW_HOSTNAME=$1 || { echo -e "$YELLOW USAGE: give short hostname as first parameter e.g. $ME host0. Exiting... $NC"; exit 1; }
 
 DIG=$(command -v dig)
 
@@ -35,7 +35,7 @@ changeHostname (){
 	if [ "$HOSTNAME" != "$NEW_HOSTNAME" ]; then
 
 		hostnamectl set-hostname $NEW_HOSTNAME.$DOMAIN 
-		[ $? -ne 0 ] && {echo -e "$RED !!! ERROR: changing hostname failed. Exiting..." $NC; exit 1; } ||echo -e "$GREEN Hostname changed to" $NEW_HOSTNAME.$DOMAIN $NC
+		[ $? -ne 0 ] && { echo -e "$RED !!! ERROR: changing hostname failed. Exiting..." $NC; exit 1; } ||echo -e "$GREEN Hostname changed to" $NEW_HOSTNAME.$DOMAIN $NC
 
 	fi
 }

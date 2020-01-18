@@ -58,12 +58,20 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 -->
 
-
-
-[TOC]
-
-
-
+| Hostname                    | IP Address    | Role          |      |
+| --------------------------- | ------------- | ------------- | ---- |
+| lb-ocp3.iicparis.fr.ibm.com | 172.16.187.30 | Load Balancer |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
 
 
 

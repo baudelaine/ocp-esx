@@ -2,10 +2,16 @@
 
 Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect) to get access to Openshift packages.
 
-In your ESX datastore you should have copied:
+One ESXi server in whichdatastore you should have copied:
 
 - A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
+
+One **DNS server**.
+
+One **DHCP server**.
+
+
 
 <!--
 

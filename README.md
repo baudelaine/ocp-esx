@@ -11,6 +11,22 @@ In your ESX datastore you should have copied:
 
 
 
+<!--
+awk '/!container-selinux/{if (NR!=1)print "";next}{printf "%s ",$0}END{print "";}' b
+
+yum install atomic
+
+yum install container-selinux container-storage-setup containers-common criu gomtree libnet ostree protobuf-c python-docker python-docker-pycreds python-requests python-websocket-client python2-pysocks python2-urllib3 runc skopeo
+
+
+
+yum install atomic-openshift atomic-openshift-clients atomic-openshift-hyperkube atomic-openshift-node bind ceph-common dnsmasq flannel iscsi-initiator-utils pyparted atomic-openshift:3.11 atomic-openshift-master:3.11 atomic-openshift-node:3.11
+
+-->
+
+
+
+
 ## On DNS
 
 ### Set DNS environment variables
@@ -316,6 +332,10 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 #### Extend root Volume Group on all cluster vms
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; /root/extendRootLV.sh'; done
+
+#### Check root Volume Group on all cluster vms
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; lvs'; done
 
 #### Check ansible can speak with every nodes in the cluster
 

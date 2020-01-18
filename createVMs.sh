@@ -1,25 +1,25 @@
 #!/bin/sh
 
 ME=${0##*/}
-RED="\033[0;31m"
-YELLOW="\033[0;33m"
-LBLUE="\033[0;34m"
-GREEN="\033[0;32m"
-NC="\033[0m"
+RED="\e[31m"
+YELLOW="\e[33m"
+LBLUE="\e[34m"
+GREEN="\e[32m"
+NC="\e[0m"
 
-[ ! -z "$1" or "$1" == "" ] && OCP=$1 || { echo "$YELLOW USAGE: give ocp cluster name as first parameter e.g. $ME ocp1. Exiting... $NC"; exit 1; }
+[ ! -z "$1" and "$1" != "" ] && OCP=$1 || { echo -e "$YELLOW USAGE: give ocp cluster name as first parameter e.g. $ME ocp1. Exiting... $NC"; exit 1; }
 
-[ -f "$VMDK" ] && echo || { echo "$RED ERROR: VMDK file not found. Exiting... $NC"; exit 1; }
+[ -f "$VMDK" ] && echo || { echo -e "$RED ERROR: VMDK file not found. Exiting... $NC"; exit 1; }
 
-[ -d "$WORKDIR" ] && echo || { echo "$RED ERROR: WORKDIR directory not found. Exiting... $NC"; exit 1; }
+[ -d "$WORKDIR" ] && echo || { echo -e "$RED ERROR: WORKDIR directory not found. Exiting... $NC"; exit 1; }
 
-[ -d "$DATASTORE" ] && echo || { echo "$RED ERROR: DATASTORE directory not found. Exiting... $NC"; exit 1; }
+[ -d "$DATASTORE" ] && echo || { echo -e "$RED ERROR: DATASTORE directory not found. Exiting... $NC"; exit 1; }
 
 DATASTORE_PATH=$DATASTORE"/$OCP"
 
-[ ! -d "$DATASTORE_PATH" ] && { echo -n "$BLUE Creating $DATASTORE_PATH... $NC"; mkdir $DATASTORE_PATH; echo "$BLUE RC=$? $NC"; } || { echo ; }
+[ ! -d "$DATASTORE_PATH" ] && { echo -e "$BLUE Creating $DATASTORE_PATH... $NC"; mkdir $DATASTORE_PATH; echo -e "$BLUE RC=$? $NC"; } || { echo ; }
 
-[ $? -ne 0 ] && { echo "$RED ERROR: $DATASTORE_PATH not created successfully. Exiting... $NC"; exit 1; }
+[ $? -ne 0 ] && { echo -e "$RED ERROR: $DATASTORE_PATH not created successfully. Exiting... $NC"; exit 1; }
 
 CTL_VM="ctl-$OCP"
 LB_VM="lb-$OCP"

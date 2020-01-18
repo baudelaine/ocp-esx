@@ -1,11 +1,11 @@
 #!/bin/sh
 
 ME=${0##*/}
-RED="\033[0;31m"
-YELLOW="\033[0;33m"
-LBLUE="\033[0;34m"
-GREEN="\033[0;32m"
-NC="\033[0m"
+RED="\e[31m"
+YELLOW="\e[33m"
+LBLUE="\e[34m"
+GREEN="\e[32m"
+NC="\e[0m"
 
 [ ! -z "$1" ] && NEW_HOSTNAME=$1 || { echo "$YELLOW USAGE: give short hostname as first parameter e.g. $ME host0. Exiting... $NC"; exit 1; }
 

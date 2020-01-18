@@ -58,20 +58,28 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 -->
 
-| Hostname                    | IP Address    | Role          |      |
-| --------------------------- | ------------- | ------------- | ---- |
-| lb-ocp3.iicparis.fr.ibm.com | 172.16.187.30 | Load Balancer |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
-| -ocp3.iicparis.fr.ibm.com   | 172.16.187.   |               |      |
+
+## Target 
+
+
+> Target is to bluid an Openshift cluster that we'll call **ocp3**
+
+
+
+| Hostname                     | IP Address    | Role                 |
+| ---------------------------- | ------------- | -------------------- |
+| lb-ocp3.iicparis.fr.ibm.com  | 172.16.187.30 | Load Balancer        |
+| m1-ocp3.iicparis.fr.ibm.com  | 172.16.187.31 | Master + etcd        |
+| m2-ocp3.iicparis.fr.ibm.com  | 172.16.187.32 | Master + etcd        |
+| m3-ocp3.iicparis.fr.ibm.com  | 172.16.187.33 | Master + etcd        |
+| n1-ocp3.iicparis.fr.ibm.com  | 172.16.187.34 | Computer             |
+| i1-ocp3.iicparis.fr.ibm.com  | 172.16.187.35 | Infra                |
+| n2-ocp3.iicparis.fr.ibm.com  | 172.16.187.36 | Computer             |
+| i2-ocp3.iicparis.fr.ibm.com  | 172.16.187.37 | Infra                |
+| n3-ocp3.iicparis.fr.ibm.com  | 172.16.187.38 | Computer             |
+| i3-ocp3.iicparis.fr.ibm.com  | 172.16.187.39 | Infra                |
+| nfs-ocp3.iicparis.fr.ibm.com | 172.16.187.48 | Persistent Storage   |
+| ctl-ocp3.iicparis.fr.ibm.com | 172.16.187.49 | Controller + ansible |
 
 
 

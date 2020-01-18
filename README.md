@@ -12,15 +12,54 @@ In your ESX datastore you should have copied:
 
 
 <!--
-awk '/!container-selinux/{if (NR!=1)print "";next}{printf "%s ",$0}END{print "";}' b
+#awk '/!container-selinux/{if (NR!=1)print "";next}{printf "%s ",$0}END{print "";}' b
 
-yum install atomic
+yum install atomic -y
 
-yum install container-selinux container-storage-setup containers-common criu gomtree libnet ostree protobuf-c python-docker python-docker-pycreds python-requests python-websocket-client python2-pysocks python2-urllib3 runc skopeo
+yum install container-selinux container-storage-setup containers-common criu gomtree libnet ostree protobuf-c python-docker python-docker-pycreds python-requests python-websocket-client python2-pysocks python2-urllib3 runc skopeo -y
 
 
 
-yum install atomic-openshift atomic-openshift-clients atomic-openshift-hyperkube atomic-openshift-node bind ceph-common dnsmasq flannel iscsi-initiator-utils pyparted atomic-openshift:3.11 atomic-openshift-master:3.11 atomic-openshift-node:3.11
+yum install atomic-openshift atomic-openshift-clients atomic-openshift-hyperkube atomic-openshift-node bind ceph-common dnsmasq flannel iscsi-initiator-utils pyparted atomic-openshift:3.11 atomic-openshift-master:3.11 atomic-openshift-node:3.11 -y
+
+
+
+yum install ose-control-plane ose-deployer ose-docker-registry ose-haproxy-router ose-pod registry-console etcd -y
+
+
+
+yum install atomic-openshift-excluder atomic-openshift-docker-excluder -y
+
+
+
+echo "OPTIONS='--insecure-registry=172.30.0.0/16 --selinux-enabled --log-opt max-size=1M --log-opt max-file=3'" >> 	/etc/sysconfig/docker 
+
+
+
+cat >> /etc/sysctl.conf << EOF
+
+net.ipv4.ip_local_port_range = 2048 65000
+net.core.rmem_default = 262144
+net.core.wmem_default = 262144
+net.core.wmem_max = 33554432
+net.core.rmem_max = 33554432
+net.core.netdev_max_backlog = 5000
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv4.tcp_rmem = 4096 16777216 33554432
+net.ipv4.tcp_wmem = 4096 16777216 33554432
+net.core.optmem_max = 40960
+vm.max_map_count=262144
+kernel.sem = 250 1024000 32 4096
+
+EOF
+
+sysctl -p
+
+
+
+swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
+
+
 
 -->
 
@@ -173,12 +212,15 @@ source ~/.bashrc
 
 ```
 curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
+[ ! -z $(command -v unzip) ] && echo zip installed || yum install unzip -y
 unzip master.zip
 echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
 source ~/.bashrc
 ```
 
 ### Extend root logical volume
+
+>:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
 
 	$WORKDIR/extendRootLV.sh && lvs
 
@@ -197,11 +239,6 @@ source ~/.bashrc
 ### Start other vms
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
-
-> :bulb: (Optional) In case cluster vms need to be reboot because of dhcp address lost.
-> You may reboot cluster vms with the following command.
-
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh && vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ### Wait for all cluster vms to be up and get their DHCP ip address
 
@@ -260,6 +297,9 @@ source ~/.bashrc
 ## On esx
 
 ### Wait for all cluster vms to be up with static ip address
+
+> :bulb: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
+> You may need to run script several times.
 
 	$WORKDIR/getVMAddress.sh
 
@@ -323,6 +363,8 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 
 #### Copy inventory file to default ansible file
 
+> :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **$WORKDIR/hosts-cluster** accordingly.
+
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
 
 #### Check hosts 
@@ -330,6 +372,8 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 	grep -e '-ocp.' /etc/ansible/hosts
 
 #### Extend root Volume Group on all cluster vms
+
+>:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; /root/extendRootLV.sh'; done
 
@@ -346,6 +390,7 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 ```
 ansible nodes -a 'systemctl stop docker'
 ansible lb -a 'systemctl stop docker'
+
 ```
 
 
@@ -357,6 +402,7 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 ```
 ansible nodes -a 'du -h /var/lib/docker/'
 ansible lb -a 'du -h /var/lib/docker/'
+
 ```
 
 
@@ -379,15 +425,19 @@ EOF
 
 	chmod +x setDockerStorage.sh && ./setDockerStorage.sh
 
-
 #### Set OCP storage
+
+
+```
+for node in n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/origin ] && rm -rf /var/lib/origin/* || mkdir /var/lib/origin; du -h /var/lib/origin'; done
+```
+
 
 ```
 cat > setOCPStorage.sh << EOF
 ansible infracompute -a 'pvcreate /dev/sdd'
 ansible infracompute -a 'vgcreate origin /dev/sdd'
 ansible infracompute -a 'lvcreate -n origin -l 100%VG origin'
-ansible infracompute -a 'mkdir /var/lib/origin'
 ansible infracompute -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
 ansible infracompute -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
 ansible infracompute -a 'mount /var/lib/origin'
@@ -403,11 +453,15 @@ EOF
 #### Set ETCD storage
 
 ```
+for node in m1 m2 m3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/etcd ] && rm -rf /var/lib/etcd/* || mkdir /var/lib/etcd; du -h /var/lib/etcd'; done
+```
+
+
+```
 cat > setETCDStorage.sh << EOF
 ansible etcd -a 'pvcreate /dev/sdd'
 ansible etcd -a 'vgcreate etcd /dev/sdd'
 ansible etcd -a 'lvcreate -n etcd -l 100%VG etcd'
-ansible etcd -a 'mkdir /var/lib/etcd'
 ansible etcd -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/etcd/etcd'
 ansible etcd -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/etcd-etcd  /var/lib/etcd  xfs defaults,noatime 1 2"'
 ansible etcd -a 'mount /var/lib/etcd'
@@ -451,13 +505,28 @@ EOF
 
 	ansible OSEv3 -m ping
 
+#### Check every nodes in the cluster can speak to registry.redhat.io
+
+	ansible nodes -a 'ping -c 2 registry.redhat.io'
+
+#### Check OpenShift Health
+
+> :warning:  Set **oreg_auth_user** and **oreg_auth_password** accordingly
+
+
+	[ ! -z $(command -v skopeo) ] && echo skopeo installed || yum install skopeo -y
+	skopeo inspect --tls-verify=false --creds='$oreg_auth_user:$oreg_auth_password' docker://registry.redhat.io/openshift3/ose-docker-registry:v3.11.161
+
+
 
 #### Launch OCP installation
 
 > :bulb: To avoid network failure, launch installation on **locale console** or in a **screen**
 
 ```
+[ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
 screen -mdS ADM && screen -r ADM
+
 ```
 
 
@@ -478,6 +547,17 @@ ansible-playbook playbooks/deploy_cluster.yml
 >:bulb: Leave screen with **Ctrl + a + d**
 
 >:bulb: Come back with **screen -r ADM**
+
+
+
+:hourglass: 
+
+:smoking: :coffee: :smoking: :coffee:
+
+
+
+openshift-ansible.log
+
 
 
 # On first master

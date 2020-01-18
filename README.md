@@ -1,4 +1,4 @@
-## Prerequisites
+# Prerequisites
 
 Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect) to get access to Openshift packages.
 
@@ -59,7 +59,7 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 -->
 
 
-## Target 
+# Target 
 
 
 > Target is to bluid an Openshift cluster that we'll call **ocp3**
@@ -82,6 +82,7 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 | ctl-ocp3.iicparis.fr.ibm.com | 172.16.187.49 | Controller + ansible |
 
 
+# Start building cluster
 
 ## On DNS
 
@@ -322,7 +323,6 @@ source ~/.bashrc
 
 ## On  controller
 
-
 ### Exchange ssh public key with all cluster vms
 
 #### Clean ssh env on all cluster vms
@@ -341,40 +341,6 @@ source ~/.bashrc
 :bulb: Use this command to sync time among cluster members
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
-
-### Create key pair and exchange public key between cluster vms
-
-> PermitUserEnvironment must enabled in target /etc/ssh/sshd_config
-
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
-
-
-:warning: Set **FIRST** and **LAST** variables acordingly
-
-```
-cat > ssh-env << EOF
-SSHPASS=spcspc
-IP_HEAD=172.16.187.
-FIRST=30
-LAST=39
-EOF
-```
-
-
-```
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
-```
-
-
-```
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
-```
-
-
-#### Check all vm can access each other without being prompt for a password
-
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
-
 
 ### Prepare to install OCP
 
@@ -580,49 +546,63 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 # On first master
 
-## Give admin cluster-admin role
+#### Give admin cluster-admin role
 
+```
 oc login -u system:admin
+```
 
+```
 oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --user=admin
-
+```
 
 
 # On ctl
 
-## Install oc Client Tools
+#### Install oc Client Tools
 
 Download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz) and copy **oc** and **kubectl** in your $PATH
 
-	rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz .
-	
+	wget -c https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
+
+<!--
+rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz .
+-->
+
 	tar xvzf openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz --strip-components 1 -C /usr/local/sbin
 
-## Check install
+### Check install
+
+#### Login to cluster
 
 	oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
-	
-	oc new-project validate
-	
-	oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
-	
-	oc logs -f bc/ruby-ex
-	
-	oc expose svc/ruby-ex
-	
-	curl -I -v $(oc get routes | awk 'NR>1 {print $2}')
-	
-	oc delete project validate
 
-## Check further with instructions here:  Check install https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html
+### Check Environment health
+
+#### Checking complete environment health
+
+Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-complete-deployment-health-check)
+
+#### Checking Hosts Router Registry and Network connectivity
+
+proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
 
 
 # On esx
-## Make a snapshot
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPInstalled"}' | sh
-vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
+### Make a snapshot
+
+#### Power cluster vms off
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+
+#### Make a snapshot called beforeInstallingOCP
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
+
+#### Power cluster vms on
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 ## If necessary revert snapshot
 
 ### Get snapshot id
@@ -785,3 +765,39 @@ https://docs.okd.io/latest/minishift/getting-started/quickstart.html
 
 
 https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry
+
+# Annexes
+
+### Create key pair and exchange public key between cluster vms
+
+> PermitUserEnvironment must enabled in target /etc/ssh/sshd_config
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; sed -i "s/^#PermitUserEnvironment no/PermitUserEnvironment yes/g" /etc/ssh/sshd_config; systemctl restart sshd'; done
+
+
+:warning: Set **FIRST** and **LAST** variables acordingly
+
+```
+cat > ssh-env << EOF
+SSHPASS=spcspc
+IP_HEAD=172.16.187.
+FIRST=30
+LAST=39
+EOF
+```
+
+
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/root/.ssh/environment; done
+```
+
+
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
+```
+
+
+#### Check all vm can access each other without being prompt for a password
+
+	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
+

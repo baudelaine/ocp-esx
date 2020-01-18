@@ -550,9 +550,7 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 
 
-:hourglass: 
-
-:smoking: :coffee: :smoking: :coffee:
+:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee:
 
 
 

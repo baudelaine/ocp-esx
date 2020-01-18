@@ -7,19 +7,19 @@ LBLUE="\e[34m"
 GREEN="\e[32m"
 NC="\e[0m"
 
-[ ! -z "$1" ] && NEW_HOSTNAME=$1 || { echo "$YELLOW USAGE: give short hostname as first parameter e.g. $ME host0. Exiting... $NC"; exit 1; }
+[ ! -z "$1" ] && NEW_HOSTNAME=$1 || {echo -e "$YELLOW USAGE: give short hostname as first parameter e.g. $ME host0. Exiting... $NC"; exit 1; }
 
 DIG=$(command -v dig)
 
 if [ -z "$DIG" ]; then
-	echo "$RED !!! ERROR: dig not found in $PATH. Exiting... $NC"
+	echo -e "$RED !!! ERROR: dig not found in $PATH. Exiting... $NC"
 	exit 1
 fi
 
 HOSTNAMECTL=$(command -v hostnamectl)
 
 if [ -z "$HOSTNAMECTL" ]; then
-	echo "$RED !!! ERROR: hostnamectl not found in $PATH. Exiting... $NC"
+	echo -e "$RED !!! ERROR: hostnamectl not found in $PATH. Exiting... $NC"
 	exit 1
 fi
 
@@ -35,7 +35,7 @@ changeHostname (){
 	if [ "$HOSTNAME" != "$NEW_HOSTNAME" ]; then
 
 		hostnamectl set-hostname $NEW_HOSTNAME.$DOMAIN 
-		[ $? -ne 0 ] && { echo "$RED !!! ERROR: changing hostname failed. Exiting..." $NC; exit 1; } || echo "$GREEN Hostname changed to" $NEW_HOSTNAME.$DOMAIN $NC
+		[ $? -ne 0 ] && {echo -e "$RED !!! ERROR: changing hostname failed. Exiting..." $NC; exit 1; } ||echo -e "$GREEN Hostname changed to" $NEW_HOSTNAME.$DOMAIN $NC
 
 	fi
 }
@@ -51,7 +51,7 @@ setDynamicIPAddr (){
 	if [ "$IS_BOOTPROTO" -eq 1 ]; then
 		sed -i 's/^bootproto.*$/BOOTPROTO="dhcp"/gI' $IFCFG
 	else
-		echo 'BOOTPROTO="dhcp"' >> $IFCFG
+		echo -e 'BOOTPROTO="dhcp"' >> $IFCFG
 	fi
 
 	sed -i 's/^\(ipaddr.*$\)/#\1/gI' $IFCFG
@@ -60,9 +60,9 @@ setDynamicIPAddr (){
 	sed -i 's/^\(dns1.*$\)/#\1/gI' $IFCFG
 	sed -i 's/^\(domain.*$\)/#\1/gI' $IFCFG
 
-	echo "$GREEN IP address set to dynamic" $NC
+	echo -e "$GREEN IP address set to dynamic" $NC
 
-	echo "$LBLUE Restart network for changes to take effect. $NC"
+	echo -e "$LBLUE Restart network for changes to take effect. $NC"
 
 }
 
@@ -75,7 +75,7 @@ setStaticIPAddr (){
 	if [ "$IS_BOOTPROTO" -eq 1 ]; then
 		sed -i 's/^bootproto.*$/BOOTPROTO="none"/gI' $IFCFG
 	else
-		echo 'BOOTPROTO="none"' >> $IFCFG
+		echo -e 'BOOTPROTO="none"' >> $IFCFG
 	fi
 
 	IS_IPADDR=$(grep -cEi -m 1 '^ipaddr=' $IFCFG)
@@ -83,7 +83,7 @@ setStaticIPAddr (){
 	if [ "$IS_IPADDR" -eq 1 ]; then
 		sed -i 's/^ipaddr.*$/IPADDR="'$NEW_IPADDR'"/gI' $IFCFG
 	else
-		echo 'IPADDR="'$NEW_IPADDR'"' >> $IFCFG
+		echo -e 'IPADDR="'$NEW_IPADDR'"' >> $IFCFG
 	fi
 
 	IS_PREFIX=$(grep -cEi -m 1 '^prefix=' $IFCFG)
@@ -91,7 +91,7 @@ setStaticIPAddr (){
 	if [ "$IS_PREFIX" -eq 1 ]; then
 		sed -i 's/^prefix.*$/PREFIX="'$MASK'"/gI' $IFCFG
 	else
-		echo 'PREFIX="'$MASK'"' >> $IFCFG
+		echo -e 'PREFIX="'$MASK'"' >> $IFCFG
 	fi
 
 	IS_GATEWAY=$(grep -cEi -m 1 '^gateway=' $IFCFG)
@@ -99,7 +99,7 @@ setStaticIPAddr (){
 	if [ "$IS_GATEWAY" -eq 1 ]; then
 		sed -i 's/^gateway.*$/GATEWAY="'$GATEWAY'"/gI' $IFCFG
 	else
-		echo 'GATEWAY="'$GATEWAY'"' >> $IFCFG
+		echo -e 'GATEWAY="'$GATEWAY'"' >> $IFCFG
 	fi
 
 	IS_DNS=$(grep -cEi -m 1 '^dns1=' $IFCFG)
@@ -107,7 +107,7 @@ setStaticIPAddr (){
 	if [ "$IS_DNS" -eq 1 ]; then
 		sed -i 's/^dns1.*$/DNS1="'$DNS'"/gI' $IFCFG
 	else
-		echo 'DNS1="'$DNS'"' >> $IFCFG
+		echo -e 'DNS1="'$DNS'"' >> $IFCFG
 	fi
 
 	IS_DOMAIN=$(grep -cEi -m 1 '^domain=' $IFCFG)
@@ -115,12 +115,12 @@ setStaticIPAddr (){
 	if [ "$IS_DOMAIN" -eq 1 ]; then
 		sed -i 's/^domain.*$/DOMAIN="'$DOMAIN'"/gI' $IFCFG
 	else
-		echo 'DOMAIN="'$DOMAIN'"' >> $IFCFG
+		echo -e 'DOMAIN="'$DOMAIN'"' >> $IFCFG
 	fi
 
-	echo "$GREEN Static IP address set to" $NEW_IPADDR"/"$MASK $NC
+	echo -e "$GREEN Static IP address set to" $NEW_IPADDR"/"$MASK $NC
 
-	echo "$LBLUE Restart network for changes to take effect. $NC"
+	echo -e "$LBLUE Restart network for changes to take effect. $NC"
 
 }
 

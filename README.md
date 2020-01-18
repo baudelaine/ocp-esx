@@ -2,7 +2,7 @@
 
 Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect) to get access to Openshift packages.
 
-One **ESXi server** in whichdatastore you should have copied:
+One **ESXi server** in which datastore you should have copied:
 
 - A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
@@ -214,7 +214,7 @@ e.g.
 
 
 
-## On Ccontroller
+## On Controller
 
 ### Set environment variables
 
@@ -230,6 +230,7 @@ e.g.
 echo "" >> ~/.bashrc
 echo "export OCP=ocp3" >> ~/.bashrc
 source ~/.bashrc
+
 ```
 
 ### Get tools to manage storage and setup hostname and ip address from DNS
@@ -240,6 +241,8 @@ curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
 unzip master.zip
 echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
 source ~/.bashrc
+rm -f master.zip
+
 ```
 
 ### Extend root logical volume
@@ -264,7 +267,7 @@ source ~/.bashrc
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-### Wait for all cluster vms to be up and get their DHCP ip address
+### Get cluster vms DHCP ip address
 
 > :bulb: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
@@ -385,14 +388,7 @@ ansible lb -a 'systemctl stop docker'
 
 
 ```
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*'; done
-```
-
-
-```
-ansible nodes -a 'du -h /var/lib/docker/'
-ansible lb -a 'du -h /var/lib/docker/'
-
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*; du -h /var/lib/docker'; done
 ```
 
 
@@ -532,16 +528,13 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 >:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :zzz::zzz: :zzz::zzz::hourglass_flowing_sand: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee: :hourglass: 
 
->:checkered_flag::checkered_flag::checkered_flag:
-
 >:bulb: Leave screen with **Ctrl + a + d**
 
 >:bulb: Come back with **screen -r ADM**
 
 > :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log**
 
-
-
+>:checkered_flag::checkered_flag::checkered_flag:
 
 
 # Check Openshift Installation
@@ -600,7 +593,7 @@ proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
 
-#### Make a snapshot called beforeInstallingOCP
+#### Make a snapshot called OCPInstalled
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
 

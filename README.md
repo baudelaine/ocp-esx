@@ -2,7 +2,7 @@
 
 Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect) to get access to Openshift packages.
 
-One ESXi server in whichdatastore you should have copied:
+One **ESXi server** in whichdatastore you should have copied:
 
 - A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
@@ -769,7 +769,9 @@ https://docs.openshift.com/container-platform/3.11/install_config/registry/secur
 
 # Annexes
 
-### Create key pair and exchange public key between cluster vms
+## On Controller
+
+#### Create key pair and exchange public key between cluster vms
 
 > PermitUserEnvironment must enabled in target /etc/ssh/sshd_config
 
@@ -796,7 +798,6 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do scp ssh-env root@$IP_HEAD$i:/ro
 ```
 for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N "" && for i in $(seq $FIRST $LAST); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done'; done
 ```
-
 
 #### Check all vm can access each other without being prompt for a password
 

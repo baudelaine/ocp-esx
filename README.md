@@ -7,18 +7,13 @@ In your ESX datastore you should have copied:
 - A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
 
-> :bulb: Unregister a RHEL with subscription-manager **unregister**
-
-
-
 <!--
+
 #awk '/!container-selinux/{if (NR!=1)print "";next}{printf "%s ",$0}END{print "";}' b
 
 yum install atomic -y
 
 yum install container-selinux container-storage-setup containers-common criu gomtree libnet ostree protobuf-c python-docker python-docker-pycreds python-requests python-websocket-client python2-pysocks python2-urllib3 runc skopeo -y
-
-
 
 yum install atomic-openshift atomic-openshift-clients atomic-openshift-hyperkube atomic-openshift-node bind ceph-common dnsmasq flannel iscsi-initiator-utils pyparted atomic-openshift:3.11 atomic-openshift-master:3.11 atomic-openshift-node:3.11 -y
 
@@ -62,6 +57,12 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 
 -->
+
+
+
+[TOC]
+
+
 
 
 
@@ -557,6 +558,10 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 
 > :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log**
+
+
+
+
 
 
 

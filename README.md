@@ -561,16 +561,13 @@ ansible-playbook playbooks/prerequisites.yml
 ansible-playbook playbooks/deploy_cluster.yml
 ```
 
+>:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :zzz::zzz: :zzz::zzz::hourglass_flowing_sand: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee: :hourglass: 
+
+>:checkered_flag::checkered_flag::checkered_flag:
+
 >:bulb: Leave screen with **Ctrl + a + d**
 
 >:bulb: Come back with **screen -r ADM**
-
-
-
-
-:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :zzz::zzz: :zzz::zzz::hourglass_flowing_sand: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee: :hourglass: 
-
-:checkered_flag::checkered_flag::checkered_flag:
 
 
 > :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log**

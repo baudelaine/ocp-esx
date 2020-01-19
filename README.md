@@ -310,20 +310,20 @@ rm -f master.zip
 
 #### Clean ssh env on all cluster vms
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
+	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
 #### Generate ssh key pair and copy public key on all cluster vms
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
 
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$node-$OCP; done
+	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$node-$OCP; done
 
 #### Check  controller can access all cluster vm without being prompt for a password
 
 :bulb: Use this command to sync time among cluster members
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
+	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
 
 
 # Prepare to install OCP
@@ -342,11 +342,11 @@ rm -f master.zip
 
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
 
 #### Check root Volume Group on all cluster vms
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
 
 #### Check ansible can speak with every nodes in the cluster
 

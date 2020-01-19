@@ -415,20 +415,20 @@ EOF
 #### Set OCP storage
 
 ```
-for node in n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/origin ] && rm -rf /var/lib/origin/* || mkdir /var/lib/origin; du -h /var/lib/origin'; done
+for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/origin ] && rm -rf /var/lib/origin/* || mkdir /var/lib/origin; du -h /var/lib/origin'; done
 ```
 
 
 ```
 cat > setOCPStorage.sh << EOF
-ansible infracompute -a 'pvcreate /dev/sdd'
-ansible infracompute -a 'vgcreate origin /dev/sdd'
-ansible infracompute -a 'lvcreate -n origin -l 100%VG origin'
-ansible infracompute -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
-ansible infracompute -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
-ansible infracompute -a 'mount /var/lib/origin'
-ansible infracompute -a 'df -hT /var/lib/origin'
-ansible infracompute -a 'lvs'
+ansible nodes -a 'pvcreate /dev/sdd'
+ansible nodes -a 'vgcreate origin /dev/sdd'
+ansible nodes -a 'lvcreate -n origin -l 100%VG origin'
+ansible nodes -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/origin/origin'
+ansible nodes -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/origin-origin  /var/lib/origin  xfs defaults,noatime 1 2"'
+ansible nodes -a 'mount /var/lib/origin'
+ansible nodes -a 'df -hT /var/lib/origin'
+ansible nodes -a 'lvs'
 EOF
 ```
 
@@ -445,8 +445,8 @@ for node in m1 m2 m3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostna
 
 ```
 cat > setETCDStorage.sh << EOF
-ansible etcd -a 'pvcreate /dev/sdd'
-ansible etcd -a 'vgcreate etcd /dev/sdd'
+ansible etcd -a 'pvcreate /dev/sde'
+ansible etcd -a 'vgcreate etcd /dev/sde'
 ansible etcd -a 'lvcreate -n etcd -l 100%VG etcd'
 ansible etcd -a 'mkfs.xfs -f -n ftype=1 -i size=512 -n size=8192 /dev/etcd/etcd'
 ansible etcd -m lineinfile -a 'path=/etc/fstab line="/dev/mapper/etcd-etcd  /var/lib/etcd  xfs defaults,noatime 1 2"'
@@ -583,7 +583,7 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 #### Checking Hosts Router Registry and Network connectivity
 
-proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
+Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
 
 
 # Make a OCPinstalled snapshot

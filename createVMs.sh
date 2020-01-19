@@ -55,6 +55,7 @@ for VM_NAME in $MASTER_VM; do
 		vmkfstools -i $ROOT0_DISK $DATASTORE_PATH/$VM_NAME/root0.vmdk
 		vmkfstools -c 60G $DATASTORE_PATH/$VM_NAME/root1.vmdk
 		vmkfstools -c 50G $DATASTORE_PATH/$VM_NAME/docker0.vmdk
+		vmkfstools -c 20G $DATASTORE_PATH/$VM_NAME/origin0.vmdk
 		vmkfstools -c 10G $DATASTORE_PATH/$VM_NAME/etcd0.vmdk
 	fi
 done

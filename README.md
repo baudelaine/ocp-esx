@@ -108,7 +108,7 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 e.g.
 
-	export OCP=ocp3
+	export OCP=ocp15
 	export MASTER_IP_HEAD=172.16.187.3
 	export MASTER_NFS_IP=172.16.187.48
 	export MASTER_CTL_IP=172.16.187.49
@@ -173,6 +173,7 @@ service bind9 restart
 
 	LB_IP=$(dig @localhost +short lb-$OCP.iicparis.fr.ibm.com)
 	dig @localhost +short -x $LB_IP
+	
 
 ### Test alias
 
@@ -466,15 +467,17 @@ EOF
 
 # Make a beforeInstallingOCP snapshot
 
+## On Controller
+
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; poweroff'; done
+```
+
 ## On ESX
-
-#### Power cluster vms off
-
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
 
 #### Make a snapshot called beforeInstallingOCP
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
 
 #### Power cluster vms on
 
@@ -585,39 +588,37 @@ proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 # Make a OCPinstalled snapshot
 
+## On Controller
+
+```
+for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; poweroff'; done
+```
+
 ## On ESX
 
 ### Make a snapshot
 
-#### Power cluster vms off
-
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
-
 #### Make a snapshot called OCPInstalled
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
 
 #### Power cluster vms on
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ### If necessary revert snapshot
 
-#### Power cluster vms off
+#### Get last snapshot id from first master
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.off " $1}' | sh
+	export SNAPID=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}')
 
-### Get last snapshot id from first master
+#### Revert to latest snapshot
 
-	export SNAPID=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp"  && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}')
-
-### Revert to latest snapshot
-
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
 
 #### Power cluster vms on
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 <!--
 
@@ -757,6 +758,24 @@ https://docs.openshift.com/container-platform/3.11/getting_started/configure_ope
 https://docs.okd.io/latest/minishift/getting-started/quickstart.html
 
 https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry
+
+
+
+https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry
+
+
+
+oc get route/docker-registry -o json | jq -r .spec.tls.termination
+
+should display passthrough if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
+
+oc get route/docker-registry -o json | jq -r .spec.host
+
+
+
+The ***ca.crt\*** file is a copy of ***/etc/origin/master/ca.crt\*** on the master
+
+
 
 -->
 

@@ -227,7 +227,8 @@ for VM_NAME in $MASTER_VM; do
 		vim-cmd vmsvc/device.diskaddexisting $VMID $DATASTORE_PATH/$VM_NAME/root0.vmdk 0 0
 		vim-cmd vmsvc/device.diskaddexisting $VMID $DATASTORE_PATH/$VM_NAME/root1.vmdk 0 1
 		vim-cmd vmsvc/device.diskaddexisting $VMID $DATASTORE_PATH/$VM_NAME/docker0.vmdk 0 2
-		vim-cmd vmsvc/device.diskaddexisting $VMID $DATASTORE_PATH/$VM_NAME/etcd0.vmdk 0 3
+		vim-cmd vmsvc/device.diskaddexisting $VMID $DATASTORE_PATH/$VM_NAME/origin0.vmdk 0 3
+		vim-cmd vmsvc/device.diskaddexisting $VMID $DATASTORE_PATH/$VM_NAME/etcd0.vmdk 0 4
 	fi;
 done
 

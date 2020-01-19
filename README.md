@@ -4,7 +4,7 @@ Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask f
 
 One **ESXi server** in which datastore you should have copied:
 
-- A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7. 
+- A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7 **booting in DHCP**. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
 
 One **DNS server**.
@@ -108,7 +108,7 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 e.g.
 
-	export OCP=ocp15
+	export OCP=ocp3
 	export MASTER_IP_HEAD=172.16.187.3
 	export MASTER_NFS_IP=172.16.187.48
 	export MASTER_CTL_IP=172.16.187.49

@@ -173,7 +173,7 @@ service bind9 restart
 
 	LB_IP=$(dig @localhost +short lb-$OCP.iicparis.fr.ibm.com)
 	dig @localhost +short -x $LB_IP
-	
+
 
 ### Test alias
 
@@ -185,7 +185,7 @@ service bind9 restart
 
 ### Set ESX environment variables
 
-> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
+> :warning: Allowed characters for OCP are [A-Z] [a-z] [0-9] [-]
 
 - **OCP** for cluster-name.
 - **DATASTORE** for path where vms will be created.
@@ -219,17 +219,17 @@ e.g.
 
 ### Set environment variables
 
-> :warning: Allowed characters for values are [A-Z] [a-z] [0-9] [-/.]
-
+> :warning: Allowed characters for OCP are [A-Z] [a-z] [0-9] [-]
 
 - **OCP** for cluster-name.
-
+- **SSHPASS** for root password of cluster vms.
 
 e.g.
 
 ```
 echo "" >> ~/.bashrc
 echo "export OCP=ocp3" >> ~/.bashrc
+echo "export SSHPASS=spcspc" >> ~/.bashrc
 source ~/.bashrc
 
 ```
@@ -282,33 +282,6 @@ rm -f master.zip
 
 ## On  Controller
 
-### Set  controller environment variables
-
-> :warning: Allowed characters are [A-Z] [a-z] [0-9] [-/]
-
-- **OCP** for cluster-name.
-
-- **SSHPASS** for root password of cluster vms.
-
-- **IP_HEAD** for ip head of all cluster vms.
-
-- **FIRST_IP_TAIL** for ip tail of load balancer (lb). 
-
-- **LAST_IP_TAIL** for ip tail of third infra node (i3). 
-
-
-e.g.
-
-```
-echo "export SSHPASS=spcspc" >> ~/.bashrc
-echo "export IP_HEAD=172.16.187." >> ~/.bashrc
-echo "export FIRST_IP_TAIL=30" >> ~/.bashrc
-echo "export LAST_IP_TAIL=39" >> ~/.bashrc
-source ~/.bashrc
-
-```
-
-
 ### Copy extendRootLV.sh and setHostAndIP.sh to all cluster vms
 
 	for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
@@ -337,20 +310,20 @@ source ~/.bashrc
 
 #### Clean ssh env on all cluster vms
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do sshpass -e ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
 #### Generate ssh key pair and copy public key on all cluster vms
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
 
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$IP_HEAD$i; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$node-$OCP; done
 
 #### Check  controller can access all cluster vm without being prompt for a password
 
 :bulb: Use this command to sync time among cluster members
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
 
 
 # Prepare to install OCP
@@ -369,11 +342,11 @@ source ~/.bashrc
 
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; /root/extendRootLV.sh'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
 
 #### Check root Volume Group on all cluster vms
 
-	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; lvs'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
 
 #### Check ansible can speak with every nodes in the cluster
 
@@ -382,14 +355,12 @@ source ~/.bashrc
 #### Set Docker storage
 
 ```
-ansible nodes -a 'systemctl stop docker'
-ansible lb -a 'systemctl stop docker'
-
+ansible nodes -a 'systemctl stop docker' 
 ```
 
 
 ```
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; rm -rf /var/lib/docker/*; du -h /var/lib/docker'; done
+for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/docker ] && rm -rf /var/lib/docker/* || mkdir /var/lib/docker; du -h /var/lib/docker'; done
 ```
 
 
@@ -470,7 +441,7 @@ EOF
 ## On Controller
 
 ```
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; poweroff'; done
+for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
 ```
 
 ## On ESX
@@ -485,7 +456,7 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 
 
 
-# Install openshift
+# Install Openshift
 
 ## On Controller
 
@@ -520,6 +491,8 @@ screen -mdS ADM && screen -r ADM
 ```
 cd /usr/share/ansible/openshift-ansible
 ```
+
+
 
 ```
 ansible-playbook playbooks/prerequisites.yml
@@ -591,7 +564,7 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 ## On Controller
 
 ```
-for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; poweroff'; done
+for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
 ```
 
 ## On ESX

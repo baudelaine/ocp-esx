@@ -530,17 +530,19 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 
 ## On Controller
 
+<!--
+
 #### Install oc Client Tools
 
 Download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz) and copy **oc** and **kubectl** in your $PATH
 
 	wget -c https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
 
-<!--
 rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz .
--->
 
 	tar xvzf openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz --strip-components 1 -C /usr/local/sbin
+
+-->
 
 ### Check install
 
@@ -573,7 +575,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no ro
 
 #### Make a snapshot called OCPInstalled
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " ICP4DOCPinstalled"}' | sh
 
 #### Power cluster vms on
 
@@ -597,6 +599,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no ro
 
 # On NFS server
 
+```
 cat > installNFSServer.sh << EOF
 pvcreate /dev/sdb
 vgcreate exports /dev/sdb
@@ -608,56 +611,249 @@ mount /exports
 df -hT /exports
 lvs
 echo "/exports *(rw,sync,no_root_squash)" >> /etc/exports
+[ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed || { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
 systemctl restart nfs
 showmount -e
 systemctl enable nfs
+systemctl stop firewalld
+systemctl disable firewalld
 EOF
+```
 
+```
 chmod +x installNFSServer.sh && ./installNFSServer.sh
+```
 
-# on first master
-
-export OCP=ocp7
+# on Controller
 
 ## Test nfs access
 
-mkdir /mnt/test && mount -t nfs nfs-$OCP:/exports /mnt/test
-touch /mnt/test/a && echo "RC="$? && ls /mnt/test/a && yes | rm /mnt/test/a && echo "RC="$?
-umount /mnt/test && rmdir /mnt/test/
+```
+[ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed || { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
+[ ! -d /mnt/test ] && mkdir /mnt/test && mount -t nfs nfs-$OCP:/exports /mnt/test
+touch /mnt/test/a && echo "RC="$?
+sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/ 
+```
+
+```
+rm -f /mnt/test/a && echo "RC="$?
+sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
+umount /mnt/test && rmdir /mnt/test/ 
+```
 
 ## Add storage class managed-nfs-storage for NFS Persistent Volume Claim
 
-mount /mnt/iicbackup/produits/
+```
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
+```
 
-cd /root
-tar xvzf /mnt/iicbackup/produits/ISO/add-ons/icpa/nfs-client.tar.gz
+```
+unzip $WORKDIR/nfs-client.zip -d $WORKDIR
+```
 
 
-oc login -u admin -p admin
+
+```
+cd $WORKDIR/nfs-client/
+
 oc new-project storage
-cd /root/nfs-client/
+
 NAMESPACE=$(oc project -q)
+
 sed -i -e 's/namespace:.*/namespace: '$NAMESPACE'/g' ./deploy/rbac.yaml
+
 oc create -f deploy/rbac.yaml
-oc adm policy add-scc-to-user hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner
+
+oc adm policy add-scc-to-user \
+hostmount-anyuid system:serviceaccount:$NAMESPACE:nfs-client-provisioner
+
 sed -i -e 's/<NFS_HOSTNAME>/nfs-'$OCP'/g' deploy/deployment.yaml
 
 oc create -f deploy/class.yaml
+
 oc create -f deploy/deployment.yaml
 
 oc get pods
+
 oc logs $(oc get pods | awk 'NR>1 {print $1}')
 
 oc create -f deploy/test-claim.yaml
 
-### should display bound state
-oc get pvc
-
 oc create -f deploy/test-pod.yaml
 
-# On NFS server
+VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
 
-l /exports
+sshpass -e ssh -o StrictHostKeyChecking=no \
+nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME
+
+cd ~
+```
+
+
+
+## Exposing Secure Registry
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
+
+wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+
+chmod +x jq-linux64
+
+mv jq-linux64 /usr/local/sbin/jq
+
+oc get route/docker-registry -o json | jq -r .spec.tls.termination
+
+should display passthrough if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
+
+oc get route/docker-registry -o json | jq -r .spec.host
+
+mkdir -p /etc/docker/certs.d/docker-registry-default.apps-ocp1.iicparis.fr.ibm.com
+
+
+
+The ***ca.crt\*** file is a copy of ***/etc/origin/master/ca.crt\*** on the master
+
+
+
+docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry-default.apps-ocp1.iicparis.fr.ibm.com
+Login Succeeded
+
+
+
+docker pull busybox
+
+docker tag docker.io/busybox docker-registry-default.apps-ocp1.iicparis.fr.ibm.com/$(oc project -q)/busybox
+
+
+
+docker push docker-registry-default.apps-ocp1.iicparis.fr.ibm.com/default/busybox
+
+
+
+docker tag docker.io/busybox
+
+
+
+Cloud Pak for Data
+
+cp -v  /mnt/iicbackup/produits/ISO/add-ons/icp4d/cpd/cloudpak4data-ee-v2.5.0.0.tgz .
+
+mkdir cpd && cd cpd && tar xvzf ../cloudpak4data-ee-v2.5.0.0.tgz
+
+//Must be connected to IBM network
+
+```
+APIKEY=$(curl http://icpfs1.svl.ibm.com/zen/cp4d-builds/2.5.0.0/production/internal/repo.yaml | awk -F ": " ' $1 ~ "apikey" {print $2}')
+```
+
+
+```
+cat > repo.yaml << EOF
+registry:
+  - url: cp.icr.io/cp/cpd
+    username: iamapikey
+    apikey: $APIKEY
+    name: base-registry
+fileservers:
+  - url: https://raw.github.com/IBM/cloud-pak/master/repo/cpd
+EOF
+```
+
+
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
+
+chmod +x bin/cpd-linux
+
+// Prepare installation
+
+// Dry run
+
+bin/cpd-linux adm --repo repo.yaml --assembly lite --namespace cpd
+
+// Apply
+
+bin/cpd-linux adm --repo repo.yaml --assembly lite --namespace cpd --apply
+
+// Grant `cpd-admin-role` to the project administration user
+
+oc adm policy add-role-to-user cpd-admin-role admin --role-namespace=cpd -n cpd
+
+// Install OCP4D
+
+screen -mdS ADM
+
+screen -r ADM
+
+bin/cpd-linux \
+--repo ./repo.yaml \
+--assembly lite \
+--namespace cpd \
+--storageclass managed-nfs-storage \
+--transfer-image-to docker-registry-default.apps-$OCP.iicparis.fr.ibm.com/cpd \
+--target-registry-password $(oc whoami -t) \
+--target-registry-username $(oc whoami) \
+--cluster-pull-prefix docker-registry.default.svc:5000/cpd
+
+
+
+# Install Cloud Pak for Application
+
+[Instructions](https://github.ibm.com/IBMCloudPak4Apps/icpa-install#other-ibmers)
+
+```
+export INSTALLER_TAG=3.0.0.0
+export ENTITLED_REGISTRY=cp.icr.io
+export ENTITLED_REGISTRY_USER=ekey
+export ENTITLED_REGISTRY_KEY=
+```
+
+	docker login "$ENTITLED_REGISTRY" -u "$ENTITLED_REGISTRY_USER" -p "$ENTITLED_REGISTRY_KEY"
+	
+	docker pull "$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG"
+
+> :bulb: Optional: save installer and restore it in another environment
+
+>```
+>docker save cp.icr.io/cp/icpa/icpa-installer | gzip -c > cp.icr.io-cp-icpa-icpa-installer.tar.gz
+>```
+
+>```
+>docker load < cp.icr.io-cp-icpa-icpa-installer.tar.gz
+>```
+
+
+```
+mkdir data
+docker run -v $PWD/data:/data:z -u 0 \
+-e LICENSE=accept \
+"$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG" cp -r "data/*" /data
+```
+
+// add subdomain to data/config.yaml
+e.g. apps-ocp3.iicparis.fr.ibm.com
+
+// add existing PVC to transadv.yaml
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
+
+oc new-project ta
+
+cp -v $WORKDIR/nfs-client/deploy/test-claim.yaml $WORKDIR/nfs-client/deploy/tapvc.yaml
+
+sed -i '/  name: / s/test-claim/tapvc/' $WORKDIR/nfs-client/deploy/tapvc.yaml
+
+oc create -f $WORKDIR/nfs-client/deploy/tapvc.yaml
+
+
+
+//Add tapvc as existingClaim in data/transadv.yaml
+
+vi data/transadv.yaml
+
+
+
+
 
 
 
@@ -738,15 +934,7 @@ https://docs.openshift.com/container-platform/3.11/install_config/registry/secur
 
 
 
-oc get route/docker-registry -o json | jq -r .spec.tls.termination
 
-should display passthrough if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
-
-oc get route/docker-registry -o json | jq -r .spec.host
-
-
-
-The ***ca.crt\*** file is a copy of ***/etc/origin/master/ca.crt\*** on the master
 
 
 
@@ -788,3 +976,11 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 
 	for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -f; for i in $(seq $FIRST $LAST); do ssh -o StrictHostKeyChecking=no root@$IP_HEAD$i "hostname -f; date"; done'; done
 
+
+```
+
+```
+
+```
+
+```

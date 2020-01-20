@@ -1,0 +1,40 @@
+
+Hi,
+
+have followed instructions from here:
+https://www.ibm.com/support/knowledgecenter/en/SSQNUZ_2.5.0/cpd/install/installation-files.html
+
+to get a cloud pak for data enti
+fonctionne pour le login mais pas d'autorisation pour faire un pull.
+docker login -u cp -p eyJhbGciOiJ**** cp.icr.io
+Login Succeeded
+Mais le pull ne fonctionne pas
+docker pull cp.icr.io/cp/cpd/zen-meta-couchdb:v2.5.0.0-210
+Trying to pull repository cp.icr.io/cp/cpd/zen-meta-couchdb ...
+repository cp.icr.io/cp/cpd/zen-meta-couchdb not found: does not exist or no pull access
+docker pull cp.icr.io/cp/cpd/zen-meta-couchdb:latest
+Trying to pull repository cp.icr.io/cp/cpd/zen-meta-couchdb ...
+repository cp.icr.io/cp/cpd/zen-meta-couchdb not found: does not exist or no pull access
+
+Donc l'installation du cloud pak plante dès le début:
+
+MODULE         VERSION      ARCHITECTURE     CHART                       STATUS
+0010-infra     v2.5.0.0     x86_64           0010-infra-2.5.0.tgz        Downloaded
+0015-setup     v2.5.0.0     x86_64           0015-setup-2.5.0.tgz        Downloaded
+0020-core      v2.5.0.0     x86_64           0020-zen-base-2.5.0.tgz     Downloaded
+--------------------------------------------------------------------------------
+[INFO] [2020-01-20 15:16:43-0952] All charts downloaded successfully
+
+*** Transferring all required images ***
+
+[INFO] [2020-01-20 15:16:43-0955] Transferring image zen-meta-couchdb:v2.5.0.0-210 from repository base-registry (1/17)
+[INFO] [2020-01-20 15:16:45-0863] Failed. Retrying in 5 seconds...
+[INFO] [2020-01-20 15:16:52-0846] Failed. Retrying in 5 seconds...
+[INFO] [2020-01-20 15:16:59-0743] Failed. Retrying in 5 seconds...
+[INFO] [2020-01-20 15:17:06-0795] Failed. Retrying in 5 seconds...
+[ERROR] [2020-01-20 15:17:13-0761] Error initializing source docker://cp.icr.io/cp/cpd/zen-meta-couchdb:v2.5.0.0-210: Error reading manifest v2.5.0.0-210 in cp.icr.io/cp/cpd/zen-meta-couchdb: errors:
+denied: requested access to the resource is denied
+unauthorized: authentication required
+
+[ERROR] [2020-01-20 15:17:13-0762] Error in handling image request regarding zen-meta-couchdb:v2.5.0.0-210 from registry docker://cp.icr.io/cp/cpd/zen-meta-couchdb:v2.5.0.0-210 after 4 retries. Abort
+[ERROR] [2020-01-20 15:17:13-0763] Exiting due to error. Please check /root/cpd/bin/cpd-linux-workspace/Logs/CPD-2020-01-20T15-16-39.log for details

@@ -238,7 +238,7 @@ source ~/.bashrc
 
 ```
 curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
-[ ! -z $(command -v unzip) ] && echo zip installed || yum install unzip -y
+[ ! -z $(command -v unzip) ] && echo unzip installed || yum install zip unzip -y
 unzip master.zip
 echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
 source ~/.bashrc
@@ -330,7 +330,7 @@ rm -f master.zip
 
 #### Copy inventory file to default ansible file
 
-> :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **$WORKDIR/hosts-cluster** accordingly.
+> :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **$WORKDIR/hosts-cluster**.
 
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
 
@@ -508,7 +508,7 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 >:bulb: Come back with **screen -r ADM**
 
-> :bulb: If something went wrong have a look at **$PWD/openshift-ansible.log**
+> :bulb: If something went wrong have a look at **~/openshift-ansible.log**
 
 >:checkered_flag::checkered_flag::checkered_flag:
 

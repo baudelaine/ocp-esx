@@ -957,6 +957,7 @@ https://docs.openshift.com/container-platform/3.11/install_config/registry/secur
 
 -->
 
+<!--
 # Annexes
 
 ## On Controller
@@ -1001,3 +1002,4 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 ```
 
 ```
+-->

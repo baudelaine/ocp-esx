@@ -575,7 +575,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no ro
 
 #### Make a snapshot called OCPInstalled
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " ICP4DOCPinstalled"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
 
 #### Power cluster vms on
 
@@ -624,7 +624,7 @@ EOF
 chmod +x installNFSServer.sh && ./installNFSServer.sh
 ```
 
-# on Controller
+# On Controller
 
 ## Test nfs access
 
@@ -730,11 +730,7 @@ docker push docker-registry-default.apps-ocp1.iicparis.fr.ibm.com/default/busybo
 
 
 
-docker tag docker.io/busybox
-
-
-
-Cloud Pak for Data
+# Install Cloud Pak for Data
 
 cp -v  /mnt/iicbackup/produits/ISO/add-ons/icp4d/cpd/cloudpak4data-ee-v2.5.0.0.tgz .
 
@@ -835,21 +831,42 @@ e.g. apps-ocp3.iicparis.fr.ibm.com
 
 // add existing PVC to transadv.yaml
 
-oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
+```
+oc login https://lb-$OCP:8443 -u admin -p admin \
+--insecure-skip-tls-verify=true
+```
 
+```
 oc new-project ta
+```
 
-cp -v $WORKDIR/nfs-client/deploy/test-claim.yaml $WORKDIR/nfs-client/deploy/tapvc.yaml
+```
+cp -v $WORKDIR/nfs-client/deploy/test-claim.yaml \
+$WORKDIR/nfs-client/deploy/tapvc.yaml
+```
 
-sed -i '/  name: / s/test-claim/tapvc/' $WORKDIR/nfs-client/deploy/tapvc.yaml
+```
+sed -i '/  name: / s/test-claim/tapvc/' \
+$WORKDIR/nfs-client/deploy/tapvc.yaml
+```
 
+```
 oc create -f $WORKDIR/nfs-client/deploy/tapvc.yaml
+```
 
 
 
 //Add tapvc as existingClaim in data/transadv.yaml
 
 vi data/transadv.yaml
+
+```
+docker run -v ~/.kube:/root/.kube:z -u 0 -t \
+-v $PWD/data:/installer/data:z \
+-e LICENSE=accept \
+-e ENTITLED_REGISTRY -e ENTITLED_REGISTRY_USER -e ENTITLED_REGISTRY_KEY \
+"$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG" install
+```
 
 
 

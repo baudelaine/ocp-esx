@@ -637,9 +637,9 @@ export SNAPID=$(echo $SNAPIDS | awk '{print $NF}')
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
+# Install managed-nfs-storage Storage Class
 
-
-# On NFS server
+## On NFS server
 
 ```
 cat > installNFSServer.sh << EOF
@@ -666,9 +666,9 @@ EOF
 chmod +x installNFSServer.sh && ./installNFSServer.sh
 ```
 
-# On Controller
+## On Controller
 
-## Test nfs access
+### Test nfs access
 
 #### Install nfs utils if necessary
 
@@ -681,6 +681,7 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 
 ```
 [ ! -d /mnt/nfs-$OCP ] && mkdir /mnt/nfs-$OCP && mount -t nfs nfs-$OCP:/exports /mnt/nfs-$OCP
+
 touch /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
 ```
 
@@ -694,11 +695,13 @@ sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
 
 ```
 rm -f /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
+
 sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
+
 umount /mnt/nfs-$OCP && rmdir /mnt/nfs-$OCP/ 
 ```
 
-## Add managed-nfs-storage storage class 
+### Add managed-nfs-storage storage class 
 
 
 #### Log in Cluster
@@ -710,6 +713,8 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 #### Install and test storage class
 
 ```
+unzip $WORKDIR/nfs-client.zip -d $WORKDIR
+
 cd $WORKDIR/nfs-client/
 
 oc new-project storage
@@ -740,7 +745,7 @@ oc create -f deploy/test-pod.yaml
 VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
 ```
 
-> :warning: Next command shoud display **SUCCESS**
+> :warning: Next command has to display **SUCCESS**
 
 ```
 sshpass -e ssh -o StrictHostKeyChecking=no \
@@ -762,7 +767,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true 
 #### Install jq
 
 ```
-[ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq } || echo jq installed
+[ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
 ```
 
 #### Check docker registry route
@@ -805,7 +810,6 @@ docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox
 ```
 docker push $REG_HOST/$(oc project -q)/busybox
 ```
-
 
 <!--
 
@@ -1001,6 +1005,14 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no ro
 ### Install the IBM Cloud Pak for Multicloud Management
 
 > :bulb: Download partnumber CC4L8EN
+
+<!--
+
+```
+mount /mnt/iicbackup/produits/
+```
+
+-->
 
 #### Load the container images into the local registry
 

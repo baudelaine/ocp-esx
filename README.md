@@ -208,7 +208,7 @@ e.g.
 
 ### Get controller dhcp address
 
-> :bulb: Wait for ctl vm to be up and display its DHCP address in the **3rd column**
+> :warning: Wait for ctl vm to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
 
 	$WORKDIR/getVMAddress.sh | grep ctl
@@ -270,7 +270,7 @@ rm -f master.zip
 
 ### Get cluster vms DHCP ip address
 
-> :bulb: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
+> :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
 
 	$WORKDIR/getVMAddress.sh | sed '/ctl-ocp/d' | tee $WORK_DIR/vms
@@ -299,7 +299,7 @@ rm -f master.zip
 
 ### Wait for all cluster vms to be up with static ip address
 
-> :bulb: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
+> :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
 
 	$WORKDIR/getVMAddress.sh
@@ -686,7 +686,7 @@ sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
 umount /mnt/test && rmdir /mnt/test/ 
 ```
 
-## Add storage class managed-nfs-storage for NFS Persistent Volume Claim
+## Add managed-nfs-storage storage class 
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
@@ -744,7 +744,7 @@ cd ~
 
 ## On Controller
 
-#### Log cluster default project
+#### Log in cluster default project
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n default

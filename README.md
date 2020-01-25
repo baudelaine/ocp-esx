@@ -853,7 +853,10 @@ EOF
 
 > :warning: Save this address to connect to ESX VNC server
 
-	esxcli network ip interface ipv4 get -i vmk0 | awk 'END{print $2}'
+```
+SWITCH=vmk0
+esxcli network ip interface ipv4 get -i $SWITCH | awk 'END{print $2}'
+```
 
 ## On Controller from VNC
 

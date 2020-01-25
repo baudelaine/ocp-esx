@@ -848,11 +848,17 @@ EOF
 
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
+### Get ESX ip address
+
+> :warning: Save this address to connect to ESX VNC server
+
+	esxcli network ip interface ipv4 get -i vmk0 | awk 'END{print $2}'
+
 ## On Controller from VNC
 
-> :bulb: Connect to ESX VNC Client on port 5901
+> :bulb: Connect to ESX VNC server on port 5901 with address collected above
 
-> e.g. xtightvncviewer **esx ip address**:1
+> e.g. xtightvncviewer **172.16.161.131**:**5901**
 
 > :bulb: type **spcspc** when prompt for **password**
 

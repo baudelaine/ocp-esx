@@ -744,11 +744,19 @@ cd ~
 
 ## On Controller
 
+#### Log cluster default project
+
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n default
+```
 
+#### Install jq
+
+```
 [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq } || echo jq installed
 ```
+
+#### Check docker registry route
 
 > :warning: Termination should display **passthrough** if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
 
@@ -756,15 +764,29 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true 
 oc get route/docker-registry -o json | jq -r .spec.tls.termination
 ```
 
+#### Get OCP docker registry hostname
+
 ```
 REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host)
+```
 
+#### Add OCP certificate authority to docker
+
+```
 mkdir -p /etc/docker/certs.d/$REG_HOST
 
 scp m1-$OCP:/etc/origin/master/ca.crt /etc/docker/certs.d/$REG_HOST
+```
 
+#### Log to OCP docker registry
+
+```
 docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
+```
 
+#### Tag a docker image with OCP docker registry hostname and push it
+
+```
 docker pull busybox
 
 docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox

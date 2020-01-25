@@ -331,7 +331,9 @@ rm -f master.zip
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
 
 > :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **/etc/ansible/hosts** .
+
 > :warning: Escape **'$'** character in your password if necessary.
+
 > e.g. OREG_PWD="mypa\$sword"
 
 

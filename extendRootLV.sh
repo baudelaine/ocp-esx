@@ -28,7 +28,7 @@ echo 1
 echo
 echo
 echo w
-) | fdisk /dev/sdb
+) | fdisk $DISK
 
 ls $PART > /dev/null
 

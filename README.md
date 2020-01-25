@@ -108,14 +108,14 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 e.g.
 
-	export OCP=ocp3
-	export MASTER_IP_HEAD=172.16.187.3
-	export MASTER_NFS_IP=172.16.187.48
-	export MASTER_CTL_IP=172.16.187.49
+	export OCP=ocp19
+	export MASTER_IP_HEAD=172.16.187.19
+	export MASTER_NFS_IP=172.16.187.208
+	export MASTER_CTL_IP=172.16.187.209
 	export REVERSE_IP_TAIL=.187.16.172
-	export REVERSE_IP_HEAD=3
-	export REVERSE_NFS_IP=48.187.16.172
-	export REVERSE_CTL_IP=49.187.16.172
+	export REVERSE_IP_HEAD=19
+	export REVERSE_NFS_IP=208.187.16.172
+	export REVERSE_CTL_IP=209.187.16.172
 
 ### Add records to master zone
 
@@ -242,7 +242,7 @@ curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
 unzip master.zip
 echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
 source ~/.bashrc
-rm -f master.zip
+rm -f master.zip 
 
 ```
 
@@ -282,15 +282,15 @@ rm -f master.zip
 
 ## On  Controller
 
-### Copy extendRootLV.sh and setHostAndIP.sh to all cluster vms
+### Copy extendRootLV.sh and setHostAndIP.sh to cluster nodes
 
 	for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
 
-### Set all cluster vms with ip address and hostname known in DNS
+### Set cluster nodes with ip address and hostname known in DNS
 
 	for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
 
-### Reboot all cluster vms
+### Reboot cluster nodes
 
 	for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
 
@@ -306,47 +306,61 @@ rm -f master.zip
 
 ## On  Controller
 
-### Exchange ssh public key with all cluster vms
+### Exchange ssh public key with cluster nodes
 
-#### Clean ssh env on all cluster vms
+#### Clean cluster nodes ssh environment 
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
-#### Generate ssh key pair and copy public key on all cluster vms
+#### Generate ssh key pair and copy public key on cluster nodes
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
 
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$node-$OCP; done
 
-#### Check  controller can access all cluster vm without being prompt for a password
+#### Check  controller can access cluster nodes without being prompt for a password
 
-:bulb: Use this command to sync time among cluster members
-
-	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; ntpdate ntp.iicparis.fr.ibm.com; timedatectl | grep "Local time"'; done
+	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done
 
 
 # Prepare to install OCP
 
 #### Copy inventory file to default ansible file
 
-> :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **$WORKDIR/hosts-cluster**.
-
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
+
+> :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **/etc/ansible/hosts** .
+> :warning: Escape **'$'** character in your password if necessary.
+> e.g. OREG_PWD="mypa\$sword"
+
+
+```
+OREG_USER="iicparis"
+OREG_PWD="********"
+
+sed -i 's/\(oreg_auth_user=\).*$/\1'$OREG_USER'/' /etc/ansible/hosts
+sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
+
+
+```
+
 
 #### Check hosts 
 
-	grep -e '-ocp.' /etc/ansible/hosts
+	grep -e 'ocp[0-9]\{1,\}' /etc/ansible/hosts
 
-#### Extend root Volume Group on all cluster vms
+
+
+#### Extend root Volume Group on all cluster nodes
 
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
 
-#### Check root Volume Group on all cluster vms
+#### Check root Volume Group on all cluster nodes
 
-	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
+	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
 
 #### Check ansible can speak with every nodes in the cluster
 
@@ -436,19 +450,23 @@ EOF
 
 
 
-# Make a beforeInstallingOCP snapshot
+# Make a ReadyForOCP snapshot
 
 ## On Controller
 
 ```
-for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
+for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
 ```
 
 ## On ESX
 
-#### Make a snapshot called beforeInstallingOCP
+#### Check all vms are Powered off
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " beforeInstallingOCP"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+
+#### Make a snapshot called ReadyForOCP
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " ReadyForOCP"}' | sh
 
 #### Power cluster vms on
 
@@ -629,9 +647,12 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 ## Test nfs access
 
 ```
-[ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed || { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
+[ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed \
+|| { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
+
 [ ! -d /mnt/test ] && mkdir /mnt/test && mount -t nfs nfs-$OCP:/exports /mnt/test
 touch /mnt/test/a && echo "RC="$?
+
 sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/ 
 ```
 
@@ -682,7 +703,11 @@ oc create -f deploy/test-claim.yaml
 oc create -f deploy/test-pod.yaml
 
 VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
+```
 
+> :bulb: Next command shoud display **SUCCESS**
+
+```
 sshpass -e ssh -o StrictHostKeyChecking=no \
 nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME
 
@@ -691,42 +716,37 @@ cd ~
 
 
 
-## Exposing Secure Registry
+# Exposing openshift Registry
 
-oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
+## On Controller
 
-wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+```
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n default
 
-chmod +x jq-linux64
+[ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq } || echo jq installed
+```
 
-mv jq-linux64 /usr/local/sbin/jq
+> :warning: Termination should display **passthrough** if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
 
+```
 oc get route/docker-registry -o json | jq -r .spec.tls.termination
+```
 
-should display passthrough if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
+```
+REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host)
 
-oc get route/docker-registry -o json | jq -r .spec.host
+mkdir -p /etc/docker/certs.d/$REG_HOST
 
-mkdir -p /etc/docker/certs.d/docker-registry-default.apps-ocp1.iicparis.fr.ibm.com
+scp m1-$OCP:/etc/origin/master/ca.crt /etc/docker/certs.d/$REG_HOST
 
-
-
-The ***ca.crt\*** file is a copy of ***/etc/origin/master/ca.crt\*** on the master
-
-
-
-docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry-default.apps-ocp1.iicparis.fr.ibm.com
-Login Succeeded
-
-
+docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
 
 docker pull busybox
 
-docker tag docker.io/busybox docker-registry-default.apps-ocp1.iicparis.fr.ibm.com/$(oc project -q)/busybox
+docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox
 
-
-
-docker push docker-registry-default.apps-ocp1.iicparis.fr.ibm.com/default/busybox
+docker push $REG_HOST/$(oc project -q)/busybox
+```
 
 
 
@@ -867,6 +887,87 @@ docker run -v ~/.kube:/root/.kube:z -u 0 -t \
 -e ENTITLED_REGISTRY -e ENTITLED_REGISTRY_USER -e ENTITLED_REGISTRY_KEY \
 "$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG" install
 ```
+
+
+
+
+
+# Install Cloud Pak for Multicloud Management
+
+## On First Master Node
+
+### Add the following to your /etc/origin/master/master-config.yaml
+
+```
+admissionConfig:
+  pluginConfig:
+    MutatingAdmissionWebhook:
+      configuration:
+        apiVersion: apiserver.config.k8s.io/v1alpha1
+        kubeConfigFile: /dev/null
+        kind: WebhookAdmission
+    ValidatingAdmissionWebhook:
+      configuration:
+        apiVersion: apiserver.config.k8s.io/v1alpha1
+        kubeConfigFile: /dev/null
+        kind: WebhookAdmission
+```
+
+### Restart your apiserver and controllers
+
+```
+/usr/local/bin/master-restart api
+/usr/local/bin/master-restart controllers
+```
+
+## On Controller
+
+### Elasticsearch
+
+> :warning: **vm.max_map_count** has to be set to **262144** to all nodes
+
+#### Check
+
+```
+for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; sysctl -n vm.max_map_count'; done
+```
+
+#### Update if necessary
+
+```
+for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; sysctl -w vm.max_map_count=262144; echo "vm.max_map_count=262144" | tee -a /etc/sysctl.conf'; done
+```
+
+### Install the IBM Cloud Pak for Multicloud Management
+
+> :bulb: Download partnumber CC4L8EN
+
+#### Load the container images into the local registry
+
+> :warning: Check registry file system has 50G free.
+
+	tar xf ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
+
+#### Create an installation directory on the boot node
+
+```
+mkdir /opt/ibm-multicloud-manager-1.2 \ 
+&& cd /opt/ibm-multicloud-manager-1.2
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

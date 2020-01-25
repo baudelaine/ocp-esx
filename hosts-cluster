@@ -14,7 +14,7 @@ ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
 openshift_deployment_type=openshift-enterprise
 openshift_release=v3.11
 #oreg_url=registry.access.redhat.com/openshift3/ose-${component}:v3.11
-oreg_auth_user=iicparis
+oreg_auth_user=
 oreg_auth_password=
 
 # htpasswd auth

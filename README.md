@@ -825,7 +825,7 @@ docker push $REG_HOST/$(oc project -q)/busybox
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
 
-### Add VNC connectivity in ctl 
+### Add VNC connectivity to ctl vm
 
 > :warning: If session is new, please [set-esx--environment-variables](#set-esx-environment-variables) first.
 
@@ -869,7 +869,6 @@ usermod -a -G wheel userid
 ### Start GUI
 
 	init 5
-
 
 
 
@@ -1093,15 +1092,13 @@ vim-cmd vmsvc/device.diskaddexisting $VMID $DISK $BUS $NUM
 $WORKDIR/extendRootLV.sh
 ```
 
-<!--
+
 
 ```
 mount /mnt/iicbackup/produits/
 
 rsync /mnt/iicbackup/produits/ISO/ibm_cloud_pak_for_mcm/ibm-cp4mcm-core-1.2-x86_64.tar.gz ~
 ```
-
--->
 
 #### Load the container images into the local registry
 

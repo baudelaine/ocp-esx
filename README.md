@@ -827,7 +827,7 @@ docker push $REG_HOST/$(oc project -q)/busybox
 
 ### Add VNC connectivity to ctl vm
 
-> :warning: If session is new, please [set-esx--environment-variables](#set-esx-environment-variables) first.
+> :warning: If session is new, please [set-esx-environment-variables](#set-esx-environment-variables) first.
 
 ```
 VMX=$DATASTORE/$OCP/ctl-$OCP/ctl-$OCP.vmx

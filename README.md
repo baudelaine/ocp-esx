@@ -678,8 +678,7 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 ```
 
 
-
-#### Mount resource and test NFS server availability
+#### Mount resource and test NFS server availability
 
 ```
 [ ! -d /mnt/nfs-$OCP ] && mkdir /mnt/nfs-$OCP && mount -t nfs nfs-$OCP:/exports /mnt/nfs-$OCP

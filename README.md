@@ -262,7 +262,7 @@ rm -f master.zip
 
 ## On ESX
 
-> :warning: If session is new, please [set ESX environment variables](#set-esx-environment-variables) first.
+> :warning: If session is new, please [set-esx--environment-variables](#set-esx-environment-variables) first.
 
 ### Start other vms
 
@@ -811,6 +811,68 @@ docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox
 docker push $REG_HOST/$(oc project -q)/busybox
 ```
 
+
+# Install GUI on Controller
+
+## On Controller
+
+	poweroff
+
+## On ESX
+
+### Check ctl vm is Powered off
+
+	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+
+
+### Add VNC connectivity in ctl 
+
+> :warning: If session is new, please [set-esx--environment-variables](#set-esx-environment-variables) first.
+
+```
+VMX=$DATASTORE/$OCP/ctl-$OCP/ctl-$OCP.vmx
+
+cat >> $VMX << EOF
+RemoteDisplay.vnc.enabled = "True"
+RemoteDisplay.vnc.port = "5901"  	 
+RemoteDisplay.vnc.password = "spcspc"
+RemoteDisplay.vnc.keymap = "fr"
+EOF
+```
+
+### Open gdbserver in ESX firewall properties for VNC to work
+
+	esxcli network firewall ruleset set -e true -r gdbserver
+
+### Power ctl vm on
+
+	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
+## On Controller
+
+### Add a new user called userid and grant him administrator (sudo)
+
+```
+useradd userid
+passwd spcspc
+usermod -a -G wheel userid
+```
+
+### install GUI
+
+	yum groupinstall "Server with GUI" -y
+
+### Set runlevel to graphical.target
+
+	systemctl set-default graphical.target
+
+### Start GUI
+
+	init 5
+
+
+
+
 <!--
 
 
@@ -986,7 +1048,7 @@ admissionConfig:
 
 ## On Controller
 
-### Elasticsearch
+### Prepare for Elasticsearch
 
 > :warning: **vm.max_map_count** has to be set to **262144** to all nodes
 
@@ -1006,19 +1068,74 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no ro
 
 > :bulb: Download partnumber CC4L8EN
 
+#### Add 50G in root logical volume
+
+##### On ESX
+
+> :warning: If session is new, please [set-esx--environment-variables](#set-esx-environment-variables) first.
+
+```
+DISK=$DATASTORE/$OCP/ctl-$OCP/root2.vmdk
+BUS=0
+VMID=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print $1}')
+NUM=$(vim-cmd vmsvc/device.getdevices $VMID | grep -i -c 'label = "Hard disk')
+
+vmkfstools -c 50G $DISK
+
+vim-cmd vmsvc/device.diskaddexisting $VMID $DISK $BUS $NUM
+```
+
+##### On Controller
+
+>:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
+
+```
+$WORKDIR/extendRootLV.sh
+```
+
 <!--
 
 ```
 mount /mnt/iicbackup/produits/
+
+rsync /mnt/iicbackup/produits/ISO/ibm_cloud_pak_for_mcm/ibm-cp4mcm-core-1.2-x86_64.tar.gz ~
 ```
 
 -->
 
 #### Load the container images into the local registry
 
-> :warning: Check registry file system has 50G free.
+> :bulb: To avoid network failure, launch installation on **locale console** or in a **screen**
 
-	tar xf ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
+```
+[ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
+screen -mdS ADM && screen -r ADM
+```
+
+```
+tar xvf ~/ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
+```
+
+#### Make a snapshot called MCMImagesLoaded
+
+##### On Controller
+
+	poweroff
+
+##### On ESX
+
+###### Check ctl vm is Powered off
+
+	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+
+
+###### Make a snapshot called MCMImagesLoaded on ctl vm
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " MCMImagesLoaded"}' | sh
+
+###### Power ctl vm on
+
+	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 #### Create an installation directory on the boot node
 
@@ -1170,3 +1287,7 @@ for i in $(seq $FIRST_IP_TAIL $LAST_IP_TAIL); do ssh root@$IP_HEAD$i 'hostname -
 
 ```
 -->
+
+```
+
+```

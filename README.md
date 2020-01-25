@@ -677,8 +677,6 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 || { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
 ```
 
-#### Mount resource and write to NFS server
-
 ```
 [ ! -d /mnt/nfs-$OCP ] && mkdir /mnt/nfs-$OCP && mount -t nfs nfs-$OCP:/exports /mnt/nfs-$OCP
 

@@ -262,7 +262,7 @@ rm -f master.zip
 
 ## On ESX
 
-> :warning: If session is new, please [set-esx--environment-variables](#set-esx-environment-variables) first.
+> :warning: If session is new, please [set-esx-environment-variables](#set-esx-environment-variables) first.
 
 ### Start other vms
 

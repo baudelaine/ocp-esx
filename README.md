@@ -857,7 +857,7 @@ EOF
 
 ## On Controller from VNC
 
-> :bulb: Connect to ESX VNC server on port 5901 with address collected above
+> :bulb: Connect to ESX VNC server on port 5901 with ip address collected above
 
 > e.g. xtightvncviewer **172.16.161.131**:**5901**
 
@@ -868,7 +868,7 @@ EOF
 ```
 useradd userid
 
-passwd spcspc
+echo 'spcspc' | passwd userid --stdin
 
 usermod -a -G wheel userid
 ```

@@ -336,10 +336,10 @@ rm -f master.zip
 
 
 ```
-OREG_USER="iicparis"
-OREG_PWD="********"
+OREG_ID="myid"
+OREG_PWD="mypa\$sword"
 
-sed -i 's/\(oreg_auth_user=\).*$/\1'$OREG_USER'/' /etc/ansible/hosts
+sed -i 's/\(oreg_auth_user=\).*$/\1'$OREG_ID'/' /etc/ansible/hosts
 sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 
 
@@ -352,13 +352,13 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 
 
 
-#### Extend root Volume Group on all cluster nodes
+#### Extend root Volume Group on cluster nodes
 
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
 
 	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
 
-#### Check root Volume Group on all cluster nodes
+#### Check root Volume Group on cluster nodes
 
 	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
 
@@ -488,11 +488,16 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 #### Check OpenShift Health
 
-> :warning:  Set **oreg_auth_user** and **oreg_auth_password** accordingly
+> :warning:  skopeo inspect should return **information about your NFR license**
 
+```
+OREG_ID=$(cat /etc/ansible/hosts | awk -F'=' '$1 ~ "^oreg_auth_user" {print $2}')
+OREG_PWD=$(cat /etc/ansible/hosts | awk -F'=' '$1 ~ "^oreg_auth_password" {print $2}')
 
-	[ ! -z $(command -v skopeo) ] && echo skopeo installed || yum install skopeo -y
-	skopeo inspect --tls-verify=false --creds='$oreg_auth_user:$oreg_auth_password' docker://registry.redhat.io/openshift3/ose-docker-registry:v3.11.161
+[ ! -z $(command -v skopeo) ] && echo skopeo installed || yum install skopeo -y
+
+skopeo inspect --tls-verify=false --creds=$OREG_ID:$OREG_PWD docker://registry.redhat.io/openshift3/ose-docker-registry:v3.11.161
+```
 
 
 
@@ -548,7 +553,6 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 
 ## On Controller
 
-<!--
 
 #### Install oc Client Tools
 
@@ -556,11 +560,13 @@ Download [oc Client Tools](https://github.com/openshift/origin/releases/download
 
 	wget -c https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
 
-rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz .
+<!--
+	rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz .
+-->
 
 	tar xvzf openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz --strip-components 1 -C /usr/local/sbin
 
--->
+
 
 ### Check install
 
@@ -569,6 +575,8 @@ rsync -avg --progress /mnt/iicbackup/produits/ISO/add-ons/openshift-origin-clien
 	oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 
 ### Check Environment health
+
+> :bulb: ​OCP certificate authority  can be found in your first master **/etc/origin/master/ca.crt**.
 
 #### Checking complete environment health
 
@@ -579,41 +587,53 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
 
 
-# Make a OCPinstalled snapshot
+
+# Make a OCPInstalled snapshot
 
 ## On Controller
 
 ```
-for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
+for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
 ```
 
 ## On ESX
 
 ### Make a snapshot
 
+#### Check all vms are Powered off
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+
+
 #### Make a snapshot called OCPInstalled
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPinstalled"}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " OCPInstalled"}' | sh
 
 #### Power cluster vms on
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-### If necessary revert snapshot
+### If necessary revert to last snapshot
 
 #### Get last snapshot id from first master
 
-	export SNAPID=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}')
+```
+export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}')
+
+export SNAPID=$(echo $SNAPIDS | awk '{print $NF}')
+```
+
+
 
 #### Revert to latest snapshot
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
 
 #### Power cluster vms on
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $2 !~ "nfs-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-<!--
+
 
 # On NFS server
 
@@ -748,6 +768,8 @@ docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox
 docker push $REG_HOST/$(oc project -q)/busybox
 ```
 
+
+<!--
 
 
 # Install Cloud Pak for Data
@@ -1049,12 +1071,6 @@ https://docs.openshift.com/container-platform/3.11/install_config/registry/secur
 
 
 https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry
-
-
-
-
-
-
 
 -->
 

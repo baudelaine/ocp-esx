@@ -768,7 +768,10 @@ docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
 docker pull busybox
 
 docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox
+```
 
+> :warning: Now you have to be able to push from controller to OCP docker registry
+```
 docker push $REG_HOST/$(oc project -q)/busybox
 ```
 

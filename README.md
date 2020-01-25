@@ -848,13 +848,21 @@ EOF
 
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-## On Controller
+## On Controller from VNC
+
+> :bulb: Connect to ESX VNC Client on port 5901
+
+> e.g. xtightvncviewer **esx ip address**:1
+
+> :bulb: type **spcspc** when prompt for **password**
 
 ### Add a new user called userid and grant him administrator (sudo)
 
 ```
 useradd userid
+
 passwd spcspc
+
 usermod -a -G wheel userid
 ```
 

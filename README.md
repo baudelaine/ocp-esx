@@ -452,6 +452,7 @@ EOF
 
 
 
+
 # Make a ReadyForOCP snapshot
 
 ## On Controller
@@ -473,6 +474,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 #### Power cluster vms on
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
 
 
 
@@ -727,7 +729,7 @@ oc create -f deploy/test-pod.yaml
 VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
 ```
 
-> :bulb: Next command shoud display **SUCCESS**
+> :warning: Next command shoud display **SUCCESS**
 
 ```
 sshpass -e ssh -o StrictHostKeyChecking=no \

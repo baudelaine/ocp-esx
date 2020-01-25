@@ -670,33 +670,44 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 
 ## Test nfs access
 
+#### Install nfs utils if necessary
+
 ```
 [ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed \
 || { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
+```
 
-[ ! -d /mnt/test ] && mkdir /mnt/test && mount -t nfs nfs-$OCP:/exports /mnt/test
-touch /mnt/test/a && echo "RC="$?
+#### Mount resource and write to NFS server
 
+```
+[ ! -d /mnt/nfs-$OCP ] && mkdir /mnt/nfs-$OCP && mount -t nfs nfs-$OCP:/exports /mnt/nfs-$OCP
+touch /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
+```
+
+> :warning: Next command shoud display **SUCCESS**
+
+```
 sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/ 
 ```
 
+#### Clean things
+
 ```
-rm -f /mnt/test/a && echo "RC="$?
+rm -f /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
 sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
-umount /mnt/test && rmdir /mnt/test/ 
+umount /mnt/nfs-$OCP && rmdir /mnt/nfs-$OCP/ 
 ```
 
 ## Add managed-nfs-storage storage class 
+
+
+#### Log in Cluster
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 ```
 
-```
-unzip $WORKDIR/nfs-client.zip -d $WORKDIR
-```
-
-
+#### Install and test storage class
 
 ```
 cd $WORKDIR/nfs-client/
@@ -733,9 +744,7 @@ VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
 
 ```
 sshpass -e ssh -o StrictHostKeyChecking=no \
-nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME
-
-cd ~
+nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME && cd ~
 ```
 
 

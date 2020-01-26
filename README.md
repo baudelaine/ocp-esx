@@ -895,7 +895,26 @@ usermod -a -G wheel userid
 
 # Install Cloud Pak for Data
 
-cp -v  /mnt/iicbackup/produits/ISO/add-ons/icp4d/cpd/cloudpak4data-ee-v2.5.0.0.tgz .
+## On Controller
+
+### Pre-installation tasks
+
+#### Obtain the installation file
+
+Download part number **CC3Y1ML** either from [IBM Passport Advantage](https://www.ibm.com/software/passportadvantage/pao_customer.html) or from [XL](https://w3-03.ibm.com/software/xl/download/ticket.wss).
+
+<!--
+```
+mount /mnt/iicbackup/produits
+rsync  /mnt/iicbackup/produits/ISO/add-ons/icp4d/cpd/cloudpak4data-ee-v2.5.0.0.tgz ~
+```
+-->
+
+#### Run installer to download cloudpak4data-ee-v2.5.0.0.tgz
+
+```
+chmod +x CP4D_EE_Installer_V2.5.bin && ./CP4D_EE_Installer_V2.5.bin
+```
 
 mkdir cpd && cd cpd && tar xvzf ../cloudpak4data-ee-v2.5.0.0.tgz
 
@@ -924,7 +943,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 
 chmod +x bin/cpd-linux
 
-// Prepare installation
+
 
 // Dry run
 

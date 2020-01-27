@@ -1130,7 +1130,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin \
 oc new-project ta
 ```
 
-##### Create PVC
+##### Create PVC
 
 ```
 PVC_NAME=tapvc

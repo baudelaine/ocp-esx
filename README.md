@@ -951,23 +951,20 @@ docker pull cp.icr.io/cp/cpd/zen-meta-couchdb:v2.5.0.0-210
 > :warning: If pull failed with **repository cp.icr.io/cp/cpd/zen-meta-couchdb not found: does not exist or no pull access** then connect to IBM intranet and get username and apikey this way :
 
 >```
->USERNAME=$(curl http://icpfs1.svl.ibm.com/zen/cp4d-builds/2.5.0.0/production/internal/repo.yaml | awk -F ": " ' $1 ~ "username" {print $2}')
->
->APIKEY=$(curl http://icpfs1.svl.ibm.com/zen/cp4d-builds/2.5.0.0/production/internal/repo.yaml | awk -F ": " ' $1 ~ "apikey" {print $2}')
+>USERNAME=$(curl http://icpfs1.svl.ibm.com/zen/cp4d-builds/2.5.0.0/production/internal/repo.yaml | awk -F ": " ' $1 ~ "username" {print $2}') && echo $USERNAME
+>```
+> :bulb: username should be something like **iamapikey**
+
+>```
+>APIKEY=$(curl http://icpfs1.svl.ibm.com/zen/cp4d-builds/2.5.0.0/production/internal/repo.yaml | awk -F ": " ' $1 ~ "apikey" {print $2}') && echo $APIKEY
 >```
 
 #### Add username and apikey to repo.yaml
 
 ```
-cat > repo.yaml << EOF
-registry:
-  - url: cp.icr.io/cp/cpd
-    username: $USERNAME
-    apikey: $APIKEY
-    name: base-registry
-fileservers:
-  - url: https://raw.github.com/IBM/cloud-pak/master/repo/cpd
-EOF
+sed -i -e 's/\(^\s\{4\}username: \).*$/\1'$USERNAME'/' repo.yaml
+
+sed -i -e 's/\(^\s\{4\}apikey: \).*$/\1'$APIKEY'/' repo.yaml
 ```
 
 ### Setting up your Cloud Pak for Data environment

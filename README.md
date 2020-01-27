@@ -1,3 +1,19 @@
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Target](#target)
+- [Build cluster](https://github.com/bpshparis/ocp-esx/blob/master/Build-Cluster.md)
+- [Prepare OCP]()
+
+
+- [Target](#target)
+  * [Run application elsewhere from IBM Cloud](#run-application-elsewhere-from-ibm-cloud)
+     + [Using Resource Group with manual generated service credentials](#using-resource-group-with-manual-generated-service-credentials)
+    + [Using Resource Group with auto generated service credentials](#using-resource-group-with-auto-generated-service-credentials)
+    + [Using Cloud Foundry](#using-cloud-foundry)
+<br>
+
+
 # Prerequisites
 
 Be a [Redhat partner](https://partnercenter.redhat.com/Dashboard_page) and ask for [NEW NFR](https://partnercenter.redhat.com/NFR_Redirect) to get access to Openshift packages.
@@ -324,7 +340,7 @@ rm -f master.zip
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done
 
 
-# Prepare to install OCP
+# Prepare OCP
 
 #### Copy inventory file to default ansible file
 
@@ -478,7 +494,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 
 
-# Install Openshift
+# Install OCP
 
 ## On Controller
 
@@ -637,9 +653,11 @@ export SNAPID=$(echo $SNAPIDS | awk '{print $NF}')
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-# Install managed-nfs-storage Storage Class
+# Prepare OCP for Cloud Paks
 
-## On NFS server
+## Install managed-nfs-storage Storage Class
+
+### On NFS server
 
 ```
 cat > installNFSServer.sh << EOF
@@ -666,11 +684,11 @@ EOF
 chmod +x installNFSServer.sh && ./installNFSServer.sh
 ```
 
-## On Controller
+### On Controller
 
-### Test nfs access
+#### Test nfs access
 
-#### Install nfs utils if necessary
+##### Install nfs utils if necessary
 
 ```
 [ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed \
@@ -678,7 +696,7 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 ```
 
 
-#### Mount resource and test NFS server availability
+##### Mount resource and test NFS server availability
 
 ```
 [ ! -d /mnt/nfs-$OCP ] && mkdir /mnt/nfs-$OCP && mount -t nfs nfs-$OCP:/exports /mnt/nfs-$OCP
@@ -692,7 +710,7 @@ touch /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
 sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/ 
 ```
 
-#### Clean things
+##### Clean things
 
 ```
 rm -f /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
@@ -702,16 +720,16 @@ sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
 umount /mnt/nfs-$OCP && rmdir /mnt/nfs-$OCP/ 
 ```
 
-### Add managed-nfs-storage storage class 
+#### Add managed-nfs-storage storage class 
 
 
-#### Log in Cluster
+##### Log in Cluster
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 ```
 
-#### Install and test storage class
+##### Install and test storage class
 
 ```
 unzip $WORKDIR/nfs-client.zip -d $WORKDIR
@@ -755,19 +773,19 @@ nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME && cd ~
 
 
 
-# Exposing openshift Registry
+## Exposing openshift Registry
 
 > :bulb: Target is to be able to push docker images from Controller to Openshift registry in a secure way.
 
-## On Controller
+### On Controller
 
-#### Log in cluster default project
+##### Log in cluster default project
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n default
 ```
 
-#### Install jq 
+##### Install jq 
 
 > :bulb: jq is a json parser for command line
 
@@ -775,7 +793,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true 
 [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
 ```
 
-#### Check docker registry route
+##### Check docker registry route
 
 > :warning: Termination should display **passthrough** if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
 
@@ -783,13 +801,13 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true 
 oc get route/docker-registry -o json | jq -r .spec.tls.termination
 ```
 
-#### Get OCP docker registry hostname
+##### Get OCP docker registry hostname
 
 ```
 REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host)
 ```
 
-#### Add OCP certificate authority to docker
+##### Add OCP certificate authority to docker
 
 ```
 mkdir -p /etc/docker/certs.d/$REG_HOST
@@ -797,7 +815,7 @@ mkdir -p /etc/docker/certs.d/$REG_HOST
 scp m1-$OCP:/etc/origin/master/ca.crt /etc/docker/certs.d/$REG_HOST
 ```
 
-#### Log to OCP docker registry
+##### Log to OCP docker registry
 
 ```
 docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
@@ -806,7 +824,7 @@ docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
 > :bulb: If login has been successfull, Docker should have added an entry in ** ~/.docker/config.json**.
 
 
-#### Tag a docker image with OCP docker registry hostname and push it
+##### Tag a docker image with OCP docker registry hostname and push it
 
 ```
 docker pull busybox
@@ -820,7 +838,7 @@ docker push $REG_HOST/$(oc project -q)/busybox
 ```
 
 
-# Install GUI on Controller
+# Install RHEL GUI
 
 ## On Controller
 
@@ -1026,9 +1044,13 @@ bin/cpd-linux \
 --cluster-pull-prefix docker-registry.default.svc:5000/$PROJECT
 ```
 
+> :bulb: If something went wrong check logs in **cpd/bin/cpd-linux-workspace/Logs/** directory.
+
+>:checkered_flag::checkered_flag::checkered_flag:
 
 
-# Install Cloud Pak for Application
+
+# Install Cloud Pak for Applications
 
 ## On Controller
 
@@ -1375,7 +1397,7 @@ sed -i -e '/^\s\{2\}management:/r nodes.yaml' cluster/config.yaml
 SC=$(oc get sc | awk 'NR>1 {print $1}') && echo $SC
 ```
 
-###### Add Storage Class to config.yaml
+###### Add Storage Class name to config.yaml
 
 ```
 sed -i -e 's/\(^storage_class: \).*$/\1'$SC'/'  cluster/config.yaml

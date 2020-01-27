@@ -1083,11 +1083,13 @@ export ENTITLED_REGISTRY_KEY=$APIKEY
 	
 	docker pull "$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG"
 
-> :bulb: Optional: To save installer and restore it **later** in another environment
+> :bulb: Optional: To save installer
 
 >```
 >docker save cp.icr.io/cp/icpa/icpa-installer | gzip -c > cp.icr.io-cp-icpa-icpa-installer.tar.gz
 >```
+
+>  and restore it **later** in another environment.
 
 >```
 >docker load < cp.icr.io-cp-icpa-icpa-installer.tar.gz

@@ -11,14 +11,16 @@
 - [Install Cloud Pak for Multicloud Management](https://github.com/bpshparis/ocp-esx/blob/master/Install-Cloud-Pak-for-Multicloud-Management.md)
 - [Install RHEL GUI](https://github.com/bpshparis/ocp-esx/blob/master/Install-RHEL-GUI.md)
 
+
 <! --
+
 - [Target](#target)
   * [Run application elsewhere from IBM Cloud](#run-application-elsewhere-from-ibm-cloud)
      + [Using Resource Group with manual generated service credentials](#using-resource-group-with-manual-generated-service-credentials)
     + [Using Resource Group with auto generated service credentials](#using-resource-group-with-auto-generated-service-credentials)
     + [Using Cloud Foundry](#using-cloud-foundry)
+
 -->
-<br>
 
 
 # Prerequisites

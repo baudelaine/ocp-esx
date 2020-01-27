@@ -1021,6 +1021,8 @@ bin/cpd-linux \
 
 >:checkered_flag::checkered_flag::checkered_flag:
 
+<!--
+
 
 # Install Cloud Pak for Application
 
@@ -1099,7 +1101,6 @@ docker run -v ~/.kube:/root/.kube:z -u 0 -t \
 
 
 
-<!--
 
 
 

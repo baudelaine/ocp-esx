@@ -88,7 +88,7 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 | ctl-ocp3.iicparis.fr.ibm.com | 172.16.187.49 | Controller + ansible |
 
 
-# Start building cluster
+# Build cluster
 
 ## On DNS
 

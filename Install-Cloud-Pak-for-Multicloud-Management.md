@@ -76,7 +76,7 @@ rsync /mnt/iicbackup/produits/ISO/ibm_cloud_pak_for_mcm/ibm-cp4mcm-core-1.2-x86_
 
 ##### On ESX
 
-> :warning: If session is new, please [set-esx-environment-variables](#set-esx-environment-variables) first.
+> :warning: If session is new, please [set-esx-environment-variables](https://github.com/bpshparis/ocp-esx/blob/master/Build-Cluster.md#set-esx-environment-variables) first.
 
 ```
 DISK=$DATASTORE/$OCP/ctl-$OCP/root2.vmdk

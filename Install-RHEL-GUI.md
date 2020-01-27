@@ -13,7 +13,7 @@
 
 ### Add VNC connectivity to ctl vm
 
-> :warning: If session is new, please [set-esx-environment-variables](#set-esx-environment-variables) first.
+> :warning: If session is new, please [set-esx-environment-variables](https://github.com/bpshparis/ocp-esx/blob/master/Build-Cluster.md#set-esx-environment-variables) first.
 
 ```
 VMX=$DATASTORE/$OCP/ctl-$OCP/ctl-$OCP.vmx

@@ -871,14 +871,17 @@ esxcli network ip interface ipv4 get -i $SWITCH | awk 'END{print $2}'
 
 > :bulb: type **spcspc** when prompt for **password**
 
-### Add a new user called userid and grant him administrator (sudo)
+### Add a new user and grant him administrator (sudo)
 
 ```
-useradd userid
+USERID="userid"
+PASSWORD="spcspc"
 
-echo 'spcspc' | passwd userid --stdin
+useradd $USERID
 
-usermod -a -G wheel userid
+echo "$PASSWORD" | passwd $USERID --stdin
+
+usermod -a -G wheel $USERID
 ```
 
 ### install GUI

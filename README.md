@@ -1042,7 +1042,7 @@ Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=
 
 	curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
 
-##### login to IBM Cloud
+##### Login to IBM Cloud
 
 	ibmcloud login --sso --no-region
 
@@ -1069,6 +1069,7 @@ APIKEY=$(curl -s https://billing.cloud.ibm.com/v1/licensing/entitlements -H "Aut
 > :bulb: Following instructions came from [here](https://github.ibm.com/IBMCloudPak4Apps/icpa-install#other-ibmers)
 
 > :bulb: Tag starting with 3 seems to suit for Openshift 3.11
+
 > :bulb: Tag starting with 4 seems to suit for Openshift 4.2
 
 ```

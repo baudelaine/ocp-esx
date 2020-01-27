@@ -3,14 +3,21 @@
 - [Prerequisites](#prerequisites)
 - [Target](#target)
 - [Build cluster](https://github.com/bpshparis/ocp-esx/blob/master/Build-Cluster.md)
-- [Prepare OCP]()
+- [Prepare OCP](https://github.com/bpshparis/ocp-esx/blob/master/Prepare-OCP.md)
+- [Install OCP](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md)
+- [Prepare OCP for Cloud Paks](https://github.com/bpshparis/ocp-esx/blob/master/Prepare-OCP-for-Cloud-Paks.md)
+- [Install Cloud Pak for Data](https://github.com/bpshparis/ocp-esx/blob/master/Install-Cloud-Pak-for-Data.md)
+- [Install Cloud Pak for Applications](https://github.com/bpshparis/ocp-esx/blob/master/Install-Cloud-Pak-for-Applications.md)
+- [Install Cloud Pak for Multicloud Management](https://github.com/bpshparis/ocp-esx/blob/master/Install-Cloud-Pak-for-Multicloud-Management.md)
+- [Install RHEL GUI](https://github.com/bpshparis/ocp-esx/blob/master/Install-RHEL-GUI.md)
 
-
+<! --
 - [Target](#target)
   * [Run application elsewhere from IBM Cloud](#run-application-elsewhere-from-ibm-cloud)
      + [Using Resource Group with manual generated service credentials](#using-resource-group-with-manual-generated-service-credentials)
     + [Using Resource Group with auto generated service credentials](#using-resource-group-with-auto-generated-service-credentials)
     + [Using Cloud Foundry](#using-cloud-foundry)
+-->
 <br>
 
 
@@ -80,7 +87,6 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 
 -->
 
-
 # Target 
 
 
@@ -102,6 +108,9 @@ swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 | i3-ocp3.iicparis.fr.ibm.com  | 172.16.187.39 | Infra                |
 | nfs-ocp3.iicparis.fr.ibm.com | 172.16.187.48 | Persistent Storage   |
 | ctl-ocp3.iicparis.fr.ibm.com | 172.16.187.49 | Controller + ansible |
+
+
+<!--
 
 
 # Build cluster
@@ -1462,6 +1471,7 @@ docker run -t --net=host -e LICENSE=accept -v $(pwd):/installer/cluster:z -v /va
 >:checkered_flag::checkered_flag::checkered_flag:
 
 
+-->
 
 
 <!--

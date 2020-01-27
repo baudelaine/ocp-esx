@@ -801,7 +801,7 @@ scp m1-$OCP:/etc/origin/master/ca.crt /etc/docker/certs.d/$REG_HOST
 docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
 ```
 
-> > :bulb: If login has been successfull, Docker should have added an entry in ** ~/.docker/config.json**.
+> :bulb: If login has been successfull, Docker should have added an entry in ** ~/.docker/config.json**.
 
 
 #### Tag a docker image with OCP docker registry hostname and push it

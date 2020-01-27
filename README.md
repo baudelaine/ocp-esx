@@ -1156,6 +1156,7 @@ sed -i -e 's/\(^\s\{6\}existingClaim: \).*$/\1"'$PVC'"/'  data/transadv.yaml
 
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
+
 screen -mdS ADM && screen -r ADM
 ```
 
@@ -1414,9 +1415,29 @@ sed -i -e '/^password_rules:/r permissiveRule.yaml' cluster/config.yaml
 ```
 
 
+### Install Cloud Pak for Multicloud Management on a Red Hat OpenShift cluster
 
+> :warning: To avoid network failure, launch installation on locale console or in a screen
 
+```
+[ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
 
+screen -mdS ADM && screen -r ADM
+```
+
+> :warning: Move in cluster directory
+
+```
+cd cluster
+```
+
+```
+docker run -t --net=host -e LICENSE=accept -v $(pwd):/installer/cluster:z -v /var/run:/var/run:z -v /etc/docker:/etc/docker:z --security-opt label:disable ibmcom/mcm-inception-amd64:3.2.3 install-with-openshift
+```
+
+> :bulb: If something went wrong check logs in **mcm/cluster/logs** directory.
+
+>:checkered_flag::checkered_flag::checkered_flag:
 
 
 

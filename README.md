@@ -1008,6 +1008,7 @@ oc adm policy add-role-to-user cpd-admin-role $PROJECT_ADMIN --role-namespace=$P
 
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
+
 screen -mdS ADM && screen -r ADM
 ```
 

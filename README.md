@@ -757,6 +757,8 @@ nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME && cd ~
 
 # Exposing openshift Registry
 
+> :bulb: Target is to be able to push docker images from Controller to Openshift registry in a secure way.
+
 ## On Controller
 
 #### Log in cluster default project
@@ -798,6 +800,9 @@ scp m1-$OCP:/etc/origin/master/ca.crt /etc/docker/certs.d/$REG_HOST
 ```
 docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
 ```
+
+> > :bulb: If login has been successfull, Docker should have added an entry in ** ~/.docker/config.json**.
+
 
 #### Tag a docker image with OCP docker registry hostname and push it
 

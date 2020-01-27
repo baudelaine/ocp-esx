@@ -767,7 +767,9 @@ nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME && cd ~
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n default
 ```
 
-#### Install jq
+#### Install jq 
+
+> :bulb: jq is a json parser for command line
 
 ```
 [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
@@ -1034,7 +1036,7 @@ bin/cpd-linux \
 
 #### Get entitlement key
 
-Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=cloud%20pak%20for%20app#software) and Assign the license when you click on the CP4A tile.
+Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=cloud%20pak%20for%20app#software) and assign the license when clicking on the Cloud Pak for Application tile.
 
 ##### Install IBM Cloud CLI
 
@@ -1046,9 +1048,17 @@ Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=
 
 ##### Set APIKEY with entitlement key
 
+###### Install jq 
+
+> :bulb: jq is a json parser for command line
+
 ```
 [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
+```
 
+###### Set APIKEY
+
+```
 BEARER=$(ibmcloud iam oauth-tokens | awk '{print $4;}')
 
 APIKEY=$(curl -s https://billing.cloud.ibm.com/v1/licensing/entitlements -H "Authorization: Bearer $BEARER" -H 'Content-Type: application/json' -H 'cache-control: no-cache' | jq -r '.resources[] | select(.name | contains("Cloud Pak for Applications")) | .apikey') && echo $APIKEY

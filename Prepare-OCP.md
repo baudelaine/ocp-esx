@@ -1,5 +1,7 @@
 # Prepare OCP
 
+## On Controller
+
 #### Copy inventory file to default ansible file
 
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
@@ -22,7 +24,7 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 ```
 
 
-#### Check hosts 
+#### Check hosts
 
 	grep -e 'ocp[0-9]\{1,\}' /etc/ansible/hosts
 
@@ -30,7 +32,7 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 
 #### Extend root Volume Group on cluster nodes
 
->:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
+>:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding
 
 	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
 
@@ -45,7 +47,7 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 #### Set Docker storage
 
 ```
-ansible nodes -a 'systemctl stop docker' 
+ansible nodes -a 'systemctl stop docker'
 ```
 
 
@@ -148,4 +150,3 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 #### Power cluster vms on
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
-

@@ -18,14 +18,14 @@
 
 e.g.
 
-	export OCP=ocp19
-	export MASTER_IP_HEAD=172.16.187.19
-	export MASTER_NFS_IP=172.16.187.208
-	export MASTER_CTL_IP=172.16.187.209
+	export OCP=ocp3
+	export MASTER_IP_HEAD=172.16.187.3
+	export MASTER_NFS_IP=172.16.187.48
+	export MASTER_CTL_IP=172.16.187.49
 	export REVERSE_IP_TAIL=.187.16.172
-	export REVERSE_IP_HEAD=19
-	export REVERSE_NFS_IP=208.187.16.172
-	export REVERSE_CTL_IP=209.187.16.172
+	export REVERSE_IP_HEAD=3
+	export REVERSE_NFS_IP=48.187.16.172
+	export REVERSE_CTL_IP=49.187.16.172
 
 ### Add records to master zone
 

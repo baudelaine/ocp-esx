@@ -216,7 +216,7 @@ sed -i -e 's/^# \(default_admin_password:\)/\1 '$PWD'/'  cluster/config.yaml
 ###### Uncomment password rules
 
 ```
-sed -i -e 's/^#\s\{1,\} \(password_rules:\)/\1/'  cluster/config.yaml
+sed -i -e 's/^# \(password_rules:\)/\1/'  cluster/config.yaml
 
 ```
 

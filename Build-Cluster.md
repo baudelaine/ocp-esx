@@ -18,14 +18,14 @@
 
 e.g.
 
-	export OCP=ocp19
-	export MASTER_IP_HEAD=172.16.187.19
-	export MASTER_NFS_IP=172.16.187.208
-	export MASTER_CTL_IP=172.16.187.209
+	export OCP=ocp3
+	export MASTER_IP_HEAD=172.16.187.3
+	export MASTER_NFS_IP=172.16.187.48
+	export MASTER_CTL_IP=172.16.187.49
 	export REVERSE_IP_TAIL=.187.16.172
-	export REVERSE_IP_HEAD=19
-	export REVERSE_NFS_IP=208.187.16.172
-	export REVERSE_CTL_IP=209.187.16.172
+	export REVERSE_IP_HEAD=3
+	export REVERSE_NFS_IP=48.187.16.172
+	export REVERSE_CTL_IP=49.187.16.172
 
 ### Add records to master zone
 
@@ -152,13 +152,13 @@ curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
 unzip master.zip
 echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
 source ~/.bashrc
-rm -f master.zip 
+rm -f master.zip
 
 ```
 
 ### Extend root logical volume
 
->:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding 
+>:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding
 
 	$WORKDIR/extendRootLV.sh && lvs
 
@@ -218,7 +218,7 @@ rm -f master.zip
 
 ### Exchange ssh public key with cluster nodes
 
-#### Clean cluster nodes ssh environment 
+#### Clean cluster nodes ssh environment
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
@@ -232,4 +232,3 @@ rm -f master.zip
 #### Check  controller can access cluster nodes without being prompt for a password
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done
-

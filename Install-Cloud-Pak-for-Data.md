@@ -152,6 +152,14 @@ bin/cpd-linux \
 --cluster-pull-prefix docker-registry.default.svc:5000/$PROJECT
 ```
 
+<br>
+
+>:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :zzz::zzz: :zzz::zzz::hourglass_flowing_sand: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee: :hourglass: 
+
+>:bulb: Leave screen with **Ctrl + a + d**
+
+>:bulb: Come back with **screen -r ADM**
+
 > :bulb: If something went wrong check logs in **cpd/bin/cpd-linux-workspace/Logs/** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
 

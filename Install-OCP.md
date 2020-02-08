@@ -27,6 +27,7 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 #### Check your access to OpenShift registry
 
 > :warning: docker login should return **Login Succeeded**
+
 > :bulb: A new entry should have been added to **~/.docker/config.json** 
 
 ```

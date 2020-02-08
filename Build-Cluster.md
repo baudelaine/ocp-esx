@@ -75,7 +75,7 @@ ${REVERSE_CTL_IP}.in-addr.arpa.     IN      PTR     ctl-$OCP.iicparis.fr.ibm.com
 EOF
 ```
 
-### Restart DNS
+### Restart DNS service
 
 > :warning: Run this on DNS
 
@@ -117,6 +117,8 @@ service bind9 restart
 
 e.g.
 
+> :warning: Run this on ESX
+
 	export OCP=ocp3
 	export DATASTORE="/vmfs/volumes/V7000F-Volume-10TB"
 	export VMDK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
@@ -124,12 +126,19 @@ e.g.
 
 ### Create VMs
 
+> :warning: Run this on ESX
+
 	cd $WORKDIR && ./createVMs.sh $OCP
 
 ### Start controller vm
+
+> :warning: Run this on ESX
+
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-'$OCP'" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ### Get controller dhcp address
+
+> :warning: Run this on ESX
 
 > :warning: Wait for ctl vm to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
@@ -149,6 +158,8 @@ e.g.
 
 e.g.
 
+> :warning: Run this on Controller
+
 ```
 echo "" >> ~/.bashrc
 echo "export OCP=ocp3" >> ~/.bashrc
@@ -158,6 +169,8 @@ source ~/.bashrc
 ```
 
 ### Get tools to manage storage and setup hostname and ip address from DNS
+
+> :warning: Run this on Controller
 
 ```
 curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
@@ -171,15 +184,21 @@ rm -f master.zip
 
 ### Extend root logical volume
 
+> :warning: Run this on Controller
+
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding
 
 	$WORKDIR/extendRootLV.sh && lvs
 
 ### Setup hostname and ip address from DNS
 
+> :warning: Run this on Controller
+
 	$WORKDIR/setHostAndIP.sh ctl-$OCP
 
 ### Reboot for change to take effect
+
+> :warning: Run this on Controller
 
 	reboot
 
@@ -189,9 +208,13 @@ rm -f master.zip
 
 ### Start other vms
 
+> :warning: Run this on ESX
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ### Get cluster vms DHCP ip address
+
+> :warning: Run this on ESX
 
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
@@ -200,6 +223,8 @@ rm -f master.zip
 
 ###  Copy all cluster vms DHCP ip address to  controller
 
+> :warning: Run this on ESX
+
 	scp $WORK_DIR/vms root@ctl-$OCP:/root
 
 
@@ -207,13 +232,19 @@ rm -f master.zip
 
 ### Copy extendRootLV.sh and setHostAndIP.sh to cluster nodes
 
+> :warning: Run this on Controller
+
 	for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
 
 ### Set cluster nodes with ip address and hostname known in DNS
 
+> :warning: Run this on Controller
+
 	for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
 
 ### Reboot cluster nodes
+
+> :warning: Run this on Controller
 
 	for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
 
@@ -221,6 +252,8 @@ rm -f master.zip
 ## On ESX
 
 ### Wait for all cluster vms to be up with static ip address
+
+> :warning: Run this on ESX
 
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
@@ -233,9 +266,13 @@ rm -f master.zip
 
 #### Clean cluster nodes ssh environment
 
+> :warning: Run this on Controller
+
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
 #### Generate ssh key pair and copy public key on cluster nodes
+
+> :warning: Run this on Controller
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
 
@@ -243,5 +280,7 @@ rm -f master.zip
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$node-$OCP; done
 
 #### Check  controller can access cluster nodes without being prompt for a password
+
+> :warning: Run this on Controller
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done

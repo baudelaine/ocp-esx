@@ -214,4 +214,4 @@ docker push $REG_HOST/$(oc project -q)/busybox
 
 <br>
 
-[Make a snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot)
+[Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)

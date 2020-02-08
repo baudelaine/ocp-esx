@@ -119,7 +119,7 @@ oc create -f deploy/test-claim.yaml
 oc create -f deploy/test-pod.yaml
 ```
 
-> :warning: Next command has to display **SUCCESS**
+> :warning: Next commands have to display **SUCCESS**
 
 ```
 VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')

@@ -151,7 +151,7 @@ sed -i -e 's/\(^\s\{6\}existingClaim: \).*$/\1"'$PVC'"/'  data/transadv.yaml
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
 
-pkill screen && screen -mdS ADM && screen -r ADM
+pkill screen; screen -mdS ADM && screen -r ADM
 ```
 
 ```

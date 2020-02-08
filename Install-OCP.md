@@ -65,7 +65,7 @@ skopeo inspect --tls-verify=false --creds=$OREG_ID:$OREG_PWD docker://$OREG/open
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
 
-pkill screen && screen -mdS ADM && screen -r ADM
+pkill screen; screen -mdS ADM && screen -r ADM
 ```
 
 ##### Launch prerequisites

@@ -57,6 +57,8 @@ esxcli network ip interface ipv4 get -i $SWITCH | awk 'END{print $2}'
 
 ## On your local machine
 
+Download [TightVNC](https://www.tightvnc.com/download.php), a Free, Lightweight, Fast and Reliable Remote Control / Remote Desktop Software
+
 > :bulb: Connect to ESX VNC server on port 5901 with ip address collected above
 
 > e.g. xtightvncviewer **172.16.161.131**:**5901**

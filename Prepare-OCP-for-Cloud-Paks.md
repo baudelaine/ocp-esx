@@ -117,13 +117,13 @@ oc logs $(oc get pods | awk 'NR>1 {print $1}')
 oc create -f deploy/test-claim.yaml
 
 oc create -f deploy/test-pod.yaml
-
-VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
 ```
 
 > :warning: Next command has to display **SUCCESS**
 
 ```
+VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
+
 sshpass -e ssh -o StrictHostKeyChecking=no \
 nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME && cd ~
 ```

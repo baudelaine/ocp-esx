@@ -10,6 +10,20 @@
 
 	ansible nodes -a 'ping -c 2 registry.redhat.io'
 
+#### Set ansible hosts with you Redhat partner credential
+
+> :warning: Escape **'$'** character in your password if necessary.
+
+> e.g. OREG_PWD="mypa\$sword"
+
+```
+OREG_ID="myid"
+OREG_PWD="mypa\$sword"
+
+sed -i 's/\(oreg_auth_user=\).*$/\1'$OREG_ID'/' /etc/ansible/hosts
+sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
+```	
+
 #### Check OpenShift Health
 
 > :warning:  skopeo inspect should return **information about your NFR license**

@@ -6,24 +6,6 @@
 
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
 
-> :warning: Don't forget to set **oreg_auth_user** and **oreg_auth_password** in **/etc/ansible/hosts** .
-
-> :warning: Escape **'$'** character in your password if necessary.
-
-> e.g. OREG_PWD="mypa\$sword"
-
-
-```
-OREG_ID="myid"
-OREG_PWD="mypa\$sword"
-
-sed -i 's/\(oreg_auth_user=\).*$/\1'$OREG_ID'/' /etc/ansible/hosts
-sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
-
-
-```
-
-
 #### Check hosts
 
 	grep -e 'ocp[0-9]\{1,\}' /etc/ansible/hosts
@@ -143,9 +125,10 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
-#### Make a snapshot called ReadyForOCP
+#### Make a snapshot
 
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " ReadyForOCP"}' | sh
+	export SNAPNAME=ReadyForOCP
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
 
 #### Power cluster vms on
 

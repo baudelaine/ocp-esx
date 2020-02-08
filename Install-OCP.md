@@ -182,10 +182,15 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 #### Make a snapshot
 
+> :warning: Change SNAPNAME value before proceeding.
+
 > :warning: Run this on ESX
 
-	export SNAPNAME=ReadyForMCM
-	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
+```
+SNAPNAME="MySnapshop"
+
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
+```
 
 #### Check snapshot
 

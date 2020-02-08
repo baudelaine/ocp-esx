@@ -21,6 +21,10 @@ One **ESXi server** in which datastore you should have copied:
 - A vmdk file which host  a [minimal](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/installation_guide/chap-simple-install#sect-simple-install) and  [prepared](https://docs.openshift.com/container-platform/3.11/install/host_preparation.html) RHEL7 **booting in DHCP** and **running VMware Tools**. 
 - A [bundle](https://github.com/bpshparis/ocp-esx/archive/master.zip)  of scripts and configurations files.
 
+>```
+>curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
+>```
+
 One **DNS server**.
 
 One **DHCP server**.

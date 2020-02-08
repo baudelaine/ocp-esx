@@ -31,6 +31,8 @@ e.g.
 
 ### Add records to master zone
 
+> :warning: Run this on DNS
+
 ```
 cat >> /var/lib/bind/iicparis.fr.ibm.com.hosts << EOF
 lb-$OCP.iicparis.fr.ibm.com.    IN      A       ${MASTER_IP_HEAD}0
@@ -54,6 +56,8 @@ EOF
 
 ### Add records to reverse zone
 
+> :warning: Run this on DNS
+
 ```
 cat >> /var/lib/bind/172.16.rev << EOF
 ${REVERSE_IP_HEAD}0${REVERSE_IP_TAIL}.in-addr.arpa.     IN      PTR     lb-$OCP.iicparis.fr.ibm.com.
@@ -73,15 +77,21 @@ EOF
 
 ### Restart DNS
 
+> :warning: Run this on DNS
+
 ```
 service bind9 restart
 ```
 
 ### Test master zone
 
+> :warning: Run this on DNS
+
 	dig @localhost +short lb-$OCP.iicparis.fr.ibm.com
 
 ### Test reverse zone
+
+> :warning: Run this on DNS
 
 	LB_IP=$(dig @localhost +short lb-$OCP.iicparis.fr.ibm.com)
 	dig @localhost +short -x $LB_IP
@@ -89,8 +99,9 @@ service bind9 restart
 
 ### Test alias
 
-	dig @localhost +short *.apps-$OCP.iicparis.fr.ibm.com
+> :warning: Run this on DNS
 
+	dig @localhost +short *.apps-$OCP.iicparis.fr.ibm.com
 
 
 ## On ESX

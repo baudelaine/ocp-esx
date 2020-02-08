@@ -184,6 +184,16 @@ oc config view > cluster/kubeconfig
 
 ##### Add worker nodes
 
+###### Clean config.yaml
+
+> :warning: Run this on Controller
+
+```
+sed -i -e '/^\s\{2\}master:/, /^\s\{2\}proxy:/{//!d}'  cluster/config.yaml
+sed -i -e '/^\s\{2\}proxy:/, /^\s\{2\}management:/{//!d}'  cluster/config.yaml
+sed -i -e '/^\s\{2\}management:/, /^$/{//!d}' cluster/config.yaml
+```
+
 ###### Write nodes file
 
 > :warning: Run this on Controller
@@ -194,16 +204,6 @@ cat > nodes.yaml << EOF
     - n2-$OCP.iicparis.fr.ibm.com
     - n3-$OCP.iicparis.fr.ibm.com
 EOF
-```
-
-###### Clean config.yaml
-
-> :warning: Run this on Controller
-
-```
-sed -i -e '/^\s\{2\}master:/, /^\s\{2\}proxy:/{//!d}'  cluster/config.yaml
-sed -i -e '/^\s\{2\}proxy:/, /^\s\{2\}management:/{//!d}'  cluster/config.yaml
-sed -i -e '/^\s\{2\}management:/, /^$/{//!d}' cluster/config.yaml
 ```
 
 ###### Add nodes to config.yaml

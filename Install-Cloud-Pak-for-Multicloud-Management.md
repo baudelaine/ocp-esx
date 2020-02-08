@@ -284,7 +284,7 @@ sed -i -e '/^password_rules:/r permissiveRule.yaml' cluster/config.yaml
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
 
-screen -mdS ADM && screen -r ADM
+pkill screen && screen -mdS ADM && screen -r ADM
 ```
 
 > :warning: Move in cluster directory

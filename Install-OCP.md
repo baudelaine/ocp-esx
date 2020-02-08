@@ -14,7 +14,7 @@
 
 > :warning: Escape **'$'** character in your password if necessary.
 
-> e.g. OREG_PWD="mypa\$sword"
+> e.g. OREG_PWD="mypa\\$sword"
 
 ```
 OREG_ID="myid"

@@ -145,6 +145,7 @@ tar xvf ~/ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
 
 [Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)
 
+<br>
 
 #### Create MCM installation directory and move to it
 

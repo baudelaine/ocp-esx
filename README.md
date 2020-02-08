@@ -31,6 +31,39 @@ One **DHCP server**.
 
 #awk '/!container-selinux/{if (NR!=1)print "";next}{printf "%s ",$0}END{print "";}' b
 
+
+// Setup date and time
+ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+timedatectl list-timezones | grep -i Paris
+timedatectl set-timezone Europe/Paris
+
+// Check
+timedatectl 
+
+yum install -y ntp
+
+systemctl enable ntpd
+
+systemctl start ntpd
+
+// conf in /etc/ntp.conf
+
+ntpq -p
+
+ntpstat
+
+systemctl stop ntpd
+ntpdate pool.ntp.org
+systemctl start ntpd
+
+
+// local settings and keymaps
+localectl status
+localectl list-keymaps | grep -i map
+localectl set-keymap map
+localectl --no-convert set-x11-keymap map
+
+
 yum install atomic -y
 
 yum install container-selinux container-storage-setup containers-common criu gomtree libnet ostree protobuf-c python-docker python-docker-pycreds python-requests python-websocket-client python2-pysocks python2-urllib3 runc skopeo -y

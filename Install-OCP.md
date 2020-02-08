@@ -90,7 +90,7 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 >:bulb: Come back with **screen -r ADM**
 
-> :bulb: If something went wrong have a look at **~/openshift-ansible.log**
+> :bulb: If something went wrong have a look at **~/openshift-ansible.log** and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
 >:checkered_flag::checkered_flag::checkered_flag:
 
@@ -157,9 +157,11 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 
 
-# Make a OCPInstalled snapshot
+# Make a snapshot
 
 ## On Controller
+
+### Poweroff all nodes and nfs server
 
 > :warning: Run this on Controller
 
@@ -199,7 +201,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 ### If necessary revert to last snapshot
 
-> :warning: This will work only if all clusters and nfs server have the **same snapshot history**
+> :warning: This will work ~out of the box~ only if all clusters and nfs server have the **same snapshot history**.
 
 #### Get last snapshot id from first master
 

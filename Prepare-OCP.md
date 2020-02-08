@@ -4,15 +4,20 @@
 
 #### Copy inventory file to default ansible file
 
+> :warning: Run this on Controller
+
 	sed 's/-ocp./-'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
 
 #### Check hosts
 
+> :warning: Run this on Controller
+
 	grep -e 'ocp[0-9]\{1,\}' /etc/ansible/hosts
 
 
-
 #### Extend root Volume Group on cluster nodes
+
+> :warning: Run this on Controller
 
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding
 
@@ -20,13 +25,19 @@
 
 #### Check root Volume Group on cluster nodes
 
+> :warning: Run this on Controller
+
 	for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
 
 #### Check ansible can speak with every nodes in the cluster
 
+> :warning: Run this on Controller
+
 	ansible OSEv3 -m ping
 
 #### Set Docker storage
+
+> :warning: Run this on Controller
 
 ```
 ansible nodes -a 'systemctl stop docker'
@@ -59,6 +70,8 @@ EOF
 
 #### Set OCP storage
 
+> :warning: Run this on Controller
+
 ```
 for node in m1 m2 m3 n1 i1 n2 i2 n3 i3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/origin ] && rm -rf /var/lib/origin/* || mkdir /var/lib/origin; du -h /var/lib/origin'; done
 ```
@@ -83,6 +96,8 @@ EOF
 
 #### Set ETCD storage
 
+> :warning: Run this on Controller
+
 ```
 for node in m1 m2 m3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; [ -d /var/lib/etcd ] && rm -rf /var/lib/etcd/* || mkdir /var/lib/etcd; du -h /var/lib/etcd'; done
 ```
@@ -106,14 +121,15 @@ EOF
 
 #### Check nodes logical volume
 
+> :warning: Run this on Controller
+
 	ansible nodes -a 'lvs'
 
-
-
-
-# Make a ReadyForOCP snapshot
+# Make a snapshot
 
 ## On Controller
+
+> :warning: Run this on Controller
 
 ```
 for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
@@ -123,17 +139,25 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 #### Check all vms are Powered off
 
+> :warning: Run this on ESX
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
 #### Make a snapshot
+
+> :warning: Run this on ESX
 
 	export SNAPNAME=ReadyForOCP
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
 
 #### Check snapshot
 
+> :warning: Run this on ESX
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1}' | sh
 
 #### Power cluster vms on
+
+> :warning: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh

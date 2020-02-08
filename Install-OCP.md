@@ -4,13 +4,19 @@
 
 #### Check ansible can speak with every nodes in the cluster
 
+> :warning: Run this on Controller
+
 	ansible OSEv3 -m ping
 
 #### Check every nodes in the cluster can speak to registry.redhat.io
 
+> :warning: Run this on Controller
+
 	ansible nodes -a 'ping -c 2 registry.redhat.io'
 
 #### Set ansible hosts with you Redhat partner credential
+
+> :warning: Run this on Controller
 
 > :warning: Escape **'$'** character in your password if necessary.
 
@@ -25,6 +31,8 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 ```	
 
 #### Check your access to OpenShift registry
+
+> :warning: Run this on Controller
 
 > :warning: docker login should return **Login Succeeded**
 
@@ -50,6 +58,8 @@ skopeo inspect --tls-verify=false --creds=$OREG_ID:$OREG_PWD docker://$OREG/open
 
 #### Launch OCP installation
 
+> :warning: Run this on Controller
+
 > :bulb: To avoid network failure, launch installation on **locale console** or in a **screen**
 
 ```
@@ -60,11 +70,15 @@ screen -mdS ADM && screen -r ADM
 
 ##### Launch prerequisites
 
+> :warning: Run this on Controller
+
 ```
 cd /usr/share/ansible/openshift-ansible && ansible-playbook playbooks/prerequisites.yml
 ```
 
 ##### Launch deploy_cluster
+
+> :warning: Run this on Controller
 
 ```
 ansible-playbook playbooks/deploy_cluster.yml
@@ -87,6 +101,8 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 #### Give admin cluster-admin role
 
+> :warning: Run this on First Master
+
 ```
 oc login -u system:admin
 ```
@@ -99,9 +115,11 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 ## On Controller
 
 
-#### Install oc Client Tools
+#### Install oc Client Tools if necessary
 
-Download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz) and copy **oc** and **kubectl** in your $PATH
+If both **oc** and **kubectl** are not found then download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0) and copy **oc** and **kubectl** in your $PATH
+
+> :warning: Run this on Controller if necessary
 
 	wget -c https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
 

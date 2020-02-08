@@ -102,21 +102,25 @@ usermod -a -G wheel $USERID
 
 > :warning: Run this from your local machine on Conroller VNC console
 
-When prompt keep checked locales and keybords, uncheck contribution and skip signing.
+:information_source: When prompted, keep checked locales and keybords, uncheck contribution and skip signing.
 
 #### Open a terminal and copy Openshift cluster Certificate Authority from first Master 
 
 > :warning: Run this from your local machine on Conroller VNC console
 
+
+
 #### Add Openshift Certificate Authority to Firefox
 
 > :warning: Run this from your local machine on Conroller VNC console
+
 
 #### Log to Openshift console
 
 >:bulb: Login to cluster via the load balancer on port 8443 
 
 > :warning: Run this from your local machine on Conroller VNC console
+
 
 
 <br>

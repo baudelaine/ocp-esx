@@ -142,7 +142,7 @@ oc create -f $WORKDIR/nfs-client/deploy/$PVC_NAME.yaml
 sed -i -e 's/\(^\s\{6\}existingClaim: \).*$/\1"'$PVC'"/'  data/transadv.yaml
 ```
 
-### Install Cloud Pak for Applications on a Red Hat OpenShift cluster
+### Install Cloud Pak for Applications on a Redhat OpenShift cluster
 
 > :warning: To avoid network failure, launch installation on locale console or in a screen
 

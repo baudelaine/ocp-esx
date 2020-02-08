@@ -143,7 +143,7 @@ tar xvf ~/ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
 
 <br>
 
-[Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)
+:bulb: Make a snapshot of the Controller to avoid having to load MCM images again.
 
 <br>
 

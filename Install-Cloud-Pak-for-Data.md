@@ -87,17 +87,23 @@ sed -i -e 's/\(^\s\{4\}apikey: \).*$/\1'$APIKEY'/' repo.yaml
 
 #### Log in cluster
 
+> :warning: Run this on Controller
+
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 ```
 
 #### Set Cloud Pak for Data project name
 
+> :warning: Run this on Controller
+
 	export PROJECT="cpd"
 
 #### Preview the list of resources that must be created on the cluster
 
 ##### Dry run
+
+> :warning: Run this on Controller
 
 ```
 chmod +x bin/cpd-linux
@@ -106,11 +112,15 @@ bin/cpd-linux adm --repo repo.yaml --assembly lite --namespace $PROJECT
 
 ##### Apply
 
+> :warning: Run this on Controller
+
 ```
 bin/cpd-linux adm --repo repo.yaml --assembly lite --namespace $PROJECT --apply
 ```
 
 #### Grant cpd-admin-role to the project administration user
+
+> :warning: Run this on Controller
 
 ```
 export PROJECT_ADMIN="admin"
@@ -121,6 +131,8 @@ oc adm policy add-role-to-user cpd-admin-role $PROJECT_ADMIN --role-namespace=$P
 ### Install Cloud Pak for Data on a Red Hat OpenShift cluster
 
 > :warning: To avoid network failure, launch installation on locale console or in a screen
+
+> :warning: Run this on Controller
 
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
@@ -140,6 +152,6 @@ bin/cpd-linux \
 --cluster-pull-prefix docker-registry.default.svc:5000/$PROJECT
 ```
 
-> :bulb: If something went wrong check logs in **cpd/bin/cpd-linux-workspace/Logs/** directory.
+> :bulb: If something went wrong check logs in **cpd/bin/cpd-linux-workspace/Logs/** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
 >:checkered_flag::checkered_flag::checkered_flag:

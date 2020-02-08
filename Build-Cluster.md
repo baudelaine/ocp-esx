@@ -138,8 +138,8 @@ e.g.
 
 ### Get controller dhcp address
 
-> :warning: Wait for ctl vm to be up and display its DHCP address in the **3rd column**
-> You may need to run script several times.
+> :warning: Wait for ctl vm to be up and display its DHCP address in the **3rd column**.
+> You may need to run script **several times**.
 
 > :warning: Run this on ESX
 
@@ -184,9 +184,9 @@ rm -f master.zip
 
 ### Extend root logical volume
 
-> :warning: Run this on Controller
-
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding
+
+> :warning: Run this on Controller
 
 	$WORKDIR/extendRootLV.sh && lvs
 
@@ -214,10 +214,10 @@ rm -f master.zip
 
 ### Get cluster vms DHCP ip address
 
-> :warning: Run this on ESX
-
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
+
+> :warning: Run this on ESX
 
 	$WORKDIR/getVMAddress.sh | sed '/ctl-ocp/d' | tee $WORK_DIR/vms
 
@@ -253,10 +253,10 @@ rm -f master.zip
 
 ### Wait for all cluster vms to be up with static ip address
 
-> :warning: Run this on ESX
-
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
+
+> :warning: Run this on ESX
 
 	$WORKDIR/getVMAddress.sh
 
@@ -284,3 +284,11 @@ rm -f master.zip
 > :warning: Run this on Controller
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done
+
+<br>
+
+:checkered_flag::checkered_flag::checkered_flag:
+
+<br>
+
+[Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)

@@ -165,5 +165,9 @@ docker run -v ~/.kube:/root/.kube:z -u 0 -t \
 
 > :bulb: If something went wrong check logs in **data/logs** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
+
 >:checkered_flag::checkered_flag::checkered_flag:
+
+
+[Make a snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot)
 

@@ -37,14 +37,27 @@ yum install container-selinux container-storage-setup containers-common criu gom
 
 yum install atomic-openshift atomic-openshift-clients atomic-openshift-hyperkube atomic-openshift-node bind ceph-common dnsmasq flannel iscsi-initiator-utils pyparted atomic-openshift:3.11 atomic-openshift-master:3.11 atomic-openshift-node:3.11 -y
 
-
-
 yum install ose-control-plane ose-deployer ose-docker-registry ose-haproxy-router ose-pod registry-console etcd -y
-
-
 
 yum install atomic-openshift-excluder atomic-openshift-docker-excluder -y
 
+yum install -y nfs-utils rpcbind zip unzip screen
+
+wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq
+
+
+// Install moreutils
+
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh epel-release-latest-7.noarch.rpm
+
+sed -i -e 's/^notify_only=.$/notify_only=0/' /etc/yum/pluginconf.d/search-disabled-repos.conf
+
+yum install moreutils -y
+
+sed -i -e 's/^notify_only=.$/notify_only=1/' /etc/yum/pluginconf.d/search-disabled-repos.conf
+
+yum install moreutils-parallel -y
 
 
 echo "OPTIONS='--insecure-registry=172.30.0.0/16 --selinux-enabled --log-opt max-size=1M --log-opt max-file=3'" >> 	/etc/sysconfig/docker 

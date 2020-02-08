@@ -67,7 +67,7 @@ Download [TightVNC](https://www.tightvnc.com/download.php), a Free, Lightweight,
 
 ### Add a new user and grant him administrator (sudo)
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 ```
 USERID="userid"

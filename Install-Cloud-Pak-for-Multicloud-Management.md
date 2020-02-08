@@ -168,8 +168,7 @@ docker run --rm -v $(pwd):/data:z -e LICENSE=accept --security-opt label:disable
 > :warning: Run this on Controller
 
 ```
-oc login https://lb-$OCP:8443 -u admin -p admin \
---insecure-skip-tls-verify=true
+oc login https://lb-$OCP:8443 -u admin -p admin -n default --insecure-skip-tls-verify=true
 ```
 
 #### Create cluster configuration files

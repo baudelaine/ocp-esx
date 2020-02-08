@@ -100,9 +100,10 @@ usermod -a -G wheel $USERID
 
 ### Sign in GUI
 
+:information_source: When prompted, keep checked locales and keybords, uncheck contribution and skip signing.
+
 > :warning: Run this from your local machine on Conroller VNC console
 
-:information_source: When prompted, keep checked locales and keybords, uncheck contribution and skip signing.
 
 #### Open a terminal and copy Openshift cluster Certificate Authority from first Master 
 

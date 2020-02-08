@@ -138,10 +138,10 @@ e.g.
 
 ### Get controller dhcp address
 
-> :warning: Run this on ESX
-
 > :warning: Wait for ctl vm to be up and display its DHCP address in the **3rd column**
 > You may need to run script several times.
+
+> :warning: Run this on ESX
 
 	$WORKDIR/getVMAddress.sh | grep ctl
 

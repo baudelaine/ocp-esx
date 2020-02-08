@@ -84,6 +84,8 @@ cd /usr/share/ansible/openshift-ansible && ansible-playbook playbooks/prerequisi
 ansible-playbook playbooks/deploy_cluster.yml
 ```
 
+<br><br>
+
 >:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :zzz::zzz: :zzz::zzz::hourglass_flowing_sand: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee: :hourglass: 
 
 >:bulb: Leave screen with **Ctrl + a + d**
@@ -92,7 +94,9 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 > :bulb: If something went wrong have a look at **~/openshift-ansible.log** and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
->:checkered_flag::checkered_flag::checkered_flag:
+<br>
+
+:checkered_flag::checkered_flag::checkered_flag:
 
 
 # Check Openshift Installation

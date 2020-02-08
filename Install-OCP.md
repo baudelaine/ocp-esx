@@ -24,17 +24,25 @@ sed -i 's/\(oreg_auth_user=\).*$/\1'$OREG_ID'/' /etc/ansible/hosts
 sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 ```	
 
-#### Check OpenShift Health
+#### Check your access to OpenShift registry
 
-> :warning:  skopeo inspect should return **information about your NFR license**
+> :warning: docker login should return **Login Succeeded**
+> :bulb: A new entry should have been added to **~/.docker/config.json** 
 
 ```
+OREG=$(docker info | awk -F ': https://' '$1 ~ "Registry" {print $2}' | awk -F '/' '{print $1}') && echo $OREG
 OREG_ID=$(cat /etc/ansible/hosts | awk -F'=' '$1 ~ "^oreg_auth_user" {print $2}')
 OREG_PWD=$(cat /etc/ansible/hosts | awk -F'=' '$1 ~ "^oreg_auth_password" {print $2}')
 
+docker login -u $OREG_ID -p $OREG_PWD $OREG
+```
+
+> :warning: Skopeo should return informations about **ose-docker-registry** image
+
+```
 [ ! -z $(command -v skopeo) ] && echo skopeo installed || yum install skopeo -y
 
-skopeo inspect --tls-verify=false --creds=$OREG_ID:$OREG_PWD docker://registry.redhat.io/openshift3/ose-docker-registry:v3.11.161
+skopeo inspect --tls-verify=false --creds=$OREG_ID:$OREG_PWD docker://$OREG/openshift3/ose-docker-registry:latest
 ```
 
 

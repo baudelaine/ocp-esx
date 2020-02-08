@@ -58,15 +58,13 @@ screen -mdS ADM && screen -r ADM
 
 ```
 
-```
-cd /usr/share/ansible/openshift-ansible
-```
-
-
+##### Launch prerequisites
 
 ```
-ansible-playbook playbooks/prerequisites.yml
+cd /usr/share/ansible/openshift-ansible && ansible-playbook playbooks/prerequisites.yml
 ```
+
+##### Launch deploy_cluster
 
 ```
 ansible-playbook playbooks/deploy_cluster.yml

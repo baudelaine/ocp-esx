@@ -162,7 +162,7 @@ bin/cpd-linux \
 
 >:bulb: Come back with **screen -r ADM**
 
-> :bulb: If something went wrong check logs in **cpd/bin/cpd-linux-workspace/Logs/** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
+> :bulb: If something went wrong check logs in **~/cpd/bin/cpd-linux-workspace/Logs/** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
 <br>
 

@@ -162,6 +162,12 @@ docker run -v ~/.kube:/root/.kube:z -u 0 -t \
 "$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG" install
 ```
 
+<br>
+
+:hourglass_flowing_sand: :smoking::coffee::smoking::coffee::smoking::coffee::smoking: :coffee: :hourglass_flowing_sand: :beer::beer::beer::pill:  :zzz::zzz: :zzz::zzz: :zzz::zzz::hourglass_flowing_sand: :smoking::coffee: :toilet: :shower: :smoking: :coffee::smoking: :coffee: :smoking: :coffee: :hourglass: 
+
+<br>
+
 >:bulb: Leave screen with **Ctrl + a + d**
 
 >:bulb: Come back with **screen -r ADM**

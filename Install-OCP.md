@@ -213,7 +213,7 @@ export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {p
 export SNAPID=$(echo $SNAPIDS | awk '{print $NF}') && echo $SNAPID
 ```
 
-#### Revert to latest snapshot
+#### Revert to last snapshot
 
 > :warning: Run this on ESX
 

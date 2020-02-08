@@ -18,6 +18,8 @@
 
 e.g.
 
+> :warning: Run this on DNS
+
 	export OCP=ocp3
 	export MASTER_IP_HEAD=172.16.187.3
 	export MASTER_NFS_IP=172.16.187.48

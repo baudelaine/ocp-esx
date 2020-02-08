@@ -119,7 +119,7 @@ $WORKDIR/extendRootLV.sh
 > :warning: Run this on Controller
 
 ```
-pkill screen && [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
+pkill screen; [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
 screen -mdS ADM && screen -r ADM
 ```
 

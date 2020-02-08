@@ -161,7 +161,7 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 ## On Controller
 
-### Poweroff all nodes and nfs server
+### Poweroff all vms
 
 > :warning: Run this on Controller
 
@@ -173,7 +173,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 ### Make a snapshot
 
-#### Check all vms are Powered off
+#### Check all vms are powered off
 
 > :warning: Run this on ESX
 
@@ -201,7 +201,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 ### If necessary revert to last snapshot
 
-> :warning: This will work *out of the box* only if all clusters and nfs server have the **same snapshot history**.
+> :warning: This will work *out of the box* only if vms have the **same snapshot history**.
 
 #### Get last snapshot id from first master
 

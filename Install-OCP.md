@@ -135,6 +135,8 @@ If both **oc** and **kubectl** are not found then download [oc Client Tools](htt
 
 #### Login to cluster
 
+> :warning: Run this on Controller
+
 	oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 
 ### Check Environment health
@@ -143,9 +145,13 @@ If both **oc** and **kubectl** are not found then download [oc Client Tools](htt
 
 #### Checking complete environment health
 
+> :warning: Run this on Controller
+
 Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-complete-deployment-health-check)
 
 #### Checking Hosts Router Registry and Network connectivity
+
+> :warning: Run this on Controller
 
 Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
 
@@ -154,6 +160,8 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 # Make a OCPInstalled snapshot
 
 ## On Controller
+
+> :warning: Run this on Controller
 
 ```
 for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
@@ -165,21 +173,37 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 #### Check all vms are Powered off
 
+> :warning: Run this on ESX
+
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
 
 #### Make a snapshot
 
+> :warning: Run this on ESX
+
 	export SNAPNAME=ReadyForMCM
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
 
+#### Check snapshot
+
+> :warning: Run this on ESX
+
+	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh
+
 #### Power cluster vms on
+
+> :warning: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ### If necessary revert to last snapshot
 
+> :warning: This will work only if all clusters and nfs server have the **same snapshot history**
+
 #### Get last snapshot id from first master
+
+> :warning: Run this on ESX
 
 ```
 export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}') && echo $SNAPIDS
@@ -187,12 +211,14 @@ export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {p
 export SNAPID=$(echo $SNAPIDS | awk '{print $NF}') && echo $SNAPID
 ```
 
-
-
 #### Revert to latest snapshot
+
+> :warning: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
 
 #### Power cluster vms on
+
+> :warning: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh

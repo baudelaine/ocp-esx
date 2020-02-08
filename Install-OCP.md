@@ -117,7 +117,7 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 
 #### Install oc Client Tools if necessary
 
-If both **oc** and **kubectl** are not found then download [oc Client Tools](https://github.com/openshift/origin/releases/download/v3.11.0) and copy **oc** and **kubectl** in your $PATH
+If both **oc** and **kubectl** are not found then download [oc Client Tools](https://www.okd.io/download.html) and copy **oc** and **kubectl** in your $PATH
 
 > :warning: Run this on Controller if necessary
 

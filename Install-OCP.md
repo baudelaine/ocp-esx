@@ -201,7 +201,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 ### If necessary revert to last snapshot
 
-> :warning: This will work ~out of the box~ only if all clusters and nfs server have the **same snapshot history**.
+> :warning: This will work *out of the box* only if all clusters and nfs server have the **same snapshot history**.
 
 #### Get last snapshot id from first master
 

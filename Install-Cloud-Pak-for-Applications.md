@@ -162,12 +162,17 @@ docker run -v ~/.kube:/root/.kube:z -u 0 -t \
 "$ENTITLED_REGISTRY/cp/icpa/icpa-installer:$INSTALLER_TAG" install
 ```
 
+>:bulb: Leave screen with **Ctrl + a + d**
+
+>:bulb: Come back with **screen -r ADM**
 
 > :bulb: If something went wrong check logs in **data/logs** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
+<br>
 
->:checkered_flag::checkered_flag::checkered_flag:
+:checkered_flag::checkered_flag::checkered_flag:
 
+<br>
 
-[Make a snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot)
+[Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)
 

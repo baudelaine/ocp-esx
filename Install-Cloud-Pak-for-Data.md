@@ -164,9 +164,10 @@ bin/cpd-linux \
 
 > :bulb: If something went wrong check logs in **cpd/bin/cpd-linux-workspace/Logs/** directory and revert to [last snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot).
 
+<br>
 
 :checkered_flag::checkered_flag::checkered_flag:
 
 <br>
 
-[Make a snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot)
+[Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)

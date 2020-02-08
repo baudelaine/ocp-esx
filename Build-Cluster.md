@@ -215,7 +215,7 @@ rm -f master.zip
 ### Get cluster vms DHCP ip address
 
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
-> You may need to run script several times.
+> You may need to run script **several times**.
 
 > :warning: Run this on ESX
 
@@ -254,7 +254,7 @@ rm -f master.zip
 ### Wait for all cluster vms to be up with static ip address
 
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
-> You may need to run script several times.
+> You may need to run script **several times**.
 
 > :warning: Run this on ESX
 

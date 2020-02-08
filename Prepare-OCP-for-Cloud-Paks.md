@@ -208,7 +208,10 @@ docker tag docker.io/busybox $REG_HOST/$(oc project -q)/busybox
 docker push $REG_HOST/$(oc project -q)/busybox
 ```
 
->:checkered_flag::checkered_flag::checkered_flag:
+<br>
 
+:checkered_flag::checkered_flag::checkered_flag:
+
+<br>
 
 [Make a snapshot](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#If-necessary-revert-to-last-snapshot)

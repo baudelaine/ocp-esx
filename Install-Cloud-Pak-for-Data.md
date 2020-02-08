@@ -128,7 +128,7 @@ export PROJECT_ADMIN="admin"
 oc adm policy add-role-to-user cpd-admin-role $PROJECT_ADMIN --role-namespace=$PROJECT -n $PROJECT
 ```
 
-### Install Cloud Pak for Data on a Red Hat OpenShift cluster
+### Install Cloud Pak for Data on a Redhat OpenShift cluster
 
 > :warning: To avoid network failure, launch installation on locale console or in a screen
 

@@ -82,41 +82,41 @@ usermod -a -G wheel $USERID
 
 ### install GUI
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 	yum groupinstall "Server with GUI" -y
 
 ### Set runlevel to graphical.target
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 	systemctl set-default graphical.target
 
 ### Start GUI
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 	init 5
 
 ### Sign in GUI
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 When prompt keep checked locales and keybords, uncheck contribution and skip signing.
 
 #### Open a terminal and copy Openshift cluster Certificate Authority from first Master 
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 #### Add Openshift Certificate Authority to Firefox
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 #### Log to Openshift console
 
 >:bulb: Login to cluster via the load balancer on port 8443 
 
-> :warning: Run this on Conroller VNC console
+> :warning: Run this from your local machine on Conroller VNC console
 
 
 <br>
@@ -125,6 +125,6 @@ When prompt keep checked locales and keybords, uncheck contribution and skip sig
 
 <br>
 
-:bulb: Make a snapshot of the Controller to avoid having to load MCM images again.
+:bulb: Make a snapshot of the Controller.
 
 <br>

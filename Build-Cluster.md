@@ -18,7 +18,7 @@
 
 e.g.
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 	export OCP=ocp3
 	export MASTER_IP_HEAD=172.16.187.3
@@ -31,7 +31,7 @@ e.g.
 
 ### Add records to master zone
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 ```
 cat >> /var/lib/bind/iicparis.fr.ibm.com.hosts << EOF
@@ -56,7 +56,7 @@ EOF
 
 ### Add records to reverse zone
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 ```
 cat >> /var/lib/bind/172.16.rev << EOF
@@ -77,7 +77,7 @@ EOF
 
 ### Restart DNS service
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 ```
 service bind9 restart
@@ -85,13 +85,13 @@ service bind9 restart
 
 ### Test master zone
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 	dig @localhost +short lb-$OCP.iicparis.fr.ibm.com
 
 ### Test reverse zone
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 	LB_IP=$(dig @localhost +short lb-$OCP.iicparis.fr.ibm.com)
 	dig @localhost +short -x $LB_IP
@@ -99,7 +99,7 @@ service bind9 restart
 
 ### Test alias
 
-> :warning: Run this on DNS
+> :information_source: Run this on DNS
 
 	dig @localhost +short *.apps-$OCP.iicparis.fr.ibm.com
 
@@ -117,7 +117,7 @@ service bind9 restart
 
 e.g.
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	export OCP=ocp3
 	export DATASTORE="/vmfs/volumes/V7000F-Volume-10TB"
@@ -126,13 +126,13 @@ e.g.
 
 ### Create VMs
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	cd $WORKDIR && ./createVMs.sh $OCP
 
 ### Start controller vm
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-'$OCP'" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
@@ -141,7 +141,7 @@ e.g.
 > :warning: Wait for ctl vm to be up and display its DHCP address in the **3rd column**.
 > You may need to run script **several times**.
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	$WORKDIR/getVMAddress.sh | grep ctl
 
@@ -158,7 +158,7 @@ e.g.
 
 e.g.
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 echo "" >> ~/.bashrc
@@ -170,7 +170,7 @@ source ~/.bashrc
 
 ### Get tools to manage storage and setup hostname and ip address from DNS
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
@@ -186,19 +186,19 @@ rm -f master.zip
 
 >:warning: Set **DISK**, **PART**, **VG** and **LV** variables accordingly in **$WORKDIR/extendRootLV.sh** before proceeding
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	$WORKDIR/extendRootLV.sh && lvs
 
 ### Setup hostname and ip address from DNS
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	$WORKDIR/setHostAndIP.sh ctl-$OCP
 
 ### Reboot for change to take effect
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	reboot
 
@@ -208,7 +208,7 @@ rm -f master.zip
 
 ### Start other vms
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
@@ -217,13 +217,13 @@ rm -f master.zip
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script **several times**.
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	$WORKDIR/getVMAddress.sh | sed '/ctl-ocp/d' | tee $WORK_DIR/vms
 
 ###  Copy all cluster vms DHCP ip address to  controller
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	scp $WORK_DIR/vms root@ctl-$OCP:/root
 
@@ -232,19 +232,19 @@ rm -f master.zip
 
 ### Copy extendRootLV.sh and setHostAndIP.sh to cluster nodes
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
 
 ### Set cluster nodes with ip address and hostname known in DNS
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
 
 ### Reboot cluster nodes
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
 
@@ -256,7 +256,7 @@ rm -f master.zip
 > :warning: Wait for all cluster vms to be up and display its DHCP address in the **3rd column**
 > You may need to run script **several times**.
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	$WORKDIR/getVMAddress.sh
 
@@ -266,13 +266,13 @@ rm -f master.zip
 
 #### Clean cluster nodes ssh environment
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
 
 #### Generate ssh key pair and copy public key on cluster nodes
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
 
@@ -281,7 +281,7 @@ rm -f master.zip
 
 #### Check  controller can access cluster nodes without being prompt for a password
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done
 

@@ -4,19 +4,19 @@
 
 #### Check ansible can speak with every nodes in the cluster
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	ansible OSEv3 -m ping
 
 #### Check every nodes in the cluster can speak to registry.redhat.io
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	ansible nodes -a 'ping -c 2 registry.redhat.io'
 
 #### Set ansible hosts with you Redhat partner credential
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 > :warning: Escape **'$'** character in your password if necessary.
 
@@ -32,7 +32,7 @@ sed -i 's/\(oreg_auth_password=\).*$/\1'$OREG_PWD'/' /etc/ansible/hosts
 
 #### Check your access to OpenShift registry
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 > :warning: docker login should return **Login Succeeded**
 
@@ -58,7 +58,7 @@ skopeo inspect --tls-verify=false --creds=$OREG_ID:$OREG_PWD docker://$OREG/open
 
 #### Launch OCP installation
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 > :bulb: To avoid network failure, launch installation on **locale console** or in a **screen**
 
@@ -70,7 +70,7 @@ pkill screen; screen -mdS ADM && screen -r ADM
 
 ##### Launch prerequisites
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 cd /usr/share/ansible/openshift-ansible && ansible-playbook playbooks/prerequisites.yml
@@ -78,7 +78,7 @@ cd /usr/share/ansible/openshift-ansible && ansible-playbook playbooks/prerequisi
 
 ##### Launch deploy_cluster
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 ansible-playbook playbooks/deploy_cluster.yml
@@ -107,7 +107,7 @@ ansible-playbook playbooks/deploy_cluster.yml
 
 #### Give admin cluster-admin role
 
-> :warning: Run this on First Master
+> :information_source: Run this on First Master
 
 ```
 oc login -u system:admin
@@ -125,7 +125,7 @@ oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --u
 
 If both **oc** and **kubectl** are not found then download [oc Client Tools](https://www.okd.io/download.html) and copy **oc** and **kubectl** in your $PATH
 
-> :warning: Run this on Controller if necessary
+> :information_source: Run this on Controller if necessary
 
 	wget -c https://github.com/openshift/origin/releases/download/v3.11.0/openshift-origin-client-tools-v3.11.0-0cbc58b-linux-64bit.tar.gz
 
@@ -141,7 +141,7 @@ If both **oc** and **kubectl** are not found then download [oc Client Tools](htt
 
 #### Login to cluster
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 
@@ -151,13 +151,13 @@ If both **oc** and **kubectl** are not found then download [oc Client Tools](htt
 
 #### Checking complete environment health
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-complete-deployment-health-check)
 
 #### Checking Hosts Router Registry and Network connectivity
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/day_two_guide/environment_health_checks.html#day-two-guide-host-health)
 
@@ -169,7 +169,7 @@ Proceed as describe [here](https://docs.openshift.com/container-platform/3.11/da
 
 ### Poweroff all vms
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
@@ -181,7 +181,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 #### Check all vms are powered off
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
@@ -190,7 +190,7 @@ for node in lb m1 m2 m3 n1 i1 n2 i2 n3 i3 nfs; do ssh -o StrictHostKeyChecking=n
 
 > :warning: Set SNAPNAME value before proceeding.
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 ```
 SNAPNAME=""
@@ -200,13 +200,13 @@ vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd v
 
 #### Check snapshot
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh
 
 #### Power cluster vms on
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
@@ -216,7 +216,7 @@ vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd v
 
 #### Get last snapshot id from first master
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 ```
 export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}') && echo $SNAPIDS
@@ -226,12 +226,12 @@ export SNAPID=$(echo $SNAPIDS | awk '{print $NF}') && echo $SNAPID
 
 #### Revert to last snapshot
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
 
 #### Power cluster vms on
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh

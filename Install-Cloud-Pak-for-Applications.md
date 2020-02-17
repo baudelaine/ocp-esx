@@ -10,13 +10,13 @@ Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=
 
 ##### Install IBM Cloud CLI
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
 
 ##### Login to IBM Cloud
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	ibmcloud login --sso --no-region
 
@@ -26,7 +26,7 @@ Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=
 
 > :bulb: jq is a json parser for command line
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
@@ -34,7 +34,7 @@ Look for [Cloud Paks in IBM Cloud catalog](https://cloud.ibm.com/catalog?search=
 
 ###### Set APIKEY
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 BEARER=$(ibmcloud iam oauth-tokens | awk '{print $4;}')
@@ -50,7 +50,7 @@ APIKEY=$(curl -s https://billing.cloud.ibm.com/v1/licensing/entitlements -H "Aut
 
 > :bulb: Tag starting with 4 seems to suit for Openshift 4.2
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 export INSTALLER_TAG=3.0.0.0
@@ -79,7 +79,7 @@ export ENTITLED_REGISTRY_KEY=$APIKEY
 
 #### Extract configuration files
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 mkdir data
@@ -91,7 +91,7 @@ docker run -v $PWD/data:/data:z -u 0 \
 
 #### Set subdomain in data/config.yaml
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 SUBDOMAIN=apps-$OCP.iicparis.fr.ibm.com
@@ -103,7 +103,7 @@ sed -i -e 's/\(^\s\{4\}subdomain: \).*$/\1"'$SUBDOMAIN'"/'  data/config.yaml
 
 ##### Log in cluster
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin \
@@ -112,7 +112,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin \
 
 ##### Create project ta for Transformation Advisor service
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 oc new-project ta
@@ -120,7 +120,7 @@ oc new-project ta
 
 ##### Create PVC
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 PVC_NAME=tapvc
@@ -136,7 +136,7 @@ oc create -f $WORKDIR/nfs-client/deploy/$PVC_NAME.yaml
 
 ##### Add PVC as existingClaim in data/transadv.yaml
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 sed -i -e 's/\(^\s\{6\}existingClaim: \).*$/\1"'$PVC'"/'  data/transadv.yaml
@@ -146,7 +146,7 @@ sed -i -e 's/\(^\s\{6\}existingClaim: \).*$/\1"'$PVC'"/'  data/transadv.yaml
 
 > :warning: To avoid network failure, launch installation on locale console or in a screen
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y

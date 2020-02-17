@@ -2,7 +2,7 @@
 
 ## On Controller
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 	poweroff
 
@@ -10,7 +10,7 @@
 
 ### Check ctl vm is Powered off
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
@@ -19,7 +19,7 @@
 
 > :warning: If session is new, please [set-esx-environment-variables](https://github.com/bpshparis/ocp-esx/blob/master/Build-Cluster.md#set-esx-environment-variables) first.
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 ```
 VMX=$DATASTORE/$OCP/ctl-$OCP/ctl-$OCP.vmx
@@ -34,19 +34,19 @@ EOF
 
 ### Open gdbserver in ESX firewall properties for VNC to work
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	esxcli network firewall ruleset set -e true -r gdbserver
 
 ### Power ctl vm on
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 	vim-cmd vmsvc/getallvms | awk '$2 ~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ### Get ESX ip address
 
-> :warning: Run this on ESX
+> :information_source: Run this on ESX
 
 > :warning: Save this address to connect to ESX VNC server
 
@@ -67,7 +67,7 @@ Download [TightVNC](https://www.tightvnc.com/download.php), a Free, Lightweight,
 
 ### Add a new user and grant him administrator (sudo)
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 ```
 USERID="userid"
@@ -82,19 +82,19 @@ usermod -a -G wheel $USERID
 
 ### install GUI
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 	yum groupinstall "Server with GUI" -y
 
 ### Set runlevel to graphical.target
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 	systemctl set-default graphical.target
 
 ### Start GUI
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 	init 5
 
@@ -102,25 +102,25 @@ usermod -a -G wheel $USERID
 
 :information_source: When prompted, keep checked locales and keybords, uncheck contribution and skip signing.
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 
 #### Open a terminal and copy Openshift cluster Certificate Authority from first Master 
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 
 
 #### Add Openshift Certificate Authority to Firefox
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 
 #### Log to Openshift console
 
 >:bulb: Login to cluster via the load balancer on port 8443 
 
-> :warning: Run this from your local machine on Conroller VNC console
+> :information_source: Run this from your local machine on Conroller VNC console
 
 
 

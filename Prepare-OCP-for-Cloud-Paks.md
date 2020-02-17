@@ -4,7 +4,7 @@
 
 ### On NFS server
 
-> :warning: Run this on NFS server
+> :information_source: Run this on NFS server
 
 ```
 cat > installNFSServer.sh << EOF
@@ -37,7 +37,7 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 
 ##### Install nfs utils if necessary
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 [ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed \
@@ -47,7 +47,7 @@ chmod +x installNFSServer.sh && ./installNFSServer.sh
 
 ##### Mount resource and test NFS server availability
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 [ ! -d /mnt/nfs-$OCP ] && mkdir /mnt/nfs-$OCP && mount -t nfs nfs-$OCP:/exports /mnt/nfs-$OCP
@@ -63,7 +63,7 @@ sshpass -e ssh -o StrictHostKeyChecking=no nfs-$OCP ls /exports/
 
 ##### Clean things
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 rm -f /mnt/nfs-$OCP/SUCCESS && echo "RC="$?
@@ -78,7 +78,7 @@ umount /mnt/nfs-$OCP && rmdir /mnt/nfs-$OCP/
 
 ##### Log in Cluster
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
@@ -86,7 +86,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true
 
 ##### Install and test storage class
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 unzip $WORKDIR/nfs-client.zip -d $WORKDIR
@@ -138,7 +138,7 @@ nfs-$OCP ls /exports/$(oc project -q)-test-claim-$VOLUME && cd ~
 
 ##### Log in cluster default project
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n default
@@ -148,7 +148,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true 
 
 > :bulb: jq is a json parser for command line
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
@@ -158,7 +158,7 @@ oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true 
 
 > :warning: Termination should display **passthrough** if not proceed as describe [here](https://docs.openshift.com/container-platform/3.11/install_config/registry/securing_and_exposing_registry.html#exposing-the-registry)
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 oc get route/docker-registry -o json | jq -r .spec.tls.termination
@@ -166,7 +166,7 @@ oc get route/docker-registry -o json | jq -r .spec.tls.termination
 
 ##### Get OCP docker registry hostname
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host)
@@ -174,7 +174,7 @@ REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host)
 
 ##### Add OCP certificate authority to docker
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 mkdir -p /etc/docker/certs.d/$REG_HOST
@@ -184,7 +184,7 @@ scp m1-$OCP:/etc/origin/master/ca.crt /etc/docker/certs.d/$REG_HOST
 
 ##### Log to OCP docker registry
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
@@ -195,7 +195,7 @@ docker login -u $(oc whoami) -p $(oc whoami -t) $REG_HOST
 
 ##### Tag a docker image with OCP docker registry hostname and push it
 
-> :warning: Run this on Controller
+> :information_source: Run this on Controller
 
 ```
 docker pull busybox

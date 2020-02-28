@@ -1,0 +1,1000 @@
+    3  ls
+    4  vi modresorts-git.yaml
+    5  oc delete -f modresorts-git.yaml
+    6  oc create -f modresorts-git.yaml
+    7  ls
+    8  oc get po
+    9  oc get deployment
+   10  oc get routes
+   11  su - ibmdemo
+   12  cd /etc
+   13  cd named
+   14  ls
+   15  vi forward.ocp.ibm.com
+   16  systemctl restart named
+   17  vi forward.ocp.ibm.com
+   18  systemctl restart named
+   19  ls
+   20  more forward.ocp.ibm.com
+   21  ls
+   22  cd tekton
+   23  ls
+   24  cd appsody
+   25  ls
+   26  oc get no
+   27  oc project
+   28  oc get pipeline
+   29  oc get pipeline java-microprofile-build-push-deploy-pipeline -o yaml | more
+   30  oc get task java-microprofile-deploy-task -o yaml
+   31  ls
+   32  cp build-task-run.yaml java-microprofile-deploy-task-run.yaml
+   33  vi java-microprofile-deploy-task-run.yaml
+   34  oc create -f java-microprofile-deploy-task-run.yaml
+   35  vi java-microprofile-deploy-task-run.yaml
+   36  oc create -f java-microprofile-deploy-task-run.yaml
+   37  ls
+   38  vi java-microprofile-deploy-task-run.yaml
+   39  oc create -f java-microprofile-deploy-task-run.yaml
+   40  tkn taskrun logs
+   41  tkn taskrun list
+   42  tkn taskrun logs build-docker-image-from-git-source-task-run
+   43  oc get po
+   44  oc describe po build-docker-image-from-git-source-task-run-pod-1099b8
+   45  tkn taskrun logs build-docker-image-from-git-source-task-run
+   46  oc get svc
+   47  oc get svc modresorts
+   48  oc get svc modresorts -o yaml
+   49  oc get svc
+   50  oc get svc modresorts
+   51  oc get svc modresorts -o yaml
+   52  clear
+   53  oc get svc modresorts -o yaml
+   54  clear 
+   55  oc get svc modresorts -o yaml |more
+   56  oc get route
+   57  oc get route modresorts-kabanero.apps.ocp.ibm.com
+   58  oc get route modresorts-kabanero.apps.ocp.ibm.com -n kabanero
+   59  oc get route modresorts  -n kabanero
+   60  oc get route modresorts  -o yaml
+   61  oc get route modresorts  -o yaml | more
+   62  cd tekton
+   63  ls
+   64  cd appsody
+   65  ls
+   66  more build-task-run.yaml
+   67  oc get task
+   68  oc get task java-microprofile-deploy-task -o yaml
+   69  oc get task java-microprofile-deploy-task -o yaml | more
+   70  oc get task java-microprofile-deploy-task -o yaml
+   71  oc get task java-microprofile-deploy-task -o yaml | more
+   72  oc get sa
+   73  ls
+   74  oc get taskrun
+   75  oc get java-microprofile-build-pipeline-run-1579792528450-build--xdx82 -o yaml | more
+   76  oc get taskrun java-microprofile-build-pipeline-run-1579792528450-build--xdx82 -o yaml | more
+   77  cd tekton
+   78  ls
+   79  sh -xv lb
+   80  ls
+   81  su - ibmdemo
+   82  ls
+   83  cd appsody/
+   84  ls
+   85  oc create -f java-microprofile-deploy-task-run.yaml
+   86  oc get route
+   87  oc get svc
+   88  ls
+   89  su - ibmdemo
+   90  exit
+   91  su - ibmdemo
+   92  cd tekton
+   93  cd appsody
+   94  ls
+   95  oc delete -f java-microprofile-deploy-task-run.yaml
+   96  oc create -f java-microprofile-deploy-task-run.yaml
+   97  oc get po
+   98  tkn taskrun list
+   99  tkn taskrun logs build-docker-image-from-git-source-task-run
+  100  tkn taskrun logs -f build-docker-image-from-git-source-task-run
+  101  tkn list taskrun
+  102  tkn taskrun list
+  103  oc get deployment -n kabanero
+  104  oc get svc -n kabanero
+  105  oc get route
+  106  oc get pvc
+  107  oc delete pvc java-build-push-deploy-pipeline-run-1579797795357-pvc --force --grace-period=0 -n kabanero
+  108  oc get pv
+  109  oc get taskrun
+  110  oc delete task run -n kabanero `oc get taskrun -n kabanero | awk '{ print $1 }'`
+  111  oc get profilerun -n kabanero
+  112  oc get po
+  113  tkn
+  114  oc get pipilinerun
+  115  oc get pipelinerun
+  116  oc delete pipelinerun -n kabanero `oc get pipelinerun -n kabanero | awk '{ print $1 }' `
+  117  oc get po
+  118  oc get taskrun
+  119  oc delete task run -n kabanero `oc get taskrun -n kabanero | awk '{ print $1 }'`
+  120  oc get taskrun -n kabanero | awk '{ print $1 }'
+  121  oc delete pipelinerun -n kabanero `oc get pipelinerun -n kabanero | awk '{ print $1 }' | grep -v NAME `
+  122  oc delete task run -n kabanero `oc get taskrun -n kabanero | awk '{ print $1 }' | grep -v NAME `
+  123  oc get po
+  124  oc get taskrun
+  125  oc get  pvc
+  126  oc get deployment
+  127  oc delete deployment modresorts -n kabanero
+  128  oc get svc
+  129  oc delete svc modresorts  -n kabanero
+  130  oc delete svc modresorts-service  -n kabanero
+  131  oc get route
+  132  oc delete route modresorts  -n kabanero
+  133  oc get routes
+  134  oc delete route test  -n kabanero
+  135  oc get po
+  136  oc get deployment
+  137  oc delete deployment test
+  138  oc get svc
+  139  oc delete svc test
+  140  oc get routes
+  141  su - ibmdemo
+  142  su - ibmdemo
+  143  ls
+  144  pwd
+  145  cd tekton
+  146  ls
+  147  cd appsody
+  148  ls
+  149  su - ibmdemo
+  150  ls
+  151  pwd
+  152  ls
+  153  oc create -f java-microprofile-deploy-task-run.yaml
+  154  oc delete -f java-microprofile-deploy-task-run.yaml
+  155  oc create -f java-microprofile-deploy-task-run.yaml
+  156  oc get po
+  157  tkn taskrun list
+  158  tkn taskrun logs build-docker-image-from-git-source-task-run
+  159  ls
+  160  vi java-microprofile-deploy-task-run.yaml
+  161  oc delete -f java-microprofile-deploy-task-run.yaml -n kabanero
+  162  oc create -f java-microprofile-deploy-task-run.yaml
+  163  oc tkn list
+  164  tkn list
+  165  tkn taskrun list
+  166  ps -eaf | grep java
+  167  cd /opt
+  168  cd IBM/
+  169  cd WebSphere/
+  170  cd AppServer70/
+  171  cd profiles
+  172  ls
+  173  cd AppSrv01
+  174  ls
+  175  cd bin
+  176  ./startServer.sh server1
+  177  ls
+  178  cd /root
+  179  ls
+  180  cd tekton
+  181  ls
+  182  cd appsody
+  183  ls
+  184  oc delete -f java-microprofile-deploy-task-run.yaml
+  185  cd /root
+  186  ls
+  187  cd /opt
+  188  ls
+  189  cd IBM/
+  190  ls
+  191  cd WebSphere/
+  192  cd AppServer70/
+  193  ls
+  194  cd ..
+  195  ls
+  196  cd TA
+  197  ls
+  198  cd transformationadvisor-2.0.2
+  199  ls
+  200  ./collect.sh
+  201  ls
+  202  shutdown -h now
+  203  oc login
+  204  ifconfig -a
+  205  ping 192.168.2.220
+  206  oc login
+  207  oc get no
+  208  oc login
+  209  cd
+  210  oc login
+  211  su - ocp42
+  212  oc login --token=eJgIrcpMH8i1e7f9XVMPi-3gbopQ0CSPpqhVAU3u-ls --server=https://api.ocp.ibm.com:6443
+  213  oc get no
+  214  ping master422
+  215  su - ocp42
+  216  oc get po
+  217  oc describe po kabanero-cli-649f944586-jrbtn
+  218  cd /etc
+  219  cd named
+  220  ls
+  221  cat forward.default.svc
+  222  more forward.default.svc
+  223  getpo
+  224  su - ocp42
+  225  oc login --token=3w8Da3L89UYGyT8jKK2s-mIC-VhgKwNbR5fe5f_wJek --server=https://api.ocp.ibm.com:6443
+  226  oc get no
+  227  cd tekton
+  228  ls
+  229  cd appsody
+  230  su - ibmdemo
+  231  systemctl stop firewalld
+  232  cd /etc
+  233  cd named
+  234  ls
+  235  cp  forward.ocp.ibm.com forward.io
+  236  vi forward.io
+  237  cd ..
+  238  ls
+  239  vi named.conf
+  240  systemctl restart
+  241  systemctl restart named
+  242  systemctl restart named; journal -xe 
+  243  systemctl restart named; journalctl -xe 
+  244  ls
+  245  cd named
+  246  ls
+  247  vi forward.io
+  248  systemctl restart named; journalctl -xe 
+  249  vi named.conf
+  250  cd ..
+  251  vi named.conf
+  252  ls
+  253  cd named
+  254  ls
+  255  more forward.io
+  256  cd ..
+  257  vi named.conf
+  258  systemctl start named
+  259  getpo
+  260  oc login --token=3w8Da3L89UYGyT8jKK2s-mIC-VhgKwNbR5fe5f_wJek --server=https://api.ocp.ibm.com:6443
+  261  getpo
+  262  id
+  263  su - ibmdemo
+  264  su - ibmdemo
+  265  su - ibmdemo
+  266  oc get src
+  267  oc get srv
+  268  su - ibmdemo
+  269  ls
+  270  su - ibmdemo
+  271  ls
+  272  cd tekton
+  273  ls
+  274  cd appsody
+  275  ls
+  276  oc get task java-microprofile-deploy-task -o yaml > test-deploy-task.yaml
+  277  ls
+  278  cp build-task-run.yaml deploy-test-taskrun.yaml
+  279  vi deploy-test-taskrun.yaml
+  280  oc create -f deploy-test-taskrun.yaml
+  281  vi "deploy-test-taskrun.yaml"
+  282  oc create -f deploy-test-taskrun.yaml
+  283  tkn taskrun list
+  284  tkn taskrun logs deploy-modresorts-task-run
+  285  oc get route
+  286  ls
+  287  oc get task
+  288  ls
+  289  cd tekton
+  290  cd appsody
+  291  ls
+  292  more deploy-test-taskrun.yaml
+  293  oc get no
+  294  oc get svc
+  295  oc get po
+  296  oc get svc
+  297  oc get svc modresorts-service -o yaml > a.yaml
+  298  vi a.yaml
+  299  rm a.yaml
+  300  ls
+  301  pwd
+  302  su - ibmdemo
+  303  ls
+  304  cd  tekton
+  305  ls
+  306  cd appsody
+  307  ls
+  308  su - ibmdemo
+  309  oc get no
+  310  su - ibmdemo
+  311  ls
+  312  cd tekton
+  313  ls
+  314  cd appsody
+  315  ls
+  316  more test-deploy-task.yaml
+  317  ls
+  318  ls test
+  319  cat java-microprofile-deploy-task-run.yaml
+  320  oc get taskrun
+  321  oc login
+  322  oc login --token=_g5TRCjIEpI6APj_CW3s1gvvVmF_ySW9PrahG3-eGsw --server=https://api.ocp.ibm.com:6443
+  323  ls
+  324  cat deploy-test-taskrun.yaml
+  325  cat test-deploy-task.yaml
+  326  ls
+  327  cat deploy-test-taskrun.yaml
+  328  vi deploy-test-taskrun.yaml
+  329  cat test-deploy-task.yaml
+  330  ls
+  331  vi java-microprofile-deploy-task-run.yaml
+  332  cat java-microprofile-deploy-task-run.yaml
+  333  oc create -f java-microprofile-deploy-task-run.yaml
+  334  oc get poo
+  335  oc get po
+  336  cat java-microprofile-deploy-task-run.yaml
+  337  vi java-microprofile-deploy-task-run.yaml
+  338  oc get po
+  339  ls
+  340  oc get po
+  341  oc logs build-docker-image-from-git-source-task-run-pod-af9ca2
+  342  oc logs build-docker-image-from-git-source-task-run-pod-af9ca2 -c step-deploy-image
+  343  ls
+  344  ls -ltr
+  345  oc get task
+  346  oc get task java-microprofile-deploy-task -o yaml --export > deploy-task.yaml
+  347  vi deploy-task.yaml
+  348  sh -ecx
+  349  bash -cex
+  350  vi deploy-task.yaml
+  351  oc get taskrun
+  352  oc get java-build-push-deploy-pipeline-run-1580221507997-deploy--qpsdr -o yaml
+  353  oc get taskrun java-build-push-deploy-pipeline-run-1580221507997-deploy--qpsdr -o yaml
+  354  oc get taskrun java-build-push-deploy-pipeline-run-1580221507997-deploy--qpsdr -o yaml | more
+  355  ls
+  356  su - ibmdemo
+  357  cd tekton
+  358  ls
+  359  cd appsody
+  360  ls
+  361  oc get taskrun
+  362  oc get po -n kabanero
+  363  oc get po -n default
+  364  ls
+  365  oc get taskrun
+  366  tkn taskrun logs build-docker-image-from-git-source-task-run
+  367  ls
+  368  ls -ltr
+  369  vi deploy-task.yaml
+  370  oc create -f deploy-task.yaml
+  371  vi deploy-task.yaml
+  372  oc create -f deploy-task.yaml
+  373  oc delete task java--deploy-task 
+  374  vi deploy-task.yaml
+  375  oc create -f deploy-task.yaml
+  376  ls
+  377  vi build-task-run.yaml
+  378  vi deploy-task.yaml
+  379  ls *run*
+  380  vi deploy-test-taskrun.yaml
+  381  oc create -f deploy-test-taskrun.yaml
+  382  tkn taskrun list
+  383  tkn taskrun logs -f deploy-test-task-run
+  384  tkn taskrun list
+  385  oc delete taskrun java-build-push-deploy-pipeline-run-1580216019238-build-p-57hkx java-build-push-deploy-pipeline-run-1580216019238-image-s-9q5z9 java-build-push-deploy-pipeline-run-1580216019238-deploy--9h2nj java-build-push-deploy-pipeline-run-1580221507997-build-p-k497w java-build-push-deploy-pipeline-run-1580221507997-image-s-cl8b5 java-build-push-deploy-pipeline-run-1580221507997-deploy--qpsdr
+  386  oc get pipelinerun
+  387  oc delete pipelinerun java-build-push-deploy-pipeline-run-1580216019238 java-build-push-deploy-pipeline-run-1580221507997
+  388  tkn
+  389  tkn list clustertask
+  390  tkn clustertask list
+  391  ls
+  392  oc create -f deploy-test-taskrun.yaml
+  393  oc get taskrun
+  394  oc delete taskrun build-docker-image-from-git-source-task-run deploy-test-task-run
+  395  tkn
+  396  oc create -f deploy-test-taskrun.yaml
+  397  tkn taskrun logs -f deploy-test-task-run
+  398  tkn pipelinerun list
+  399  tkn pipelinerun logs java-build-push-deploy-pipeline-run-1580235187432
+  400  tkn pipelinerun logs -f java-build-push-deploy-pipeline-run-1580235187432
+  401  oc get no
+  402  oc login
+  403  oc login --token=4dCKGOKfIXkpu5_5c1-ycPmXgAF0i8dr460JWmPgMDw --server=https://api.ocp.ibm.com:6443
+  404  oc get no
+  405  oc get pipelinerun
+  406  oc get pipelinerun -o yaml
+  407  ls
+  408  cd /opt
+  409  cd IBM/
+  410  cd WebSphere/
+  411  cd AppServer70/
+  412  cd profiles
+  413  cd AppSrv01/
+  414  cd bin
+  415  ./startServer.sh server1
+  416  ls
+  417  cd ..
+  418  ls
+  419  cd ..
+  420  ls
+  421  cd ..
+  422  ls
+  423  cd ..
+  424  ls
+  425  cd TA
+  426  ls
+  427  cd transformationadvisor-2.0.2/
+  428  ls
+  429  rm -rf trace_*
+  430  ls
+  431  ls -ltr
+  432  cd /opt
+  433  ls
+  434  cd terraform-provider-esxi
+  435  ls
+  436  cd examples
+  437  ls
+  438  cd 01\ Simple\ Guest/
+  439  ls
+  440  more main.tf
+  441  su - ibmdemo
+  442  su - ibmdemo
+  443  find ./ -name '*.war'
+  444  cp ./modresorts/modresorts/target/modresorts.war /home/ibmdemo/
+  445  chown ibmdemo:ibmdemo /home/ibmdemo/modresorts.war 
+  446  exit
+  447  docker images | grep nfs
+  448  cat /etc/fstab
+  449  cd /usr/local/bin
+  450  ls
+  451  scp oc kubectl 158.177.112.194:/usr/local/bin/
+  452  cd
+  453  ls
+  454  cd nfs
+  455  ls
+  456  cd docker
+  457  ls
+  458  cd ..
+  459  ls
+  460  cd helm
+  461  ls
+  462  cd nfs-client-provisioner
+  463  ls
+  464  cd ..
+  465  ls
+  466  cd ocp
+  467  ls
+  468  tar -cvpf - * | ssh 158.177.112.194 "cd /root/nfs; tar -xvpf -"
+  469  ms
+  470  ls
+  471  tar -cvzf ../nfs.tgz .
+  472  ls
+  473  cd ..
+  474  ls
+  475  scp nfs.tgz 158.177.112.194:/root/nfs/
+  476  docker images | grep nfs
+  477  docker save docker-registry:5000/nfsclient:v1 > nfsclient.tgz
+  478  ls -ltr
+  479  scp nfsclient.tgz 158.177.112.194:/root/nfs/
+  480  cd /home
+  481  ls
+  482  du -ks *
+  483  su - cp4a
+  484  oc get task
+  485  oc login
+  486  su - ibmdemo
+  487  cd /opt
+  488  cd IBM
+  489  cd WebSphere
+  490  cd AppServer
+  491  ls
+  492  cd AppServer70
+  493  ls
+  494  cd profiles
+  495  ls
+  496  cd AppSrv01
+  497  ls
+  498  cd bin
+  499  ls
+  500  ls -ltr
+  501  ls setupCmdLine.sh 
+  502  more setupCmdLine.sh 
+  503  ls
+  504  cd ..
+  505  cd config
+  506  ls
+  507  cd cells
+  508  ls
+  509  cd ubuntuNode01Cell/
+  510  ls
+  511  more variables.xml
+  512  cd nodes
+  513  ls
+  514  cd ubuntuNode01/
+  515  ls
+  516  more variables.xml
+  517  ls
+  518  cd servers
+  519  ls
+  520  cd server1
+  521  ls
+  522  more variables.xml
+  523  cd ..
+  524  ls
+  525  cd ..
+  526  ls
+  527  more variables.xml
+  528  cat variables.xml | awk '{ print $2 }'
+  529  cat variables.xml | awk '{ print $3 }'
+  530  more variables.xml
+  531  cd ..
+  532  ls
+  533  cd ..
+  534  ls
+  535  more variables.xml
+  536  ls
+  537  cd nodes
+  538  ls
+  539  cd ubuntuNode01/
+  540  ls
+  541  more variables.xml
+  542  cd servers
+  543  ls
+  544  cd server1
+  545  ls
+  546  cat variables.xml
+  547  cd ..
+  548  ls
+  549  cd ..
+  550  ls
+  551  cd ..
+  552  ls
+  553  cd ..
+  554  ls
+  555  cd ..
+  556  ls
+  557  cd
+  558  ls
+  559  oc get no
+  560  s2I
+  561  s2i
+  562  oc get images
+  563  oc login --token=zLKV85OlhT9llDdAZGhYLsrgUmJ4N88PYQzOUWei-iI --server=https://api.ocp.ibm.com:6443
+  564  oc et all --all-namespaces |grep -i images
+  565  oc get all --all-namespaces |grep -i images
+  566  oc get all --all-namespaces |grep -i image |grep -o control
+  567  oc get all --all-namespaces |grep -i image |grep -i control
+  568  oc get all --all-namespaces |grep -i image
+  569  oc get all --all-namespaces |grep -i image |more
+  570  docker login image-registry.openshift-image-registry.svc:5000
+  571  oc get svc
+  572  oc get svc -n openshift
+  573  oc get svc --all-namespaces
+  574  oc get svc --all-namespaces | image
+  575  oc get svc --all-namespaces | grep image
+  576  oc get all -n openshift-image-registry
+  577   oc expose service docker-registry -n default
+  578   oc expose service image-registry-c7dc6cdc7-mlrpq  -n default
+  579   oc expose service image-registry-c7dc6cdc7-mlrpq  -n openshift-image-registry
+  580   oc expose service image-registry  -n openshift-image-registry
+  581  oc get all -n openshift-image-registry
+  582  oc get route
+  583  oc get route -n openshift-image-registry
+  584  oc get po -n openshift-image-registry -o yaml
+  585  oc get po -n openshift-image-registry -o wide
+  586  ssh -l core worker421.ocp.ibm.com
+  587  su - ocp42
+  588  shutdown -h now
+  589  cd /etc
+  590  ls
+  591  cd networks
+  592  ls | more
+  593  cd sysconfig
+  594  ls
+  595  cd network-scripts/
+  596  ls
+  597  ls -ltr
+  598  vi ifcfg-ens192
+  599  systemctl restart network
+  600  systemctl restart network; journalctl -xe
+  601  vi /etc/hostname
+  602  systemctl restart network; journalctl -xe
+  603  systemctl restart network; journalctl -xe | more
+  604  hostname
+  605  cat hostname
+  606  cat /etc/hostname
+  607  hostname dns.iicparis.fr.ibm.com
+  608  systemctl restart network; journalctl -xe | more
+  609  systemctl restart network; journalctl -xe 
+  610  reboot
+  611  cd /usr/local/bin
+  612  ls
+  613  tar -xvzf /home/ocp42/openshift-client-linux-4.2.19.tar.gz
+  614  ls
+  615  rm README.md
+  616  exit
+  617  cat /etc/hosts
+  618  vi /etc/hosts
+  619  ls
+  620  rm 3.CP4A.mp4 
+  621  ls
+  622  rm Cloud\ Paks\ -\ Michelin\ 19\ nov-CP4I-MQ-CP4A-CPMCM-Herve.pptx 
+  623  ls
+  624  cat all.sh
+  625  ls
+  626  cd /etc
+  627  cd named
+  628  ls
+  629  more forward.iicparis.fr.ibm.com
+  630  nslookup bootstrap
+  631  nslookup master421
+  632  nslookup master422
+  633  nslookup master423
+  634  nslookup dns
+  635  ls
+  636  vi forward.iicparis.fr.ibm.com
+  637  nslookup bootstrap
+  638  nslookup worker421
+  639  nslookup worker422
+  640  nslookup worker423
+  641  ls
+  642  su - ocp42
+  643  ls
+  644  id
+  645  exit
+  646  ls
+  647  su - ocp42
+  648  passwd
+  649  su - ocp42
+  650  cd /etc
+  651  vi named.conf
+  652  ls
+  653  cd named
+  654  ls
+  655  mv forward.ocp.ibm.com forward.iicparis.fr.ibm.com
+  656  cat /etc/named.conf
+  657  ls -l /etc/named/forward.iicparis.fr.ibm.com
+  658  ls
+  659  vi forward.iicparis.fr.ibm.com
+  660  cat /etc/resolv.conf
+  661  cd ..
+  662  vi named.conf
+  663  systemctl restart named
+  664  nslookup master421
+  665  nslookup worker423
+  666  passwd
+  667  ifconfig ens33
+  668  ls
+  669  cd named
+  670  ls
+  671  vi forward.iicparis.fr.ibm.com
+  672  ssh lb
+  673  cd
+  674  ssh-copy-id -i .ssh/id_rsa root@lb
+  675  ssh lb
+  676  ls
+  677  ssh lb
+  678  nslookup bootstrap
+  679  nslookup master421
+  680  nslookup master422
+  681  nslookup worker421
+  682  nslookup worker422
+  683  ls
+  684  id
+  685  su - ocp42
+  686  cd named
+  687  ls
+  688  vi forward.iicparis.fr.ibm.com
+  689  ssh lb
+  690  ssh -l core bootstrap
+  691  exit
+  692  ls
+  693  ùv docker-registry.iicparis.fr.ibm.com docker-registry.iicparis.fr.ibm.com:5000
+  694  mv docker-registry.iicparis.fr.ibm.com docker-registry.iicparis.fr.ibm.com:5000
+  695  ls
+  696  ls /etc/ssl/ca/certs/users/
+  697  ls *
+  698  cp /etc/ssl/ca/certs/users/docker-registry.crt .
+  699  ls
+  700  mv docker-registry.crt docker-registry.iicparis.fr.ibm.com\:5000/
+  701  ls
+  702  systemctm restart docker-distribution
+  703  systemctl restart docker-distribution
+  704  docker login docker-registry.iicparis.fr.ibm.com:5000
+  705  ping docker-registry.iicparis.fr.ibm.com
+  706  netstat -an |grep 5000
+  707  ifconfig ens33
+  708  systemctl start docker-distribution
+  709  systemctl start docker-distribution; journalctl -xe
+  710  cd /etc/ssl/ca/certs/users
+  711  ls -la
+  712  cd ..
+  713  ls
+  714  cd ..
+  715  ls
+  716  cd /etc
+  717  cd docker-distribution/
+  718  ls
+  719  cd /var/lib
+  720  ls
+  721  ls -ltr
+  722  cd registry
+  723  ls
+  724  ls
+  725  mv docker docker-old
+  726  du -ks *
+  727  mv docker-old docker
+  728  ls
+  729  ls
+  730  cd /etc
+  731  cd docker-re
+  732  cd docker-distribution/
+  733  ls
+  734  cd registry/
+  735  ls
+  736  vi config.yml
+  737  systemctl start docker-distribution 
+  738  netstat -an | grep 5000
+  739  systemctl start docker-distribution ; journalctl -xe
+  740  ls
+  741  vi config.yaml
+  742  ls
+  743  vi config.yml
+  744  systemctl start docker-distribution ; journalctl -xe
+  745  netstat -an |grep 5000
+  746  systemctl start docker
+  747  systemctl start docker-distribution ; journalctl -xe
+  748  ls
+  749  cat config.yml
+  750  ls -la /etc/ssl/ca/certs/users/docker-registry.crt
+  751  ls -la /etc/ssl/ca/certs/users/docker-registry.key
+  752  openssl pkcs12 -export -clcerts     -in /etc/ssl/ca/certs/users/docker-registry.crt -inkey /etc/ssl/ca/certs/users/docker-registry.key -out /etc/ssl/ca/certs/users/docker-registry.p12
+  753  id
+  754  exit
+  755   rm *
+  756  touch /etc/ssl/ca/index.txt && echo ’01’ > /etc/ssl/ca/crlnumber
+  757  cat /etc/ssl/ca/index.txt
+  758  cat /etc/ssl/ca/crlnumber
+  759  openssl genrsa -des3 -out /etc/ssl/ca/private/ca.key 4096
+  760  cd ..
+  761  ls
+  762  cd private
+  763  ls
+  764  cd ..
+  765  cd out
+  766  ls
+  767  cd certs
+  768  ls
+  769  ls *
+  770  rm -rf *
+  771  mkdir users
+  772  openssl req -new -x509 -days 1095      -key /etc/ssl/ca/private/ca.key      -out /etc/ssl/ca/certs/ca.crt
+  773  openssl genrsa -des3 -out /etc/ssl/ca/certs/users/USERNAME.key 1024
+  774  mv /etc/ssl/ca/certs/users/USERNAME.key /etc/ssl/ca/certs/users/docker-registry.key
+  775   openssl req -new -key /etc/ssl/ca/certs/users/docker-registry.key -out /etc/ssl/ca/certs/users/docker-registry.csr
+  776  openssl x509 -req -days 9095 -in /etc/ssl/ca/certs/users/docker-registry.csr -CA /etc/ssl/ca/certs/ca.crt  -CAkey /etc/ssl/ca/private/ca.key -CAserial /etc/ssl/ca/serial     -CAcreateserial     -out /etc/ssl/ca/certs/users/docker-registry.crt
+  777  ls -la  /etc/ssl/ca/certs/users/
+  778  cat docker-registry.csr
+  779  cd /etc/ssl/ca/certs/users/
+  780  ls
+  781  cat docker-registry.csr
+  782  ls
+  783  cd
+  784  ls
+  785  id
+  786  su - ocp42
+  787  id
+  788  exit
+  789  id
+  790  systemctl stop docker-distribution
+  791  systemctl start docker-distribution; journalctl -xe
+  792  ls
+  793  cd /etc
+  794  cd docker-distribution
+  795  ls
+  796  cd registry
+  797  ls
+  798  ls -ltr
+  799  cat config.yml
+  800  ls -la /etc/ssl/ca/certs/users/docker-registry.crt
+  801  ls -la /etc/ssl/ca/certs/users/docker-registry.key
+  802  ls -l /etc/pki/tls/private/
+  803  rm /etc/pki/tls/private/registry.key
+  804  rm /etc/pki/tls/registry.crt
+  805  [ocp-dns registry]$ ls -l /etc/pki/tls/private/
+  806  openssl req -newkey rsa:2048 -nodes -sha256 -x509 -days 3650 -keyout /etc/pki/tls/private/registry.key -out /etc/pki/tls/registry.crt
+  807  ls
+  808  vi config.yml
+  809  systemctl start docker-distribution; journalctl -xe
+  810  ls
+  811  vi config.yml
+  812  systemctl start docker-distribution; journalctl -xe
+  813  netstat -an | grep 5000
+  814  cd /etc
+  815  cd docker
+  816  ls
+  817  cd certs.d/
+  818  ls
+  819  cd docker-registry.iicparis.fr.ibm.com\:5000/
+  820  ls
+  821  cp /etc/pki/tls/registry.crt .
+  822  ls
+  823  rm docker-registry.crt
+  824  ls
+  825  cd
+  826  ls
+  827  docker login docker-registry.iicparis.fr.ibm.com:5000
+  828  su - ocp42
+  829  exit
+  830  ifconfig -a
+  831  ifconfig -a | more
+  832  docker ps
+  833  exit
+  834  l
+  835  ls
+  836  su - ocp42
+  837  ls
+  838  netstat -rn
+  839  ssh lb
+  840  ls
+  841  cd /etc
+  842  cd sysconfig
+  843  ls
+  844  cd network-scripts
+  845  ls
+  846  cat ifcfg-ens33
+  847  cat /proc/sys/net/ipv4/ip_local_port_range
+  848  systemctl restart network
+  849  su - ocp42
+  850  ls
+  851  cd /etc
+  852  cd named
+  853  ls
+  854  more forward.iicparis.fr.ibm.com
+  855  ls
+  856  vi forward.iicparis.fr.ibm.com
+  857  systemctl restart named
+  858  nslookup console-openshift-console.apps.iicparis.fr.ibm.com
+  859  dig +short  console-openshift-console.apps.iicparis.fr.ibm.com
+  860  nslookup
+  861  vi forward.iicparis.fr.ibm.com
+  862  systemctl restart named
+  863  nslookup console-openshift-console.apps.iicparis.fr.ibm.com
+  864  vi forward.iicparis.fr.ibm.com
+  865  systemctl restart named
+  866  nslookup console-openshift-console.apps.iicparis.fr.ibm.com
+  867  ls
+  868  su - ocp42
+  869  ls
+  870  cd /opt
+  871  ls
+  872  cd /home
+  873  ls
+  874  su - cp4a
+  875  su - ocp42
+  876  ls
+  877  su - cp4a
+  878  l /home
+  879  ls /home
+  880  cd /home/ocp42/
+  881  l
+  882  ls
+  883  cd openshift4/
+  884  alias l='ls -Alhtr'
+  885  l
+  886  vi 1-install.sh 
+  887  vi 0-sshKey.sh 
+  888  dig _etcd-server-ssl._tcp.ocp23.iicparis.fr.ibm.com.com SRV +short
+  889  dig _etcd-server-ssl._tcp.ocp23.iicparis.fr.ibm.com SRV +short
+  890  vi /etc/named/forward.iicparis.fr.ibm.com
+  891  dig _etcd-server-ssl._tcp.iicparis.fr.ibm.com SRV +short
+  892  vi /etc/resolv.conf
+  893  vi 1-install.sh 
+  894  pwd
+  895  l
+  896  cat users.htpasswd 
+  897  pwd
+  898  cd /opt
+  899  ls
+  900  cd IBM/
+  901  ls
+  902  cd WebSphere/
+  903  cd AppServer70/
+  904  cd profiles
+  905  ls
+  906  cd AppSrv01/
+  907  ls
+  908  cd bin
+  909  ls
+  910  ./startServer.sh server1
+  911  netstat -an | grep 9043
+  912  ping dns
+  913  cd /nfs
+  914  ls
+  915  cd ta
+  916  ls
+  917  ls *
+  918  ls /opt
+  919  ls /opt/IBM/
+  920  ls /opt/IBM/WebSphere/
+  921  ls /opt/IBM/WebSphere/AppServer70/
+  922  ls /opt/IBM/WebSphere/
+  923  ls /opt/IBM/WebSphere/TA
+  924  ls /opt/IBM/WebSphere/TA/transformationadvisor-2.0.2/
+  925  cp /opt/IBM/WebSphere/TA/transformationadvisor-2.0.2/AppSrv01.zip  .
+  926  pwd
+  927  ls
+  928  id
+  929  mv AppSrv01.zip /home/ibmdemo/
+  930  exit
+  931  vi /etc/named/forward.iicparis.fr.ibm.com 
+  932  docker login localhost:5000
+  933  vi /etc/docker-distribution/dockerpasswd 
+  934  ll /etc/docker-distribution/
+  935  ll /etc/docker-distribution/registry/
+  936  vi /etc/docker-distribution/registry/config.yml
+  937  vi /etc/docker-distribution/registry/config.yml-withAuthent 
+  938  vi /etc/docker-distribution/registry/config.yml-withoutAuthent 
+  939  vi /etc/docker-distribution/registry/config.yml
+  940  docker login docker-registry.iicparis.fr.ibm.com:5000
+  941  vi /etc/docker-distribution/registry/config.yml
+  942  vi /etc/docker-distribution/registry/config.yml-withoutAuthent 
+  943  vi /etc/docker-distribution/registry/config.yml-withAuthent 
+  944  cat /etc/docker-distribution/dockerpasswd
+  945  cat /etc/docker-distribution/registry/config.yml
+  946  docker images
+  947  docker images | grep nfs
+  948  vi /etc/docker-distribution/registry/config.yml-withAuthent 
+  949  vi /etc/docker-distribution/registry/config.yml
+  950  l /etc/ssl/
+  951  ll /etc/ssl/
+  952  ll /etc/ssl/ca/
+  953  cat /etc/ssl/ca/serial 
+  954  cat /etc/ssl/ca/certs/
+  955  ll /etc/ssl/ca/certs/
+  956  ll /etc/ssl/ca/certs/users/
+  957  cat /etc/ssl/ca/certs/ca.crt 
+  958  cat /etc/ssl/ca/private/ca.key 
+  959  pwd
+  960  ll /etc/pki/ca-trust/source/anchors/
+  961  ll /etc/pki/tls/
+  962  ll /etc/pki/tls/private/
+  963  ll /etc/pki/tls/certs
+  964  vi /etc/pki/tls/openssl.cnf 
+  965  ll /etc/pki/CA/certs/
+  966  ll /etc/pki/CA/private/
+  967  ll /etc/pki/tls/
+  968  vi /etc/pki/tls/openssl.cnf 
+  969  l /etc/pki/
+  970  ll /etc/pki/
+  971  ll /etc/pki/Ca
+  972  ll /etc/pki/CA
+  973  ll /etc/pki/tls/
+  974  ll /etc/pki/tls/private/
+  975  history
+  976  systemctl start docker-distribution ; journalctl -xe
+  977  history
+  978  l
+  979  ls
+  980  cd /home/
+  981  ls
+  982  cd ocp42
+  983  ls
+  984  cd openshift4/
+  985  ls
+  986  l auth/
+  987  ll auth/
+  988  cd ..
+  989  l
+  990  ll
+  991  find / -type d -name manifest*
+  992  find / -type f -name .openshift_install.log
+  993  l /home/ocp42/bin/.openshift_install.log
+  994  ll /home/ocp42/bin/.openshift_install.log
+  995  vi /home/ocp42/bin/.openshift_install.log
+  996  l
+  997  ll
+  998  cd openshift4/
+  999  l
+ 1000  ll
+ 1001  history 
+ 1002  history > history-172.16.187.35

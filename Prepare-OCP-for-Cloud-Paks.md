@@ -119,7 +119,7 @@ oc create -f deploy/test-claim.yaml
 oc create -f deploy/test-pod.yaml
 ```
 
-> :warning: Next commands have to display **SUCCESS**
+> :warning: Wait for test-pod to be deployed and check that next commands have to display **SUCCESS**
 
 ```
 VOLUME=$(oc get pvc | awk '$1 ~ "test-claim" {print $3}')
@@ -169,7 +169,7 @@ oc get route/docker-registry -o json | jq -r .spec.tls.termination
 > :information_source: Run this on Controller
 
 ```
-REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host)
+REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host) && ECHO $REG_HOST
 ```
 
 ##### Add OCP certificate authority to docker

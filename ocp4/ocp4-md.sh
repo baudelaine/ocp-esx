@@ -176,6 +176,15 @@ systemctl enable haproxy
 ### Run on ctl
 
 ```
+wget -c http://web/ocp43/rhcos-4.3.0-x86_64-installer.iso
 
+[ ! -d /media/iso ] && mkdir /media/iso 
+
+mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
+
+[ ! -d /media/isorw ] && mkdir /media/isorw 
+
+rsync -avg --progress /media/iso/ /media/isorw 
 
 ```
+

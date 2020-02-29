@@ -1,0 +1,992 @@
+    1  sysctl -p
+    2  vi /etc/selinux/config 
+    3  sysctl -a
+    4  sysctl -a | grep kernel.sem
+    5  vi /etc/fstab 
+    6  mkdir -p /mnt/iicbackup/produits
+    7  mount /mnt/iicbackup/produits
+    8  l /mnt/iicbackup/produits/ISO/
+    9  vi ~/.bashrc 
+   10  command -v rsync
+   11  alias rsync='/usr/bin/rsync -avg --progress'
+   12  rsync /mnt/iicbackup/produits/ISO/policy.yaml .
+   13  l
+   14  . ~/.bashrc 
+   15  l
+   16  rm policy.yaml 
+   17  vi ~/.bashrc 
+   18  . ~/.bashrc 
+   19  l /var/lib/docker/
+   20  df -h
+   21  yum install atomic-openshift-excluder atomic-openshift-docker-excluder
+   22  systemctl stop docker
+   23  rm -rf /var/lib/docker/*
+   24  systemctl start docker
+   25  docker pa -a
+   26  docker ps -a
+   27  docker images
+   28  jq
+   29  yum provides */sponge
+   30  curl
+   31  wget
+   32  yum install moreutils
+   33  yum install net-tools
+   34  ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+   35  timedatectl set-timezone Europe/Paris
+   36  timedatectl 
+   37  yum install -y ntp
+   38  systemctl enable ntpd
+   39  systemctl start ntpd
+   40  ntpq -p
+   41  vi /etc/ntp.conf
+   42  ntpstat
+   43  systemctl stop ntpd
+   44  ntpdate ntp.iicparis.fr.ibm.com
+   45  systemctl start ntpd
+   46  localectl status
+   47  localectl set-keymap fr
+   48  localectl --no-convert set-x11-keymap fr
+   49  ulimit -aH
+   50  ulimit -aS
+   51  df -h /
+   52  poweroff
+   53  yum install jq
+   54  poweroff
+   55  yum install unzip
+   56  sed
+   57  grep
+   58  zip
+   59  yum install unzip zip rar unrar -y
+   60  netstat -pant
+   61  poweroff
+   62  echo "" >> ~/.bashrc
+   63  echo "export OCP=ocp23" >> ~/.bashrc
+   64  echo "export SSHPASS=spcspc" >> ~/.bashrc
+   65  source ~/.bashrc
+   66  echo $OCP 
+   67  curl -LO http://github.com/bpshparis/ocp-esx/archive/master.zip
+   68  [ ! -z $(command -v unzip) ] && echo unzip installed || yum install zip unzip -y
+   69  unzip master.zip
+   70  echo "export WORKDIR=$PWD/ocp-esx-master" >> ~/.bashrc
+   71  source ~/.bashrc
+   72  rm -f master.zip
+   73  df -h
+   74  df -h /
+   75  $WORKDIR/setHostAndIP.sh ctl-$OCP
+   76  reboot
+   77  ip addr show
+   78  yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ''
+   79  l ~/.ssh/
+   80  eval "$(ssh-agent -s)"
+   81  l ~/.ssh/
+   82  ssh-add  ~/.ssh/id_rsa
+   83  vi $WORKDIR/extendRootLV.sh
+   84  $WORKDIR/extendRootLV.sh
+   85  wget -c http://web/ocpcli/openshift-install-linux-4.2.18.tar.gz
+   86  l
+   87  wget -c http://web/ocpcli/pull-secret.txt
+   88  l
+   89  cat pull-secret.txt 
+   90  tar tvzf openshift-install-linux-4.2.18.tar.gz 
+   91  tar xvzf openshift-install-linux-4.2.18.tar.gz 
+   92  l
+   93  rm openshift-install-linux-4.2.18.tar.gz 
+   94  wget -c http://web/ocpcli/openshift-client-linux-4.2.18.tar.gz
+   95  l
+   96  tar tvzf openshift-client-linux-4.2.18.tar.gz 
+   97  tar xvzf openshift-client-linux-4.2.18.tar.gz 
+   98  l
+   99  ./oc
+  100  l
+  101  echo $PATH
+  102  mv oc kubectl /usr/local/sbin
+  103  l
+  104  ./openshift-install 
+  105  mkdir install
+  106  cd install/
+  107  vi  install-config.yaml
+  108  cat ../pull-secret.txt 
+  109  vi  install-config.yaml
+  110  cat ../.ssh/id_rsa.pub 
+  111  vi  install-config.yaml
+  112  cat install-config.yaml 
+  113  vi /etc/fstab 
+  114  mount /mnt/iicbackup/produits/
+  115  cp install-config.yaml /mnt/iicbackup/produits/ocp42
+  116  cd ..
+  117  l
+  118  ./openshift-install create manifests --dir=/root/install
+  119  l
+  120  l install/
+  121  vi install/manifests/cluster-scheduler-02-config.yml 
+  122  l
+  123  ./openshift-install create ignition-configs --dir=/root/install
+  124  l install/
+  125  l install/auth/
+  126  cp -v master.ign worker.ign bootstrap.ign /mnt/iicbackup/produits/ocp42/
+  127  cp -v install/master.ign install/worker.ign install/bootstrap.ign /mnt/iicbackup/produits/ocp42/
+  128  chmod -R 755 /mnt/iicbackup/produits/ocp*
+  129  l /mnt/iicbackup/produits/ocp42/
+  130  l /mnt/iicbackup/produits/
+  131  chmod -R 777 /mnt/iicbackup/produits/ocp*
+  132  l /mnt/iicbackup/produits/
+  133  l /mnt/iicbackup/produits/ocp42/
+  134  vi /etc/fstab 
+  135  vi install/bootstrap.ign 
+  136  cat install/bootstrap.ign | jq .
+  137  [ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
+  138  jq
+  139  cat install/bootstrap.ign | jq .
+  140  ping 172.16.191.152
+  141  ssh core@172.16.191.152
+  142  l
+  143  ./openshift-install --dir=/root/install wait-for bootstrap-complete \ 
+  144      --log-level=info
+  145  ./openshift-install --dir=/root/install wait-for bootstrap-complete --log-level=info
+  146  l /mnt/iicbackup/produits/ocp42/
+  147  mount mkdir /media/loop
+  148  mount -o loop  /mnt/iicbackup/produits/ocp42/rhcos-4.2.18-x86_64-installer.iso /media/loop/
+  149  cd /media/loop/
+  150  l
+  151  l isolinux/
+  152  vi README.md 
+  153  vi EFI/redhat/grub.cfg 
+  154  l
+  155  l images/
+  156  l isolinux/
+  157  vi isolinux/isolinux.cfg 
+  158  ssh root@172.16.191.152
+  159  ssh core@172.16.191.152
+  160  ip addr show
+  161  l
+  162  cd install/
+  163  l
+  164  cd auth/
+  165  l
+  166  vi /etc/resolv.conf
+  167  dig _etcd-server-ssl._tcp.ocp23.iicparis.fr.ibm.com SRV +short
+  168  dig +short bs-ocp23
+  169  dig +short +search bs-ocp23
+  170  mount
+  171  vi /media/loop/isolinux/isolinux.cfg 
+  172  pwd
+  173  mkdir rhcos
+  174  command -v rsync 
+  175  rsync /media/loop/* rhcos/
+  176  cd rhcos/
+  177  l
+  178  vi isolinux/isolinux.cfg 
+  179  l /root/
+  180  cd /root/
+  181  l install/
+  182  wget -c http://172.16.160.150/ocp42/install-config.yaml
+  183  vi install-config.yaml 
+  184  l
+  185  rm openshift-install 
+  186  wget -c http://172.16.160.150/ocpcli/openshift-install-linux-4.3.1.tar.gz 
+  187  l
+  188  rm openshift-client-linux-4.2.18.tar.gz
+  189  tar tvzf openshift-install-linux-4.3.1.tar.gz
+  190  tar xvzf openshift-install-linux-4.3.1.tar.gz
+  191  df -h /
+  192  oc
+  193  rm -rf install
+  194  l
+  195  mkdir install
+  196  cp -v install-config.yaml install
+  197  cd install/
+  198  ./openshift-install create manifests --dir=$PWD
+  199  ../openshift-install create manifests --dir=$PWD
+  200  l
+  201  touch $PWD/manifests/cluster-network-03-config.yml
+  202  l manifests/
+  203  l manifests/cluster-network-*
+  204  rm manifests/cluster-network-03-config.yml
+  205  sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' manifests/cluster-scheduler-02-config.yml
+  206  vi manifests/cluster-scheduler-02-config.yml
+  207  ../openshift-install create ignition-configs --dir=$PWD
+  208  l ..
+  209  l
+  210  scp *.ign root@web:/mnt/iicbackup/produits/ocp43
+  211  cd ../rhcos/
+  212  l
+  213  cd ..
+  214  vi rhcos/isolinux/isolinux.cfg 
+  215  l
+  216  mount
+  217  umount /media/loop/
+  218  l
+  219     sudo mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o bs.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos/
+  220  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o bs.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos/
+  221  yum provides */mkisofs
+  222  apt-get install -y genisoimage
+  223  yum install -y genisoimage
+  224  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o bs.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos/
+  225  l
+  226  scp bs.iso ocp23:/vmfs/volumes/5bed6085-018ed1be-f7e7-b496910d56dc/iso
+  227  rm bs.iso 
+  228  vi rhcos/isolinux/isolinux.cfg 
+  229  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o bs.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos/
+  230  l
+  231  scp bs.iso ocp23:/vmfs/volumes/5bed6085-018ed1be-f7e7-b496910d56dc/iso
+  232  cat ~/.ssh/id_rsa.pub 
+  233  vi install-config.yaml 
+  234  mv rhcos/ rhcos430
+  235  mv rhcos430/ rhcos4218
+  236  mount -o loop /mnt/iicbackup/produits/ocp43/rhcos-4.3.0-x86_64-installer.iso /media/loop/
+  237  mkdir rhcos430
+  238  rsync /media/loop/ rhcos430/
+  239  l rhcos430/
+  240  cd rhcos430/isolinux/
+  241  vi isolinux.cfg 
+  242  l
+  243  chmod +w isolinux.cfg 
+  244  vi isolinux.cfg 
+  245  cat ../../rhcos4218/isolinux/isolinux.cfg 
+  246  vi isolinux.cfg 
+  247  cd ../..
+  248  l
+  249  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o bs.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  250  l
+  251  scp bs.iso ocp23:/vmfs/volumes/5bed6085-018ed1be-f7e7-b496910d56dc/iso
+  252  ssh core@bs-ocp23.iicparis.fr.ibm.com
+  253  ssh core@bs-ocp23
+  254  l
+  255  cat rhcos430/isolinux/isolinux.cfg 
+  256  l
+  257  vi rhcos430/isolinux/isolinux.cfg 
+  258  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m1.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  259  l
+  260  vi rhcos430/isolinux/isolinux.cfg 
+  261  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  262  l
+  263  vi rhcos430/isolinux/isolinux.cfg 
+  264  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m3.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  265  vi rhcos430/isolinux/isolinux.cfg 
+  266  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o w1.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  267  l
+  268  vi rhcos430/isolinux/isolinux.cfg 
+  269  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o w2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  270  l
+  271  scp *.iso ocp23:/vmfs/volumes/5bed6085-018ed1be-f7e7-b496910d56dc/iso
+  272  for h in bs m1 m2 m3 w1 w2; do ping -c 2 $h-ocp23; done
+  273  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core$h-ocp23 date ; done
+  274  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 date ; done
+  275  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 ping -c 2 yahoo.fr ; done
+  276  pwd
+  277  cd install/
+  278  l
+  279  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=info
+  280  ssh lb-ocp23 systemctl status haproxy
+  281  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 ping -c 2 yahoo.fr ; done
+  282  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+  283  cd ..
+  284  l
+  285  rm -rf install
+  286  mkdir install
+  287  cd install/
+  288  cp ../install-config.yaml .
+  289  l
+  290  vi install-config.yaml 
+  291  ../openshift-install create manifests --dir=$PWD
+  292  l
+  293  vi manifests/cluster-scheduler-02-config.yml
+  294  ./openshift-install create ignition-configs --dir=$PWD
+  295  ../openshift-install create ignition-configs --dir=$PWD
+  296  l
+  297  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 ping -c 2 yahoo.fr ; done
+  298  vi /root/.ssh/known_hosts
+  299  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 ping -c 2 yahoo.fr ; done
+  300  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+  301  l
+  302  vi .openshift_install.log
+  303  l
+  304  cd ..
+  305  l
+  306  vi rhcos430/isolinux/isolinux.cfg 
+  307  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m1.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  308  l
+  309  vi rhcos430/isolinux/isolinux.cfg 
+  310  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m1.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  311  l
+  312  vi rhcos430/isolinux/isolinux.cfg 
+  313  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  314  l
+  315  vi rhcos430/isolinux/isolinux.cfg 
+  316  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o m3.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  317  vi rhcos430/isolinux/isolinux.cfg 
+  318  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o w1.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  319  l
+  320  vi rhcos430/isolinux/isolinux.cfg 
+  321  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o w2.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  322  l
+  323  scp *.iso ocp23:/vmfs/volumes/5bed6085-018ed1be-f7e7-b496910d56dc/iso
+  324  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 ping -c 2 yahoo.fr ; done
+  325  vi /root/.ssh/known_hosts
+  326  for h in bs m1 m2 m3 w1 w2; do echo $h; ssh core@$h-ocp23 ping -c 2 yahoo.fr ; done
+  327  l
+  328  rm -rf install
+  329  mkdir ocp4
+  330  cd ocp4/
+  331  cp -v ../install-config.yaml .
+  332  ../openshift-install create manifests --dir=$PWD
+  333  l
+  334  vi manifests/cluster-scheduler-02-config.yml
+  335  ../openshift-install create ignition-configs --dir=$PWD
+  336  scp *.ign root@web:/mnt/iicbackup/produits/ocp43
+  337  date
+  338  l
+  339  ../openshift-install create ignition-configs --dir=$PWD
+  340  l
+  341  scp *.ign root@web:/mnt/iicbackup/produits/ocp43
+  342  ../openshift-install wait-for bootstrap-complete --log-level debug
+  343  vi ../rhcos430/isolinux/isolinux.cfg 
+  344  ../openshift-install wait-for bootstrap-complete --log-level debug
+  345  vi ../rhcos430/isolinux/isolinux.cfg 
+  346  cd ..
+  347  l
+  348  vi ../rhcos430/isolinux/isolinux.cfg 
+  349  vi rhcos430/isolinux/isolinux.cfg 
+  350  mkisofs -U -A "RHCOS-x86_64" -V "RHCOS-x86_64" -volset "RHCOS-x86_64" -J -joliet-long -r -v -T -x ./lost+found -o w3.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot rhcos430/
+  351  l
+  352  scp w3.iso ocp23:/vmfs/volumes/5bed6085-018ed1be-f7e7-b496910d56dc/iso
+  353  ../openshift-install wait-for bootstrap-complete --log-level debug
+  354  cd ocp4/
+  355  ../openshift-install wait-for bootstrap-complete --log-level debug
+  356  cd ..
+  357  export KUBECONFIG=~/ocp4/auth/kubeconfig
+  358  echo $KUBECONFIG 
+  359  l
+  360  l ocp4/auth/
+  361  cat ocp4/auth/kubeconfig 
+  362  export KUBECONFIG=~/ocp4/auth/kubeconfig
+  363  echo $KUBECONFIG 
+  364  oc get csr
+  365  oc get nodes
+  366  oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+  367  openshift-install wait-for install-complete
+  368  ./openshift-install wait-for install-complete
+  369  export KUBECONFIG=~/ocp4/auth/kubeconfig
+  370  ./openshift-install wait-for install-complete
+  371  cd ocp4
+  372  ../openshift-install wait-for install-complete
+  373  oc get pods --all-namespaces
+  374  oc get sc
+  375  l /etc/docker/certs.d/
+  376  yum provides pki
+  377  vi /etc/containers/registries.conf
+  378  vi /etc/sysonfig/docker
+  379  l /etc/sysonfig
+  380  ll /etc/sysonfig
+  381  l /etc/sysonfig/docker
+  382  vi /etc/docker/daemon.json 
+  383  vi /etc/sysconfig/docker
+  384  vi /etc/sysonfig/docker
+  385  vi /etc/sysconfig/docker
+  386  yum install docker-distribution
+  387  cd /etc/docker-distribution/
+  388  l
+  389  cd registry/
+  390  l
+  391  vi config.yml 
+  392  docker login localhost:5000
+  393  l /etc/docker-distribution/
+  394  l /etc/docker-distribution/registry/
+  395  vi config.yml 
+  396  l /etc/pki
+  397  rpm -l docker-distribution
+  398  rpm -L docker-distribution
+  399  rpm -qa | grep docker-distribution
+  400  rpm -ql | grep docker-distribution
+  401  rpm -ql docker-distribution
+  402  rpm -qa | grep pki
+  403  l /etc/pki/ca-trust/
+  404  l /etc/pki/ca-trust/source/
+  405  l /etc/pki/ca-trust/source/anchors/
+  406  docker -v
+  407  cd /root/
+  408  htpasswd -c -
+  409  htpasswd -B -b admin admin
+  410  htpasswd -n -B -b admin admin
+  411  htpasswd -n -b admin admin
+  412  login ctl-ocp23:5000
+  413  l
+  414  rm -rf ocp4
+  415  mkdir ocp4
+  416  cp install-config.yaml ocp4
+  417  cd ocp4/
+  418  eval "$(ssh-agent -s)"
+  419  ssh-add ~/.ssh/id_rsa
+  420  > ~/.ssh/known_hosts 
+  421  cat ~/.ssh/known_hosts 
+  422  ../openshift-install create manifests --dir=$PWD
+  423  l
+  424  vi manifests/cluster-scheduler-02-config.yml
+  425  ../openshift-install create ignition-configs --dir=$PWD
+  426  l
+  427  mount /mnt/iicbackup/produits/
+  428  cp -v *.ign /mnt/iicbackup/produits/ocp43
+  429  ssh root@w2-ocp23
+  430  ssh core@w2-ocp23
+  431  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true
+  432  oc new-project validate
+  433  oc new-app django-psql-example
+  434  oc logs -f bc/django-psql-example
+  435  export KUBECONFIG=$PWD/auth/kubeconfig
+  436  oc whoami
+  437  oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+  438  oc delete project validate
+  439  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true
+  440  oc new-project validate
+  441  oc new-app django-psql-example
+  442  oc logs -f bc/django-psql-example
+  443  oc status
+  444  oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+  445  oc delete project validate
+  446  oc new-project validate
+  447  oc new-app django-psql-example
+  448  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true
+  449  oc whoami
+  450  oc logout
+  451  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true
+  452  oc projects
+  453  oc new-project validate
+  454  oc new-app django-psql-example
+  455  cd ..
+  456  l
+  457  vi history-172.16.187.35 
+  458  ssh core@m1-ocp23
+  459  pwd
+  460  cd ocp4
+  461  l
+  462  cat /etc/hosts
+  463  docker login -p admin -u admin docker-registry.iicparis.fr.ibm.com:5000
+  464  l /etc/pki/ca-trust/source/anchors/
+  465  ./openshift-install --dir=<installation_directory> wait-for bootstrap-complete \ 
+  466  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=info
+  467  l
+  468  cd ocp4
+  469  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+  470  systemctl stop firewalld
+  471  systemctl disable firewalld
+  472  setenforce 0
+  473  vi /etc/selinux/config 
+  474  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+  475  export KUBECONFIG=$PWD/auth/kubeconfig
+  476  l
+  477  echo $KUBECONFIG 
+  478  oc whomai
+  479  oc who
+  480  oc whoami
+  481  oc get pods
+  482  oc get pod
+  483  oc get nodes
+  484  oc get csr
+  485  watch -n5 oc get clusteroperators
+  486  ../openshift-install --dir=$PWD wait-for install-complete
+  487  oc get pods --all-namespaces
+  488  INFO To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/root/ocp4/auth/kubeconfig'
+  489  INFO Access the OpenShift web-console here: https://console-openshift-console.apps.ocp23.iicparis.fr.ibm.com
+  490  INFO Login to the console with user: kubeadmin, password: G5nBK-vDqZE-TY2Mp-rjuZu
+  491  oc whoami
+  492  htpasswd -c -B -b users.htpasswd admin admin
+  493  cat users.htpasswd 
+  494  oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd  -n openshift-config
+  495  oc create clusterrolebinding registry-controller --clusterrole=cluster-admin --user=admin
+  496  l
+  497  cp users.htpasswd /mnt/iicbackup/produits/ocpcli
+  498  ./openshift-install --dir=<installation_directory> wait-for bootstrap-complete \ 
+  499  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+  500  cd ..
+  501  rm -rf ocp4/*
+  502  cp install-config.yaml ocp4
+  503  cd ocp4
+  504  cd ..
+  505  rm -rf ocp4
+  506  mkdir ocp4
+  507  cp install-config.yaml ocp4
+  508  cd ocp4
+  509  l
+  510  ../openshift-install create manifests --dir=$PWD
+  511  vi manifests/cluster-scheduler-02-config.yml
+  512  ../openshift-install create ignition-configs --dir=.
+  513  cp -v *.ign /mnt/iicbackup/produits/ocp43
+  514  ../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+  515  export KUBECONFIG=auth/kubeconfig
+  516  oc whoami
+  517  oc get nodes
+  518  oc get csr
+  519  oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+  520  openshift-install wait-for install-complete
+  521  ../openshift-install wait-for install-complete
+  522  INFO Waiting up to 10m0s for the openshift-console route to be created...
+  523  INFO Install complete!
+  524  INFO To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/root/ocp4/auth/kubeconfig'
+  525  INFO Access the OpenShift web-console here: https://console-openshift-console.apps.ocp23.iicparis.fr.ibm.com
+  526  INFO Login to the console with user: kubeadmin, password: X5CEM-9wpU8-eDzv7-iBoX7
+  527  htpasswd -c -B -b /root/users.htpasswd admin admin                     
+  528  htpasswd -b  /root/users.htpasswd user1 password
+  529  htpasswd -b  /root/users.htpasswd user2 password
+  530  htpasswd -b  /root/users.htpasswd user3 password
+  531  htpasswd -b  /root/users.htpasswd user4 password
+  532  htpasswd -b  /root/users.htpasswd user5 password
+  533  oc create secret generic htpass-secret --from-file=htpasswd=/root/users.htpasswd  -n openshift-config
+  534  cat /root/users.htpasswd 
+  535  oc apply -f - <<EOF
+  536  apiVersion: config.openshift.io/v1
+  537  kind: OAuth
+  538  metadata:
+  539    name: cluster
+  540  spec:
+  541    identityProviders:
+  542    - name: htpasswd_provider 
+  543      mappingMethod: claim 
+  544      type: HTPasswd
+  545      htpasswd:
+  546        fileData:
+  547          name: htpass-secret 
+  548  EOF
+  549  oc adm policy add-cluster-role-to-user cluster-admin admin
+  550  oc login https://lb-ocp23:8443 -u admin -p admin --insecure-skip-tls-verify=true
+  551  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true
+  552  vi /etc/docker-distribution/registry/config.yml 
+  553  cd /etc/docker/certs.d/
+  554  l
+  555  hostname
+  556  mkdir ctl-ocp23.iicparis.fr.ibm.com
+  557  cd ctl-ocp23.iicparis.fr.ibm.com
+  558  cp /etc/pki/tls/certs/ctl-ocp23.crt .
+  559  docker login ctl-ocp23.iicparis.fr.ibm.com:5000
+  560  cd /root/ocp4
+  561  l
+  562  for ho in bs m1 m2 m3 w1 w2 w3; do   scp /etc/pki/tls/certs/ctl-ocp23.crt core@$ho-ocp23:/tmp;   ssh -l core $ho-ocp23 "sudo cp /tmp/ctl-ocp23.crt /etc/pki/ca-trust/source/anchors/; update-ca-trust";   ssh -l core $ho-ocp23 "sudo mkdir /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com; sudo cp /tmp/ctl-ocp23.crt /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com"; done
+  563  > /root/.ssh/known_hosts
+  564  for ho in bs m1 m2 m3 w1 w2 w3; do   scp -o StrictHostKeyChecking=no /etc/pki/tls/certs/ctl-ocp23.crt core@$ho-ocp23:/tmp;   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "sudo cp /tmp/ctl-ocp23.crt /etc/pki/ca-trust/source/anchors/; update-ca-trust";   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "sudo mkdir /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com; sudo cp /tmp/ctl-ocp23.crt /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com"; done
+  565  for ho in bs m1 m2 m3 w1 w2 w3; do   echo $ho;   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "ls /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com/"; done
+  566  oc whoami
+  567  oc apply -f - <<EOF
+  568  apiVersion: storage.k8s.io/v1
+  569  kind: StorageClass
+  570  metadata:
+  571    annotations:
+  572      storageclass.kubernetes.io/is-default-class: "false"
+  573    creationTimestamp: null
+  574    name: thin
+  575    ownerReferences:
+  576    - apiVersion: v1
+  577      kind: clusteroperator
+  578      name: storage
+  579    selfLink: /apis/storage.k8s.io/v1/storageclasses/thin
+  580  parameters:
+  581    diskformat: thin
+  582  provisioner: kubernetes.io/vsphere-volume
+  583  reclaimPolicy: Delete
+  584  volumeBindingMode: Immediate
+  585  EOF
+  586  oc projects
+  587  oc project default
+  588  oc apply -f - <<EOF
+  589  apiVersion: storage.k8s.io/v1
+  590  kind: StorageClass
+  591  metadata:
+  592    name: nfsclient
+  593    annotations :
+  594      storageclass.kubernetes.io/is-default-class: "true"
+  595  provisioner: cluster.local/nfs-client-provisioner
+  596  parameters:
+  597    archiveOnDelete: "false"
+  598  EOF
+  599  oc apply -f - <<EOF
+  600  kind: ServiceAccount
+  601  apiVersion: v1
+  602  metadata:
+  603    name: nfs-client-provisioner
+  604    namespace: kube-system
+  605  ---
+  606  kind: ClusterRole
+  607  apiVersion: rbac.authorization.k8s.io/v1
+  608  metadata:
+  609    name: nfs-client-provisioner-runner
+  610  rules:
+  611    - apiGroups: [""]
+  612      resources: ["persistentvolumes"]
+  613      verbs: ["get", "list", "watch", "create", "delete"]
+  614    - apiGroups: [""]
+  615      resources: ["persistentvolumeclaims"]
+  616      verbs: ["get", "list", "watch", "update"]
+  617    - apiGroups: ["storage.k8s.io"]
+  618      resources: ["storageclasses"]
+  619      verbs: ["get", "list", "watch"]
+  620    - apiGroups: [""]
+  621      resources: ["events"]
+  622      verbs: ["create", "update", "patch"]
+  623  ---
+  624  kind: ClusterRoleBinding
+  625  apiVersion: rbac.authorization.k8s.io/v1
+  626  metadata:
+  627    name: run-nfs-client-provisioner
+  628  subjects:
+  629    - kind: ServiceAccount
+  630      name: nfs-client-provisioner
+  631      namespace: kube-system
+  632  roleRef:
+  633    kind: ClusterRole
+  634    name: nfs-client-provisioner-runner
+  635    apiGroup: rbac.authorization.k8s.io
+  636  ---
+  637  kind: Role
+  638  apiVersion: rbac.authorization.k8s.io/v1
+  639  metadata:
+  640    name: leader-locking-nfs-client-provisioner
+  641    namespace: kube-system
+  642  rules:
+  643    - apiGroups: [""]
+  644      resources: ["endpoints"]
+  645      verbs: ["get", "list", "watch", "create", "update", "patch"]
+  646  ---
+  647  kind: RoleBinding
+  648  apiVersion: rbac.authorization.k8s.io/v1
+  649  metadata:
+  650    namespace: kube-system
+  651    name: leader-locking-nfs-client-provisioner
+  652  subjects:
+  653    - kind: ServiceAccount
+  654      name: nfs-client-provisioner
+  655      namespace: kube-system
+  656  roleRef:
+  657    kind: Role
+  658    name: leader-locking-nfs-client-provisioner
+  659    apiGroup: rbac.authorization.k8s.io
+  660  EOF
+  661  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  662  vi /etc/hosts
+  663  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  664  cd /etc/docker/certs.d/
+  665  l
+  666  mkdir docker-registry.iicparis.fr.ibm.com
+  667  cd docker-registry.iicparis.fr.ibm.com
+  668  scp root@172.16.187.35:/etc/pki/tls/registry.crt .
+  669  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  670  docker login docker-registry.iicparis.fr.ibm.com
+  671  docker login docker-registry.iicparis.fr.ibm.com:5000
+  672  cp -v registry.crt /etc/pki/ca-trust/source/anchors/
+  673  docker login docker-registry.iicparis.fr.ibm.com:5000
+  674  pwd
+  675  l ..
+  676  ping docker-registry.iicparis.fr.ibm.com
+  677  docker pull docker-registry.iicparis.fr.ibm.com/nfsclient:v1
+  678  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  679  cd /root/ocp4
+  680  l
+  681  oc apply  -f - <<EOF
+  682  kind: Deployment
+  683  apiVersion: apps/v1
+  684  metadata:
+  685    name: nfs-client-provisioner
+  686    namespace: kube-system
+  687  spec:
+  688    replicas: 1
+  689    selector:
+  690      matchLabels:
+  691        app: nfs-client-provisioner
+  692    strategy:
+  693      type: Recreate
+  694    template:
+  695      metadata:
+  696        labels:
+  697          app: nfs-client-provisioner
+  698      spec:
+  699        serviceAccountName: nfs-client-provisioner
+  700        containers:
+  701          - name: nfs-client-provisioner
+  702            image: ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient:v1
+  703            volumeMounts:
+  704              - name: nfs-client-root
+  705                mountPath: /persistentvolumes
+  706            env:
+  707              - name: PROVISIONER_NAME
+  708                value: cluster.local/nfs-client-provisioner
+  709              - name: NFS_SERVER
+  710                value: ctl-ocp23
+  711              - name: NFS_PATH
+  712                value: /exports
+  713        volumes:
+  714          - name: nfs-client-root
+  715            nfs:
+  716              server: ctl-ocp23
+  717              path: /exports
+  718  EOF
+  719  oc whoami
+  720  oc project
+  721  oc patch sc thin --patch '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class": "false"}}}'
+  722  oc get sc
+  723  oc get pvc
+  724  oc get pv
+  725  oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"pvc":{"claim": ""}}}}'
+  726  oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec":{"defaultRoute":true}}'
+  727  oc get pvc
+  728  oc get pv
+  729  oc delete project validate
+  730  oc new-project validate
+  731   oc new-app django-psql-example
+  732  oc apply  -f - <<EOF
+  733  apiVersion: imageregistry.operator.openshift.io/v1
+  734  kind: Config
+  735  metadata:
+  736    creationTimestamp: <time>
+  737    finalizers:
+  738      - imageregistry.operator.openshift.io/finalizer
+  739    generation: 3
+  740    name: cluster
+  741    resourceVersion:  <version>
+  742    selfLink: <link>
+  743  spec:
+  744    readOnly: false
+  745    disableRedirect: false
+  746    requests:
+  747      read:
+  748        maxInQueue: 0
+  749        maxRunning: 0
+  750        maxWaitInQueue: 0s
+  751      write:
+  752        maxInQueue: 0
+  753        maxRunning: 0
+  754        maxWaitInQueue: 0s
+  755    defaultRoute: true
+  756    managementState: Managed
+  757  EOF
+  758  oc edit configs.imageregistry.operator.openshift.io
+  759  oc apply  -f - <<EOF
+  760  apiVersion: imageregistry.operator.openshift.io/v1
+  761  kind: Config
+  762  metadata:
+  763    creationTimestamp: <time>
+  764    finalizers:
+  765      - imageregistry.operator.openshift.io/finalizer
+  766    generation: 3
+  767    name: cluster
+  768    resourceVersion:  <version>
+  769    selfLink: <link>
+  770  spec:
+  771    readOnly: false
+  772    disableRedirect: false
+  773    requests:
+  774      read:
+  775        maxInQueue: 0
+  776        maxRunning: 0
+  777        maxWaitInQueue: 0s
+  778      write:
+  779        maxInQueue: 0
+  780        maxRunning: 0
+  781        maxWaitInQueue: 0s
+  782    defaultRoute: true
+  783    managementState: Managed
+  784  EOF
+  785  q!
+  786  oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec":{"ManagementState":"Managed"}}'
+  787  oc edit configs.imageregistry.operator.openshift.io
+  788  oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec":{"managementState":"Managed"}}'
+  789  oc projects
+  790  oc delete project validate
+  791  oc new-project validate
+  792   oc new-app django-psql-example
+  793  oc logs -f bc/django-psql-example
+  794  oc get pvc
+  795  cd /etc/docker/certs.d/
+  796  l
+  797  mv docker-registry.iicparis.fr.ibm.com/ docker-registry.iicparis.fr.ibm.com\:5000
+  798  docker login -u admin docker-registry.iicparis.fr.ibm.com:5000
+  799  docker images
+  800  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  801  docker images
+  802  docker tag docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient:v1
+  803  docker images
+  804  docker info  -f '{{.OSType}}/{{.Architecture}}'
+  805  docker manifest inspect -v docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 | jq .[].Platform
+  806  docker images
+  807  docker rmi docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  808  docker images
+  809  docker rmi 7ca865c6a2b2
+  810  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  811  docker tag docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient
+  812  docker images
+  813  docker pull nfsclient:v1
+  814  cd /root/ocp-esx-master/
+  815  l
+  816  unzip nfs-client.zip -d /tmp
+  817  vi /tmp/nfs-client/docker/x86_64/Dockerfile
+  818  vi /etc/docker-distribution/registry/config.yml 
+  819  l /etc/pki/tls/certs/
+  820  cd /etc/pki/tls/
+  821  l
+  822  openssl req -x509 -nodes -days 7300 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/certs/ctl-ocp23.key -out /etc/pki/tls/certs/ctl-ocp23.crt -subj '/C=FR/L=Bois-Colombes/O=IIC/OU=IIC Paris/CN=ctl-ocp23.iicparis.fr.ibm.com/emailAddress=iic_paris@fr.ibm.com'
+  823  l certs/
+  824  openssl req -x509 -nodes -days 7300 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/private/ctl-ocp23.key -out /etc/pki/tls/certs/ctl-ocp23.crt -subj '/C=FR/L=Bois-Colombes/O=IIC/OU=IIC Paris/CN=ctl-ocp23.iicparis.fr.ibm.com/emailAddress=iic_paris@fr.ibm.com'
+  825  l certs
+  826  rm certs/ctl-ocp23.key
+  827  l private/
+  828  cp -v certs/ctl-ocp23.crt /etc/pki/ca-trust/source/anchors/
+  829  rm /etc/pki/ca-trust/source/anchors/ca.crt 
+  830  update-ca-trust
+  831  vi /etc/docker-distribution/registry/config.yml 
+  832  systemctl restart docker-distribution 
+  833  docker login -u admin -p admin ctl-ocp23.iicparis.fr.ibm.com
+  834  docker login -u admin -p admin ctl-ocp23.iicparis.fr.ibm.com:5000
+  835  mkdir /etc/docker/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000
+  836  cp -v certs/ctl-ocp23.crt /etc/docker/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000
+  837  docker login -u admin -p admin ctl-ocp23.iicparis.fr.ibm.com:5000
+  838  docker login -u admin -p admin docker-registry.iicparis.fr.ibm.com:5000
+  839  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  840  docker images
+  841  docker rmi ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient
+  842  docker rmi docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  843  docker pull docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1
+  844  docker images
+  845  docker tag docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient:v1
+  846  docker images
+  847  docker pull busybox
+  848  docker images
+  849  docker tag docker.io/busybox ctl-ocp23.iicparis.fr.ibm.com:5000/busybox
+  850  docker images
+  851  mkdir /etc/docker/certs.d/ocdc110.iicparis.fr.ibm.com:5000
+  852  cd /etc/docker/certs.d/ocdc110.iicparis.fr.ibm.com:5000
+  853  scp root@ocdc:/etc/certs/ca.crt .
+  854  scp root@ocdc110:/etc/certs/ca.crt .
+  855  pwd
+  856  l
+  857  docker images
+  858  docker pull ocdc110.iicparis.fr.ibm.com:5000/nfsclient:v1
+  859  docker pull ocdc110.iicparis.fr.ibm.com:5000/hello-world
+  860  systemctl restart docker
+  861  docker images
+  862  docker push ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient:v1
+  863  for ho in bs m1 m2 m3 w1 w2 w3; do   scp -o StrictHostKeyChecking=no /etc/pki/tls/certs/ctl-ocp23.crt core@$ho-ocp23:/tmp;   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "sudo cp /tmp/ctl-ocp23.crt /etc/pki/ca-trust/source/anchors/; update-ca-trust";   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "sudo mkdir /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000; sudo cp /tmp/ctl-ocp23.crt /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000"; done
+  864  for ho in bs m1 m2 m3 w1 w2 w3; do   echo $ho;   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "ls /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000/"; done
+  865  df -h /
+  866  cd /root/
+  867  mkdir /exports
+  868  echo "/exports *(rw,sync,no_root_squash)" >> /etc/exports
+  869  [ ! -z $(rpm -qa nfs-utils) ] && echo nfs-utils installed || { echo nfs-utils not installed; yum install -y nfs-utils rpcbind; }
+  870  systemctl restart nfs
+  871  l /exports/
+  872  oc whoami
+  873  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true -n default
+  874  oc edit configs.imageregistry.operator.openshift.io
+  875  oc project openshift-image-registry
+  876  oc get pvc
+  877  oc get sc
+  878  oc project openshift-image-registry
+  879  oc get pvc
+  880  oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"pvc":{"claim": "image-registry-storage"}}}}'
+  881  oc get pvc
+  882  oc edit configs.imageregistry.operator.openshift.io
+  883  oc logs configs.imageregistry.operator.openshift.io
+  884  oc get configs.imageregistry.operator.openshift.io
+  885  oc get pvc
+  886  oc get configs.imageregistry.operator.openshift.io
+  887  oc edit configs.imageregistry.operator.openshift.io
+  888  l /exports/
+  889  mkdir /exports/image-registry-storage
+  890  chmod -R 777 /exports/
+  891  l /exports/
+  892  l /exports/image-registry-storage/
+  893  oc edit configs.imageregistry.operator.openshift.io
+  894  oc get pvc
+  895  oc project
+  896  rm -rf /exports/image-registry-storage/
+  897  oc whomai
+  898  oc whoami
+  899  vi /tmp/nfs-client/deploy/test-claim.yaml 
+  900  oc edit configs.imageregistry.operator.openshift.io
+  901  oc get pod -n openshift-image-registry
+  902  oc get pvc
+  903  oc delete project validate
+  904  oc new-project validate
+  905  oc new-app django-psql-example
+  906  oc logs -f bc/django-psql-example
+  907  oc new-app django-psql-example
+  908  oc logs -f bc/django-psql-example
+  909  l /exports/
+  910  l /exports/openshift-image-registry/
+  911  l /exports/openshift-image-registry/image-registry-storage/docker/registry/v2/
+  912  du -h /exports/
+  913  df -h /exports/
+  914  df -h /
+  915  oc edit configs.imageregistry.operator.openshift.io
+  916  oc get pvc
+  917  oc get sc
+  918  oc get clusteroperator image-registry
+  919  oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}'
+  920  HOST=$(oc get route default-route -n openshift-image-registry --template='{{ .spec.host }}')
+  921  echo $HOST
+  922  docker login -u $(oc whoami) -p $(oc whoami -t) --tls-verify=false $HOST
+  923  docker login -u $(oc whoami) -p $(oc whoami -t)  $HOST
+  924  yum provides podman
+  925  yum install podman
+  926  podman login -u $(oc whoami) -p $(oc whoami -t)  $HOST
+  927  podman login -u $(oc whoami) -p $(oc whoami -t) --tls-verify=false $HOST
+  928  oc edit configs.imageregistry.operator.openshift.io
+  929  oc login https://lb-ocp23:6443 -u admin -p admin --insecure-skip-tls-verify=true
+  930  df -h
+  931  fdisk -l
+  932  l
+  933  pwd
+  934  cd ocp-esx-master/
+  935  vi extendRootLV.sh 
+  936  ./extendRootLV.sh 
+  937  df -h
+  938  [ ! -z $(command -v screen) ] && echo screen installed || yum install screen -y
+  939  pkill screen; screen -mdS ADM && screen -r ADM
+  940  mount /mnt/iicbackup/produits/
+  941  cd ..
+  942  l
+  943  rsync /mnt/iicbackup/produits/ISO/ibm-cloud-private-x86_64-3.1.2.tar.gz .
+  944  l
+  945  tar xvf ~/ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
+  946  l
+  947  tar xvf ibm-cp4mcm-core-1.2-x86_64.tar.gz -O | sudo docker load
+  948  ls
+  949  docker -v
+  950  l /var/lib/docker/
+  951  tar xvf ibm-cloud-private-x86_64-3.1.2.tar.gz -O | docker load
+  952  ls -l
+  953  cd ocp4
+  954  ls -l
+  955  ls -l auth
+  956  pwd
+  957  cd ..
+  958  cd
+  959  ls -l
+  960  cd 
+  961  more openshift-install
+  962  file openshift-install
+  963  find . -type f -name "*log" -ls
+  964  ls -l *.log
+  965  more .openshift_install.log
+  966  cd ocp4
+  967  sl -al
+  968  ls -al
+  969  more .openshift_install.log
+  970  ls -l
+  971  ls -al
+  972  tail -200 .openshift_install.log
+  973  pwd
+  974  grep OpenShift .openshift_install.log
+  975  grep web-console .openshift_install.log
+  976  cd
+  977  cd -
+  978  pwd
+  979  cd
+  980  grep web-console /root/ocp4/.openshift_install.log
+  981  ping D06ML370
+  982  exit
+  983  screen -r
+  984  df -h
+  985  l
+  986  vi .openshift_install.log
+  987  l
+  988  cd ocp4
+  989  l
+  990  tail .openshift_install.log
+  991  history
+  992  history > ctl-ocp23.history

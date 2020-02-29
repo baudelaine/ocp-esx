@@ -14,7 +14,7 @@ WORKDIR="/vmfs/volumes/datastore1/ocp-esx-master"
 ISO_PATH="/vmfs/volumes/datastore1/iso"
 VMX="$WORKDIR/rhcos.vmx"
 
-MASTERS_VM="m1-$OCP m2-$OCP m3-$OCP"
+MASTERS_VM="bs-$OCP m1-$OCP m2-$OCP m3-$OCP"
 WORKERS_VM="w1-$OCP w2-$OCP w3-$OCP w4-$OCP w5-$OCP"
 MASTER_STORAGE="120G"
 MASTER_VCPU="4"

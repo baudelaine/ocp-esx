@@ -116,3 +116,29 @@ EOF
 oc patch sc thin --patch '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class": "false"}}}'
 
 
+oc apply  -f - <<EOF
+apiVersion: imageregistry.operator.openshift.io/v1
+kind: Config
+metadata:
+  creationTimestamp: <time>
+  finalizers:
+    - imageregistry.operator.openshift.io/finalizer
+  generation: 3
+  name: cluster
+  resourceVersion:  <version>
+  selfLink: <link>
+spec:
+  readOnly: false
+  disableRedirect: false
+  requests:
+    read:
+      maxInQueue: 0
+      maxRunning: 0
+      maxWaitInQueue: 0s
+    write:
+      maxInQueue: 0
+      maxRunning: 0
+      maxWaitInQueue: 0s
+  defaultRoute: true
+  managementState: Managed
+EOF

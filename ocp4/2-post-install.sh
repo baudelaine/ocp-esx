@@ -9,7 +9,7 @@ done
 for ho in bs m1 m2 m3 w1 w2 w3
 do
   echo $ho
-  ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "ls /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com/"
+  ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "ls /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000/"
 done
 
 

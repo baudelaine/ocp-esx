@@ -167,5 +167,15 @@ systemctl restart haproxy
 systemctl enable haproxy
 ```
 
+### Run on esx
+
+```
+/vmfs/volumes/datastore1/ocp-esx-master/ocp4/createRHCOSVms.sh
+```
+
+### Run on ctl
+
+```
 
 
+```

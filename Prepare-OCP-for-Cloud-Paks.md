@@ -169,7 +169,7 @@ oc get route/docker-registry -o json | jq -r .spec.tls.termination
 > :information_source: Run this on Controller
 
 ```
-REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host) && ECHO $REG_HOST
+REG_HOST=$(oc get route/docker-registry -o json | jq -r .spec.host) && echo $REG_HOST
 ```
 
 ##### Add OCP certificate authority to docker

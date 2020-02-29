@@ -100,7 +100,7 @@ usermod -a -G wheel $USERID
 
 ### Sign in GUI
 
-:information_source: When prompted, keep checked locales and keybords, uncheck contribution and skip signing.
+:information_source: When prompted, keep checked locales and keybords, set Location Services OFF, skip Connect Your Online Accounts and You're ready to go !
 
 > :information_source: Run this from your local machine on Conroller VNC console
 
@@ -109,7 +109,12 @@ usermod -a -G wheel $USERID
 
 > :information_source: Run this from your local machine on Conroller VNC console
 
+```
+OCP=ocp3
 
+scp root@m1-$OCP:/etc/origin/master/ca.crt ca-$OCP.crt
+
+```
 
 #### Add Openshift Certificate Authority to Firefox
 

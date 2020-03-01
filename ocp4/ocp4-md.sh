@@ -184,7 +184,153 @@ mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
 
 [ ! -d /media/isorw ] && mkdir /media/isorw 
 
-rsync -avg --progress /media/iso/ /media/isorw 
+$WORKDIR/ocp4/buildRHCOSIsos.sh 
 
 ```
 
+:warning: Change CN in -subj with $OCP
+
+```
+openssl req -x509 -nodes -days 7300 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/private/ctl-$OCP.key -out /etc/pki/tls/certs/ctl-$OCP.crt -subj '/C=FR/L=Bois-Colombes/O=IIC/OU=IIC Paris/CN=ctl-ocp5.iicparis.fr.ibm.com/emailAddress=iic_paris@fr.ibm.com'
+
+cp -v /etc/pki/tls/certs/ctl-$OCP.crt /etc/pki/ca-trust/source/anchors/
+
+update-ca-trust
+
+[ ! -f /etc/docker-distribution/registry/config.yml ] && yum install docker-distribution -y
+ 
+
+sed -i '/^http:/,$d' /etc/docker-distribution/registry/config.yml
+
+cat >> /etc/docker-distribution/registry/config.yml << EOF
+http:
+    addr: ctl-$OCP.iicparis.fr.ibm.com:5000
+    net: tcp
+    host: https://ctl-$OCP.iicparis.fr.ibm.com:5000
+    tls:
+         certificate: /etc/pki/tls/certs/ctl-$OCP.crt
+         key: /etc/pki/tls/private/ctl-$OCP.key
+EOF
+
+systemctl restart docker-distribution
+
+mkdir /etc/docker/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000
+
+yes | cp -v -f /etc/pki/tls/certs/ctl-$OCP.crt /etc/docker/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000
+
+docker login -u admin -p admin ctl-$OCP.iicparis.fr.ibm.com:5000
+
+wget -c http://web/ocpcli/nfsclient.tar.gz
+
+docker load < nfsclient.tar.gz
+
+docker tag docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 ctl-$OCP.iicparis.fr.ibm.com:5000/nfsclient:v1
+
+docker push ctl-ocp5.iicparis.fr.ibm.com:5000/nfsclient:v1
+
+```
+
+
+```
+UBUNTU
+$ cp certs/domain.crt /usr/local/share/ca-certificates/myregistrydomain.com.crt
+update-ca-certificates
+RED HAT ENTERPRISE LINUX
+cp certs/domain.crt /etc/pki/ca-trust/source/anchors/myregistrydomain.com.crt
+update-ca-trust
+```
+
+
+```
+> ~/.ssh/known_hosts
+[ ! -f ~/.ssh/id_rsa ] && yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
+
+eval "$(ssh-agent -s)"
+
+ssh-add ~/.ssh/id_rsa
+
+wget -c http://web/ocpcli/openshift-install-linux-4.3.1.tar.gz
+
+tar xvzf openshift-install-linux-4.3.1.tar.gz
+
+wget -c http://web/ocpcli/openshift-client-linux-4.3.1.tar.gz
+
+tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
+
+mkdir ~/ocpinst && cd ~/ocpinst
+
+wget -c http://web/ocp43/install-config.yaml
+
+../openshift-install create manifests --dir=$PWD
+
+sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' manifests/cluster-scheduler-02-config.yml
+
+../openshift-install create ignition-configs --dir=$PWD
+
+scp *.ign root@web:/mnt/iicbackup/produits/ocp43
+```
+
+### Start cluster vms
+
+
+```
+screen -mdS ADMIN && screen -r ADMIN
+
+
+../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+```
+
+
+```
+export KUBECONFIG=~/ocpinst/auth/kubeconfig
+
+
+
+../openshift-install --dir=$PWD wait-for install-complete
+
+```
+
+
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
+power.shutdown " $1}' | sh
+
+ SNAPNAME="OCPInstalled"
+
+ vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
+snapshot.create " $1 " '$SNAPNAME' "}' | sh
+
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
+snapshot.get " $1 }' | sh
+
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
+power.on " $1}' | sh
+
+
+INFO Waiting up to 30m0s for the cluster at https://api.ocp5.iicparis.fr.ibm.com:6443 to initialize... 
+INFO Waiting up to 10m0s for the openshift-console route to be created... 
+INFO Install complete!                            
+INFO To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/root/ocpinst/auth/kubeconfig' 
+INFO Access the OpenShift web-console here: https://console-openshift-console.apps.ocp5.iicparis.fr.ibm.com 
+INFO Login to the console with user: kubeadmin, password: n6fCf-Fmb2z-PLHEk-C9XKB 
+
+
+for ho in m1 m2 m3 w1 w2 w3 
+do
+  scp -o StrictHostKeyChecking=no /etc/pki/tls/certs/ctl-$OCP.crt core@$ho-$OCP:/tmp
+  ssh -o StrictHostKeyChecking=no -l core $ho-$OCP "sudo cp /tmp/ctl-$OCP.crt /etc/pki/ca-trust/source/anchors/; update-ca-trust"
+  ssh -o StrictHostKeyChecking=no -l core $ho-$OCP "sudo mkdir /etc/containers/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000; sudo cp /tmp/ctl-$OCP.crt /etc/containers/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000"
+done
+
+
+for ho in m1 m2 m3 w1 w2 w3
+do
+  echo $ho
+  ssh -o StrictHostKeyChecking=no -l core $ho-$OCP "ls /etc/containers/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000/"
+done
+
+
+oc edit sc oc edit sc managed-nfs-storage
+
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"

@@ -8,7 +8,7 @@ GREEN="\e[32m"
 NC="\e[0m"
 
 OCP="ocp5"
-WEB_SRV_URL="http://172.160.150/ocp43"
+WEB_SRV_URL="http://172.16.160.150/ocp43"
 RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.3.0-x86_64-metal.raw.gz"
 BS_IGN_URL="$WEB_SRV_URL/bootstrap.ign"
 M_IGN_URL="$WEB_SRV_URL/master.ign"

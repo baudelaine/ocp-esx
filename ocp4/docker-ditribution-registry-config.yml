@@ -1,0 +1,16 @@
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+    cache:
+        layerinfo: inmemory
+    filesystem:
+        rootdirectory: /var/lib/registry
+http:
+    addr: ctl-ocp23.iicparis.fr.ibm.com:5000
+    net: tcp
+    host: https://ctl-ocp23.iicparis.fr.ibm.com:5000
+    tls:
+         certificate: /etc/pki/tls/certs/ctl-ocp23.crt
+         key: /etc/pki/tls/private/ctl-ocp23.key

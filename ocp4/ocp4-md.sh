@@ -176,7 +176,7 @@ systemctl enable haproxy
 ### Run on ctl
 
 ```
-wget -c http://web/ocp43/rhcos-4.3.0-x86_64-installer.iso
+wget -c http://web/stuff/rhcos-4.3.0-x86_64-installer.iso
 
 [ ! -d /media/iso ] && mkdir /media/iso 
 
@@ -291,19 +291,32 @@ export KUBECONFIG=~/ocpinst/auth/kubeconfig
 ```
 
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
-power.shutdown " $1}' | sh
+```
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.shutdown " $1}' | sh
 
- SNAPNAME="OCPInstalled"
+SNAPNAME="OCPInstalled"
 
- vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
-snapshot.create " $1 " '$SNAPNAME' "}' | sh
+ vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
-snapshot.get " $1 }' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/
-power.on " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+
+
+export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}') && echo $SNAPIDS
+
+export SNAPID=$(echo $SNAPIDS | awk '{print $NF}') && echo $SNAPID
+
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+
+
+oc login https://lb-$OCP:6443 -u admin -p admin --insecure-skip-tls-verify=true
+
+```
+
+
 
 
 INFO Waiting up to 30m0s for the cluster at https://api.ocp5.iicparis.fr.ibm.com:6443 to initialize... 

@@ -167,24 +167,11 @@ systemctl restart haproxy
 systemctl enable haproxy
 ```
 
-### Run on esx
-
-```
-/vmfs/volumes/datastore1/ocp-esx-master/ocp4/createRHCOSVms.sh
-```
 
 ### Run on ctl
 
 ```
-wget -c http://web/stuff/rhcos-4.3.0-x86_64-installer.iso
 
-[ ! -d /media/iso ] && mkdir /media/iso 
-
-mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
-
-[ ! -d /media/isorw ] && mkdir /media/isorw 
-
-$WORKDIR/ocp4/buildRHCOSIsos.sh 
 
 ```
 
@@ -242,43 +229,149 @@ update-ca-trust
 
 
 ```
-> ~/.ssh/known_hosts
+cd ~
+
+wget -c http://web/stuff/install-config.yaml
+
+export DOMAIN="iicparis.fr.ibm.com"
+
+sed -e "s/\(^baseDomain: \).*$/\1$DOMAIN/" install-config.yaml
+
+sed -i -e '12s/^  name:.*$/  name: '$OCP'/' install-config.yaml
+
+wget -c http://web/stuff/iicparis-pull-secret.txt
+
+SECRET=$(cat iicparis-pull-secret.txt)
+
+sed -i "s/^pullSecret:.*$/pullSecret: '$SECRET'/"  install-config.yaml
+
 [ ! -f ~/.ssh/id_rsa ] && yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
+
+PUB_KEY=$(cat ~/.ssh/id_rsa.pub)
+
+sed -i "s:^sshKey\:.*$:sshKey\: '$PUB_KEY':"  install-config.yaml 
+
+chmod +r install-config.yaml 
+
+scp install-config.yaml  root@web:/mnt/iicbackup/produits/ocp/$OCP
+
+> ~/.ssh/known_hosts
 
 eval "$(ssh-agent -s)"
 
 ssh-add ~/.ssh/id_rsa
 
-wget -c http://web/ocpcli/openshift-install-linux-4.3.1.tar.gz
+wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
 
 tar xvzf openshift-install-linux-4.3.1.tar.gz
 
-wget -c http://web/ocpcli/openshift-client-linux-4.3.1.tar.gz
+wget -c http://web/stuff/openshift-client-linux-4.3.1.tar.gz
 
 tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
 
-mkdir ~/ocpinst && cd ~/ocpinst
+INST_DIR=~/ocpinst
 
-wget -c http://web/ocp43/install-config.yaml
+[ -d "$INST_DIR" ] && rm -rf $INST_DIR/* || mkdir $INST_DIR
 
-../openshift-install create manifests --dir=$PWD
+cd $INST_DIR
+
+cp -v ../install-config.yaml .
+
+~/openshift-install create manifests --dir=$PWD
 
 sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' manifests/cluster-scheduler-02-config.yml
 
-../openshift-install create ignition-configs --dir=$PWD
+~/openshift-install create ignition-configs --dir=$PWD
 
-scp *.ign root@web:/mnt/iicbackup/produits/ocp43
+wget -c http://web/stuff/rhcos-4.3.0-x86_64-installer.iso
+
+[ ! -d /media/iso ] && mkdir /media/iso 
+
+mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
+
+[ ! -d /media/isorw ] && mkdir /media/isorw 
+
+wget -c http://web/stuff/buildIsoAndIgn.sh
+
+chmod +x buildIsoAndIgn.sh
+
+./buildIsoAndIgn.sh
+
+chmod +r *.ign *.iso
+```
+
+```
+
+
+```
+for ign in $(ls *.ign); do
+    echo $ign
+    host=$(echo $ign | awk -F. '{print $1}')
+    jq -c -r '.storage.files[] | select(.contents.source=="data:,'$host'.iicparis.fr.ibm.com")' $ign 
+done
+
+[ ! -d /media/test ] && mkdir /media/test
+
+for iso in $(ls *.iso); do
+    echo $iso
+    mount -o loop $iso /media/test
+    grep 'ip=' /media/test/isolinux/isolinux.cfg
+    umount /media/test
+done
+```
+
+
+```
+scp *.ign root@web:/mnt/iicbackup/produits/ocp/$OCP
+
+ISO_PATH="root@$OCP:/vmfs/volumes/datastore1/iso"
+
+scp *.iso $ISO_PATH
+
+rm -f *.iso *.ign
+```
+
+### On WEB Server
+
+```
+OCP=ocp5
+cd /mnt/iicbackup/produits/ocp/
+ln -s ../stuff/rhcos-4.3.0-x86_64-metal.raw.gz $OCP/.
+chmod -R +r /mnt/iicbackup/produits/ocp/
+```
+
+
+### Run on esx
+
+```
+cd /vmfs/volumes/datastore1
+wget -c http://web/stuff/createVm.sh
+wget -c http://web/stuff/rhcos.vmx
+
+chmod +x createVm.sh
+
+./createVm.sh
+
 ```
 
 ### Start cluster vms
 
 
 ```
-screen -mdS ADMIN && screen -r ADMIN
+screen -mdS ADMIN
+screen -r ADMIN
 
-
-../openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+INST_DIR=~/ocpinst
+cd $INST_DIR
+~/openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
 ```
+
+for node in bs m1 m2 m3 w1 w2 w3 w4 w5
+do
+  echo $node
+  ssh -o StrictHostKeyChecking=no -l core $node-$OCP "echo $node; date"
+done
+
 
 
 ```

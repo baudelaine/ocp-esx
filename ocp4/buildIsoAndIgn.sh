@@ -90,12 +90,14 @@ for VM_NAME in $VMS; do
         m*)
             IGN="master.ign"
             [ ! -f "$IGN" ] && wget -c $WEB_SRV_URL/$IGN
+            jq  '.storage += {files: []}' $IGN | sponge $IGN
             jq --argjson FILE "$FILE" '.storage.files += [$FILE]' $IGN > $NEW_IGN
             ;;
 
         w*)
             IGN="worker.ign"
             [ ! -f "$IGN" ] && wget -c $WEB_SRV_URL/$IGN
+            jq  '.storage += {files: []}' $IGN | sponge $IGN
             jq --argjson FILE "$FILE" '.storage.files += [$FILE]' $IGN > $NEW_IGN
             ;;
 

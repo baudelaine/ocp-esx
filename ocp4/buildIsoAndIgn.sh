@@ -56,6 +56,7 @@ for VM_NAME in $VMS; do
     HOST=$VM_NAME.$DOMAIN
     IP=$(dig +short $HOST)
     IGN=$WEB_SRV_URL/$VM_NAME.ign
+    case $VM_NAME in bs-*) IGN=$WEB_SRV_URL/append-bootstrap.ign;; esac
     NEW_KERNEL_CMD_LINE="$NEW_KERNEL_CMD_LINE coreos.inst.ignition_url=$IGN ip=$IP::$GATEWAY:$MASK:$HOST:$IF:none nameserver=$DNS"
     # echo "KERNEL_CMD_LINE="$KERNEL_CMD_LINE
     # echo "NEW_KERNEL_CMD_LINE="$NEW_KERNEL_CMD_LINE
@@ -63,6 +64,31 @@ for VM_NAME in $VMS; do
     mkisofs $MKISOFS_ARGS -o $VM_NAME.iso $RW_ISO_PATH/
 
 done
+
+}
+
+writeAppendBsIgn (){
+
+cat > append-bootstrap.ign << EOF
+{
+"ignition": {
+    "config": {
+    "append": [
+        {
+        "source": "$WEB_SRV_URL/bootstrap.ign",
+        "verification": {}
+        }
+    ]
+    },
+    "timeouts": {},
+    "version": "2.1.0"
+},
+"networkd": {},
+"passwd": {},
+"storage": {},
+"systemd": {}
+}
+EOF
 
 }
 
@@ -83,8 +109,7 @@ for VM_NAME in $VMS; do
         bs*)
             IGN="bootstrap.ign"
             [ ! -f "$IGN" ] && wget -c $WEB_SRV_URL/$IGN
-            echo "IGN="$IGN
-            jq --argjson FILE "$FILE" '.storage.files += [$FILE]' $IGN > $NEW_IGN
+            writeAppendBsIgn
             ;;
 
         m*)

@@ -253,7 +253,11 @@ sed -i "s:^sshKey\:.*$:sshKey\: '$PUB_KEY':"  install-config.yaml
 
 chmod +r install-config.yaml 
 
-scp install-config.yaml  root@web:/mnt/iicbackup/produits/ocp/$OCP
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "rm -rf /mnt/iicbackup/produits/ocp/$OCP/*"
+
+sshpass -e scp -o StrictHostKeyChecking=no install-config.yaml root@web:/mnt/iicbackup/produits/ocp/$OCP
+
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "chmod -R +r /mnt/iicbackup/produits/ocp/"
 
 > ~/.ssh/known_hosts
 
@@ -261,13 +265,17 @@ eval "$(ssh-agent -s)"
 
 ssh-add ~/.ssh/id_rsa
 
-wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
+wget -c http://web/stuff/openshift-install-linux-4.2.18.tar.gz
+# wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
 
-tar xvzf openshift-install-linux-4.3.1.tar.gz
+tar xvzf openshift-install-linux-4.2.18.tar.gz
+# tar xvzf openshift-install-linux-4.3.1.tar.gz
 
-wget -c http://web/stuff/openshift-client-linux-4.3.1.tar.gz
+wget -c http://web/stuff/openshift-client-linux-4.2.18.tar.gz
+# wget -c http://web/stuff/openshift-client-linux-4.3.1.tar.gz
 
-tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
+tar -xvzf openshift-client-linux-4.2.18.tar.gz -C /usr/local/sbin
+# tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
 
 INST_DIR=~/ocpinst
 
@@ -322,7 +330,7 @@ done
 
 
 ```
-scp *.ign root@web:/mnt/iicbackup/produits/ocp/$OCP
+sshpass -e scp StrictHostKeyChecking=no *.ign root@web:/mnt/iicbackup/produits/ocp/$OCP
 
 ISO_PATH="root@$OCP:/vmfs/volumes/datastore1/iso"
 
@@ -334,6 +342,7 @@ rm -f *.iso *.ign
 ### On WEB Server
 
 ```
+sshpass -e ssh -o StrictHostKeyChecking=no 
 OCP=ocp5
 cd /mnt/iicbackup/produits/ocp/
 ln -s ../stuff/rhcos-4.3.0-x86_64-metal.raw.gz $OCP/.

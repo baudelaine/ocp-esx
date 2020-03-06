@@ -9,8 +9,8 @@ NC="\e[0m"
 
 OCP="ocp5"
 WEB_SRV_URL="http://172.16.160.150/$OCP"
-# RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.3.0-x86_64-metal.raw.gz"
 RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.2.18-x86_64-metal-bios.raw.gz"
+# RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.3.0-x86_64-metal.raw.gz"
 DNS="172.16.160.100"
 DOMAIN="iicparis.fr.ibm.com"
 IF="ens192"
@@ -110,6 +110,7 @@ for VM_NAME in $VMS; do
         bs*)
             IGN="bootstrap.ign"
             [ ! -f "$IGN" ] && wget -c $WEB_SRV_URL/$IGN
+            jq --argjson FILE "$FILE" '.storage.files += [$FILE]' $IGN | sponge $IGN
             writeAppendBsIgn
             ;;
 

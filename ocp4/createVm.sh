@@ -22,8 +22,12 @@ MASTER_RAM="16384"
 WORKER_STORAGE="120G"
 WORKER_VCPU="4"
 WORKER_RAM="16384"
+MASTER_1ST_VNC_PORT="5900"
+WORKER_1ST_VNC_PORT="5904"
 
 createWorkersVm (){
+
+VNC_PORT=$WORKER_1ST_VNC_PORT
 
 for VM_NAME in $WORKERS_VM; do
 	echo $VM_NAME
@@ -34,7 +38,9 @@ for VM_NAME in $WORKERS_VM; do
 		sed -i -e 's/numvcpus = "[^"]*"/numvcpus = "'$WORKER_VCPU'"/' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
 		sed -i -e 's/memSize = "[^"]*"/memSize = "'$WORKER_RAM'"/' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
 		sed -i -e 's!ide1:0.fileName = "[^"]*"!ide1:0.fileName = "'$ISO_PATH'/'$VM_NAME'.iso"!' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
+		sed -i -e 's/RemoteDisplay.vnc.port = "[^"]*"/RemoteDisplay.vnc.port = "'$VNC_PORT'"/' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
 		vim-cmd solo/registervm $VMS_PATH/$VM_NAME/$VM_NAME.vmx
+		let "VNC_PORT++"
 	fi
 done
 
@@ -67,6 +73,8 @@ done
 
 createMastersVm (){
 
+VNC_PORT=$MASTER_1ST_VNC_PORT
+
 for VM_NAME in $MASTERS_VM; do
 	echo $VM_NAME
 	[ ! -d $VMS_PATH/$VM_NAME ] && mkdir $VMS_PATH/$VM_NAME
@@ -76,7 +84,9 @@ for VM_NAME in $MASTERS_VM; do
 		sed -i -e 's/numvcpus = "[^"]*"/numvcpus = "'$MASTER_VCPU'"/' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
 		sed -i -e 's/memSize = "[^"]*"/memSize = "'$MASTER_RAM'"/' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
 		sed -i -e 's!ide1:0.fileName = "[^"]*"!ide1:0.fileName = "'$ISO_PATH'/'$VM_NAME'.iso"!' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
+		sed -i -e 's/RemoteDisplay.vnc.port = "[^"]*"/RemoteDisplay.vnc.port = "'$VNC_PORT'"/' $VMS_PATH/$VM_NAME/$VM_NAME.vmx
 		vim-cmd solo/registervm $VMS_PATH/$VM_NAME/$VM_NAME.vmx
+		let "VNC_PORT++"
 	fi
 done
 

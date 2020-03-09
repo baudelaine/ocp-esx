@@ -7,7 +7,7 @@ LBLUE="\e[34m"
 GREEN="\e[32m"
 NC="\e[0m"
 
-OCP="ocp5"
+OCP=""
 DATASTORE="/vmfs/volumes/V7000F-Volume-10TB"
 VMS_PATH="$DATASTORE/$OCP"
 # WORKDIR="/vmfs/volumes/datastore1/ocp-esx-master"

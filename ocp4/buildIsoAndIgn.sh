@@ -9,8 +9,8 @@ NC="\e[0m"
 
 OCP="ocp5"
 WEB_SRV_URL="http://172.16.160.150/$OCP"
-RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.2.18-x86_64-metal-bios.raw.gz"
-# RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.3.0-x86_64-metal.raw.gz"
+# RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.2.18-x86_64-metal-bios.raw.gz"
+RAW_IMG_URL="$WEB_SRV_URL/rhcos-4.3.0-x86_64-metal.raw.gz"
 DNS="172.16.160.100"
 DOMAIN="iicparis.fr.ibm.com"
 IF="ens192"
@@ -21,7 +21,8 @@ RW_ISO_PATH="/media/isorw"
 ISO_CFG=$RW_ISO_PATH/isolinux/isolinux.cfg
 
 
-VMS="bs-$OCP m1-$OCP m2-$OCP m3-$OCP w1-$OCP w2-$OCP w3-$OCP w4-$OCP w5-$OCP"
+VMS="bs-$OCP m1-$OCP m2-$OCP m3-$OCP w1-$OCP w2-$OCP w3-$OCP"
+# VMS="bs-$OCP m1-$OCP m2-$OCP m3-$OCP w1-$OCP w2-$OCP w3-$OCP w4-$OCP w5-$OCP"
 KERNEL_CMD_LINE="coreos.inst=yes"
 DEVICE="sda"
 NEW_KERNEL_CMD_LINE="$KERNEL_CMD_LINE coreos.inst.install_dev=$DEVICE coreos.inst.image_url=$RAW_IMG_URL"
@@ -56,8 +57,11 @@ for VM_NAME in $VMS; do
     init
     HOST=$VM_NAME.$DOMAIN
     IP=$(dig +short $HOST)
-    IGN=$WEB_SRV_URL/$VM_NAME.ign
-    case $VM_NAME in bs-*) IGN=$WEB_SRV_URL/append-bootstrap.ign;; esac
+    # IGN=$WEB_SRV_URL/$VM_NAME.ign
+    # case $VM_NAME in bs-*) IGN=$WEB_SRV_URL/append-bootstrap.ign;; esac
+    case $VM_NAME in bs-*) IGN=$WEB_SRV_URL/bootstrap.ign;; esac
+    case $VM_NAME in m*) IGN=$WEB_SRV_URL/master.ign;; esac
+    case $VM_NAME in w*) IGN=$WEB_SRV_URL/worker.ign;; esac
     NEW_KERNEL_CMD_LINE="$NEW_KERNEL_CMD_LINE coreos.inst.ignition_url=$IGN ip=$IP::$GATEWAY:$MASK:$HOST:$IF:none nameserver=$DNS"
     # echo "KERNEL_CMD_LINE="$KERNEL_CMD_LINE
     # echo "NEW_KERNEL_CMD_LINE="$NEW_KERNEL_CMD_LINE
@@ -110,7 +114,6 @@ for VM_NAME in $VMS; do
         bs*)
             IGN="bootstrap.ign"
             [ ! -f "$IGN" ] && wget -c $WEB_SRV_URL/$IGN
-            jq --argjson FILE "$FILE" '.storage.files += [$FILE]' $IGN | sponge $IGN
             writeAppendBsIgn
             ;;
 

@@ -395,7 +395,7 @@ cd $INST_DIR
 ```
 for node in bs m1 m2 m3 w1 w2 w3
 do
-  ssh -o StrictHostKeyChecking=no -l core $node-$OCP "hostname; date; cat /etc/hostname"
+  ssh -o StrictHostKeyChecking=no -l core $node-$OCP "hostname; date"
 done
 ```
 
@@ -432,8 +432,7 @@ oc whoami
 system:admin
 ```
 
-
-https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-bare-metal.html#cli-logging-in-kubeadmin_installing-bare-metal
+https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-bare-metal.html#installation-approve-csrs_installing-bare-metal
 
 
 ```

@@ -1,0 +1,11 @@
+oc login -u system:admin --server=<public-api-link>:6443 --config=<complete_path_to_kubeconfig --loglevel=8
+
+Installation complete.
+
+Please see https://ibm-cp-applications.apps.ocp11.iicparis.fr.ibm.com to get started and learn more about IBM Cloud Pak for Applications.
+
+The Tekton Dashboard is available at: https://tekton-dashboard-tekton-pipelines.apps.ocp11.iicparis.fr.ibm.com.
+
+The IBM Transformation Advisor UI is available at: https://ta-apps.apps.ocp11.iicparis.fr.ibm.com.
+
+The IBM Application Navigator UI is available at: https://kappnav-ui-service-kappnav.apps.ocp11.iicparis.fr.ibm.com.

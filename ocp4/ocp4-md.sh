@@ -235,7 +235,7 @@ wget -c http://web/stuff/install-config.yaml
 
 export DOMAIN="iicparis.fr.ibm.com"
 
-sed -e "s/\(^baseDomain: \).*$/\1$DOMAIN/" install-config.yaml
+sed -i "s/\(^baseDomain: \).*$/\1$DOMAIN/" install-config.yaml
 
 sed -i -e '12s/^  name:.*$/  name: '$OCP'/' install-config.yaml
 
@@ -261,13 +261,19 @@ eval "$(ssh-agent -s)"
 
 ssh-add ~/.ssh/id_rsa
 
-wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
+wget -c http://web/stuff/openshift-install-linux-4.2.18.tar.gz
+# wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
 
-tar xvzf openshift-install-linux-4.3.1.tar.gz
+tar xvzf openshift-install-linux-4.2.18.tar.gz
+# tar xvzf openshift-install-linux-4.3.1.tar.gz
 
-wget -c http://web/stuff/openshift-client-linux-4.3.1.tar.gz
+chmod +x openshift-install
 
-tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
+wget -c http://web/stuff/openshift-client-linux-4.2.18.tar.gz
+# wget -c http://web/stuff/openshift-client-linux-4.3.1.tar.gz
+
+tar -xvzf openshift-client-linux-4.2.18.tar.gz -C /usr/local/sbin
+# tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
 
 INST_DIR=~/ocpinst
 
@@ -283,11 +289,13 @@ sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' manifests/cluster
 
 ~/openshift-install create ignition-configs --dir=$PWD
 
-wget -c http://web/stuff/rhcos-4.3.0-x86_64-installer.iso
+wget -c http://web/stuff/rhcos-4.2.18-x86_64-installer.iso
+# wget -c http://web/stuff/rhcos-4.3.0-x86_64-installer.iso
 
 [ ! -d /media/iso ] && mkdir /media/iso 
 
-mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
+mount -o loop rhcos-4.2.18-x86_64-installer.iso /media/iso/
+# mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
 
 [ ! -d /media/isorw ] && mkdir /media/isorw 
 
@@ -336,7 +344,8 @@ rm -f *.iso *.ign
 ```
 OCP=ocp5
 cd /mnt/iicbackup/produits/ocp/
-ln -s ../stuff/rhcos-4.3.0-x86_64-metal.raw.gz $OCP/.
+ln -sf ../stuff/rhcos-4.2.18-x86_64-metal-bios.raw.gz $OCP/.
+# ln -sf ../stuff/rhcos-4.3.0-x86_64-metal.raw.gz $OCP/.
 chmod -R +r /mnt/iicbackup/produits/ocp/
 ```
 

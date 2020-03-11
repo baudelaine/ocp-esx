@@ -1,4 +1,6 @@
-for ho in bs m1 m2 m3 w1 w2 w3
+
+
+for ho in m1 m2 m3 w1 w2 w3 
 do
   scp -o StrictHostKeyChecking=no /etc/pki/tls/certs/ctl-ocp23.crt core@$ho-ocp23:/tmp
   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "sudo cp /tmp/ctl-ocp23.crt /etc/pki/ca-trust/source/anchors/; update-ca-trust"
@@ -6,7 +8,7 @@ do
 done
 
 
-for ho in bs m1 m2 m3 w1 w2 w3
+for ho in bs m1 m2 m3 w1 w2 w3 w4 w5
 do
   echo $ho
   ssh -o StrictHostKeyChecking=no -l core $ho-ocp23 "ls /etc/containers/certs.d/ctl-ocp23.iicparis.fr.ibm.com\:5000/"

@@ -68,7 +68,7 @@ service bind9 restart
 ```
 
 ```
-for host in lb m1 m2 m3 w1 w2 w3 w4 w5 bs nfs ctl; do echo -n $host-$OCP "->"; dig @localhost +short $host-$OCP.$DOMAIN; done
+for host in lb m1 m2 m3 w1 w2 w3 w4 w5 bs nfs ctl; do echo -n $host-$OCP "-> "; dig @localhost +short $host-$OCP.$DOMAIN; done
 dig @localhost +short *.apps.$OCP.$DOMAIN
 dig @localhost +short _etcd-server-ssl._tcp.$OCP.$DOMAIN SRV
 ```
@@ -92,6 +92,8 @@ export DOMAIN="iicparis.fr.ibm.com"
 export OCP=ocp5
 ```
 
+:warning: Remove everything after "maxconn                 3000"
+
 ```
 cat >> /etc/haproxy/haproxy.cfg << EOF
 
@@ -113,8 +115,8 @@ backend ingress-http
     server w1-$OCP $(dig +short w1-$OCP.$DOMAIN):80 check
     server w2-$OCP $(dig +short w2-$OCP.$DOMAIN):80 check
     server w3-$OCP $(dig +short w3-$OCP.$DOMAIN):80 check
-    server w4-$OCP $(dig +short w4-$OCP.$DOMAIN):80 check
-    server w5-$OCP $(dig +short w5-$OCP.$DOMAIN):80 check
+    # server w4-$OCP $(dig +short w4-$OCP.$DOMAIN):80 check
+    # server w5-$OCP $(dig +short w5-$OCP.$DOMAIN):80 check
 
 frontend ingress-https
     bind *:443
@@ -128,8 +130,8 @@ backend ingress-https
     server w1-$OCP $(dig +short w1-$OCP.$DOMAIN):443 check
     server w2-$OCP $(dig +short w2-$OCP.$DOMAIN):443 check
     server w3-$OCP $(dig +short w3-$OCP.$DOMAIN):443 check
-    server w4-$OCP $(dig +short w4-$OCP.$DOMAIN):443 check
-    server w5-$OCP $(dig +short w5-$OCP.$DOMAIN):443 check
+    # server w4-$OCP $(dig +short w4-$OCP.$DOMAIN):443 check
+    # server w5-$OCP $(dig +short w5-$OCP.$DOMAIN):443 check
 
 frontend openshift-api-server
     bind *:6443
@@ -231,6 +233,8 @@ update-ca-trust
 ```
 cd ~
 
+rm -f install-config.yaml
+
 wget -c http://web/stuff/install-config.yaml
 
 export DOMAIN="iicparis.fr.ibm.com"
@@ -238,6 +242,8 @@ export DOMAIN="iicparis.fr.ibm.com"
 sed -i "s/\(^baseDomain: \).*$/\1$DOMAIN/" install-config.yaml
 
 sed -i -e '12s/^  name:.*$/  name: '$OCP'/' install-config.yaml
+
+rm -f iicparis-pull-secret.txt
 
 wget -c http://web/stuff/iicparis-pull-secret.txt
 
@@ -251,9 +257,13 @@ PUB_KEY=$(cat ~/.ssh/id_rsa.pub)
 
 sed -i "s:^sshKey\:.*$:sshKey\: '$PUB_KEY':"  install-config.yaml 
 
-chmod +r install-config.yaml 
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "rm -rf /mnt/iicbackup/produits/ocp/$OCP"
 
-scp install-config.yaml  root@web:/mnt/iicbackup/produits/ocp/$OCP
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "mkdir /mnt/iicbackup/produits/ocp/$OCP"
+
+sshpass -e scp -o StrictHostKeyChecking=no install-config.yaml root@web:/mnt/iicbackup/produits/ocp/$OCP
+
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "chmod -R +r /mnt/iicbackup/produits/ocp/$OCP"
 
 > ~/.ssh/known_hosts
 
@@ -261,6 +271,7 @@ eval "$(ssh-agent -s)"
 
 ssh-add ~/.ssh/id_rsa
 
+<<<<<<< HEAD
 wget -c http://web/stuff/openshift-install-linux-4.2.18.tar.gz
 # wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
 
@@ -268,10 +279,23 @@ tar xvzf openshift-install-linux-4.2.18.tar.gz
 # tar xvzf openshift-install-linux-4.3.1.tar.gz
 
 chmod +x openshift-install
+=======
+rm -f ~/openshift-install ~/openshift-install-linux-* ~/openshift-client-linux-*
+
+wget -c http://web/stuff/openshift-install-linux-4.2.18.tar.gz
+# wget -c http://web/stuff/openshift-install-linux-4.3.1.tar.gz
+
+tar xvzf openshift-install-linux-4.2.18.tar.gz
+# tar xvzf openshift-install-linux-4.3.1.tar.gz
+>>>>>>> 155c0ad7ce519f33a6a760dd009648ec49a8a344
 
 wget -c http://web/stuff/openshift-client-linux-4.2.18.tar.gz
 # wget -c http://web/stuff/openshift-client-linux-4.3.1.tar.gz
 
+<<<<<<< HEAD
+=======
+rm -f /usr/local/sbin/oc /usr/local/sbin/kubectl
+>>>>>>> 155c0ad7ce519f33a6a760dd009648ec49a8a344
 tar -xvzf openshift-client-linux-4.2.18.tar.gz -C /usr/local/sbin
 # tar -xvzf openshift-client-linux-4.3.1.tar.gz -C /usr/local/sbin
 
@@ -281,23 +305,30 @@ INST_DIR=~/ocpinst
 
 cd $INST_DIR
 
-cp -v ../install-config.yaml .
+cp -v ../install-config.yaml ../openshift-install .
 
-~/openshift-install create manifests --dir=$PWD
+./openshift-install create manifests --dir=$PWD
 
 sed -i 's/mastersSchedulable: true/mastersSchedulable: false/' manifests/cluster-scheduler-02-config.yml
 
-~/openshift-install create ignition-configs --dir=$PWD
+./openshift-install create ignition-configs --dir=$PWD
 
 wget -c http://web/stuff/rhcos-4.2.18-x86_64-installer.iso
 # wget -c http://web/stuff/rhcos-4.3.0-x86_64-installer.iso
 
 [ ! -d /media/iso ] && mkdir /media/iso 
 
+<<<<<<< HEAD
+=======
+[ ! -z "$(ls -A /media/iso)" ] && umount /media/iso
+
+sleep 2
+
+>>>>>>> 155c0ad7ce519f33a6a760dd009648ec49a8a344
 mount -o loop rhcos-4.2.18-x86_64-installer.iso /media/iso/
 # mount -o loop rhcos-4.3.0-x86_64-installer.iso /media/iso/
 
-[ ! -d /media/isorw ] && mkdir /media/isorw 
+[ ! -d /media/isorw ] && mkdir /media/isorw || rm -rf /media/isorw/*
 
 wget -c http://web/stuff/buildIsoAndIgn.sh
 
@@ -305,13 +336,15 @@ chmod +x buildIsoAndIgn.sh
 
 ./buildIsoAndIgn.sh
 
-chmod +r *.ign *.iso
+umount /media/iso
 ```
 
 ```
 
 
 ```
+[ -z $(command -v jq) ] && { wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq; } || echo jq installed
+
 for ign in $(ls *.ign); do
     echo $ign
     host=$(echo $ign | awk -F. '{print $1}')
@@ -330,17 +363,17 @@ done
 
 
 ```
-scp *.ign root@web:/mnt/iicbackup/produits/ocp/$OCP
+sshpass -e scp -o StrictHostKeyChecking=no *.ign root@web:/mnt/iicbackup/produits/ocp/$OCP
 
-ISO_PATH="root@$OCP:/vmfs/volumes/datastore1/iso"
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "OCP=$OCP; cd /mnt/iicbackup/produits/ocp/; ln -s ../stuff/rhcos-4.2.18-x86_64-metal-bios.raw.gz $OCP/."
 
-scp *.iso $ISO_PATH
+# sshpass -e ssh -o StrictHostKeyChecking=no root@web "OCP=ocp5; cd /mnt/iicbackup/produits/ocp/; ln -s ../stuff/rhcos-4.3.0-x86_64-metal.raw.gz $OCP/."
 
-rm -f *.iso *.ign
-```
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "chmod -R +r /mnt/iicbackup/produits/ocp/$OCP"
 
-### On WEB Server
+ISO_PATH="/vmfs/volumes/datastore1/iso"
 
+<<<<<<< HEAD
 ```
 OCP=ocp5
 cd /mnt/iicbackup/produits/ocp/
@@ -348,12 +381,22 @@ ln -sf ../stuff/rhcos-4.2.18-x86_64-metal-bios.raw.gz $OCP/.
 # ln -sf ../stuff/rhcos-4.3.0-x86_64-metal.raw.gz $OCP/.
 chmod -R +r /mnt/iicbackup/produits/ocp/
 ```
+=======
+sshpass -e ssh -o StrictHostKeyChecking=no root@$OCP "rm -rf $ISO_PATH/*"
 
+sshpass -e scp -o StrictHostKeyChecking=no *.iso root@$OCP:/$ISO_PATH
+>>>>>>> 155c0ad7ce519f33a6a760dd009648ec49a8a344
+
+sshpass -e ssh -o StrictHostKeyChecking=no root@$OCP "chmod -R +r /vmfs/volumes/datastore1/iso/"
+
+# rm -f *.iso *.ign
+```
 
 ### Run on esx
 
 ```
 cd /vmfs/volumes/datastore1
+rm -f createVm.sh rhcos.vmx
 wget -c http://web/stuff/createVm.sh
 wget -c http://web/stuff/rhcos.vmx
 
@@ -372,25 +415,64 @@ screen -r ADMIN
 
 INST_DIR=~/ocpinst
 cd $INST_DIR
-~/openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
+./openshift-install --dir=$PWD wait-for bootstrap-complete --log-level=debug
 ```
 
-for node in bs m1 m2 m3 w1 w2 w3 w4 w5
+```
+for node in bs m1 m2 m3 w1 w2 w3
 do
-  echo $node
-  ssh -o StrictHostKeyChecking=no -l core $node-$OCP "echo $node; date"
+  ssh -o StrictHostKeyChecking=no -l core $node-$OCP "hostname; date"
 done
+```
 
 
+```
+./openshift-install gather bootstrap --bootstrap 172.16.187.67 --key ~/.ssh/id_rsa --master "172.16.187.51 172.16.187.52 172.16.187.53"
+```
+
+
+:warning: For VNC to work run this on ESX:
+>
+```
+esxcli network firewall ruleset set -e true -r gdbserver
+```
+
+```
+export OCP=ocp11
+
+xtightvncviewer -compresslevel 9 -passwd ~/.vnc/passwd $OCP:0
+
+xtightvncviewer -compresslevel 9 -passwd ~/.vnc/passwd $OCP:1
+
+xtightvncviewer -compresslevel 9 -passwd ~/.vnc/passwd $OCP:4
+```
 
 ```
 export KUBECONFIG=~/ocpinst/auth/kubeconfig
 
+oc whoami
 
+Error from server (NotFound): the server could not find the requested resource (get users.user.openshift.io ~)
 
-../openshift-install --dir=$PWD wait-for install-complete
+oc whoami
+system:admin
+```
+
+https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-bare-metal.html#installation-approve-csrs_installing-bare-metal
+
 
 ```
+./openshift-install --dir=$PWD wait-for install-complete
+```
+
+INFO Waiting up to 30m0s for the cluster at https://api.ocp23.iicparis.fr.ibm.com:6443 to initialize... 
+INFO Waiting up to 10m0s for the openshift-console route to be created... 
+INFO Install complete!                            
+INFO To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/root/ocpinst/auth/kubeconfig' 
+INFO Access the OpenShift web-console here: https://console-openshift-console.apps.ocp23.iicparis.fr.ibm.com 
+INFO Login to the console with user: kubeadmin, password: 2tfrX-x9Lzi-FTtLJ-x6i2B 
+
+
 
 
 ```
@@ -444,7 +526,7 @@ do
 done
 
 
-oc edit sc oc edit sc managed-nfs-storage
+oc edit sc managed-nfs-storage
 
 metadata:
   annotations:

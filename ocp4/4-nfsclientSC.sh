@@ -96,7 +96,7 @@ spec:
       serviceAccountName: nfs-client-provisioner
       containers:
         - name: nfs-client-provisioner
-          image: ctl-ocp23.iicparis.fr.ibm.com:5000/nfsclient:v1
+          image: ctl-ocp5.iicparis.fr.ibm.com:5000/nfsclient:v1
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes
@@ -104,13 +104,13 @@ spec:
             - name: PROVISIONER_NAME
               value: cluster.local/nfs-client-provisioner
             - name: NFS_SERVER
-              value: ctl-ocp23
+              value: nfs-ocp5
             - name: NFS_PATH
               value: /exports
       volumes:
         - name: nfs-client-root
           nfs:
-            server: ctl-ocp23
+            server: nfs-ocp5
             path: /exports
 EOF
 oc patch sc thin --patch '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class": "false"}}}'

@@ -46,19 +46,24 @@ timedatectl
 
 yum install -y ntp
 
-systemctl enable ntpd
-
-systemctl start ntpd
-
 // conf in /etc/ntp.conf
+// add logfile /var/log/ntp.log under driftfile /var/lib/ntp/drift
+// comment out public server
+// add server 172.16.160.130 iburst below last public server
+
+systemctl restart ntpd
+
+// Display connected server
 
 ntpq -p
 
+// Checked we're synchronized with local server
+
 ntpstat
 
-systemctl stop ntpd
-ntpdate pool.ntp.org
-systemctl start ntpd
+timedatectl | grep 'NTP synchronized:'
+
+systemctl enable ntpd
 
 
 // local settings and keymaps
@@ -67,6 +72,8 @@ localectl list-keymaps | grep -i map
 localectl set-keymap map
 localectl --no-convert set-x11-keymap map
 
+// redhat openshift
+yum install wget git net-tools bind-utils yum-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct -y
 
 yum install atomic -y
 
@@ -78,12 +85,43 @@ yum install ose-control-plane ose-deployer ose-docker-registry ose-haproxy-route
 
 yum install atomic-openshift-excluder atomic-openshift-docker-excluder -y
 
-yum install -y nfs-utils rpcbind zip unzip screen
+
+// if https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os/repodata/repomd.xml: [Errno 14] PYCURL ERROR 22 - "The requested URL returned error: 403" 
+// then
+
+subscription-manager unregister
+subscription-manager clean
+subscription-manager register
+subscription-manager refresh
+subscription-manager list --available --matches '*OpenShift*'
+
+subscription-manager attach --pool=8a85f99c6d6e1b00016d6e1ec2f900cc
+
+yum clean all 
+yum repolist
+
+subscription-manager repos \
+    --enable="rhel-7-server-rpms" \
+    --enable="rhel-7-server-extras-rpms" \
+    --enable="rhel-7-server-ose-3.11-rpms" \
+    --enable="rhel-7-server-ansible-2.8-rpms"
+
+// https://docs.openshift.com/container-platform/3.11/install/host_preparation.html#installing-base-packages
+
+
+
+// end redhat openshift
+
+
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh epel-release-latest-7.noarch.rpm
+
+yum install -y nfs-utils rpcbind zip unzip screen wget perl net-tools moreutils
 
 wget -c https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x jq-linux64 && mv jq-linux64 /usr/local/sbin/jq
 
 
-// Install moreutils
+// Install moreutils on redhat
 
 wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -Uvh epel-release-latest-7.noarch.rpm
@@ -95,6 +133,8 @@ yum install moreutils -y
 sed -i -e 's/^notify_only=.$/notify_only=1/' /etc/yum/pluginconf.d/search-disabled-repos.conf
 
 yum install moreutils-parallel -y
+
+// end Install moreutils on redhat
 
 
 echo "OPTIONS='--insecure-registry=172.30.0.0/16 --selinux-enabled --log-opt max-size=1M --log-opt max-file=3'" >> 	/etc/sysconfig/docker 
@@ -113,7 +153,8 @@ net.ipv4.tcp_no_metrics_save = 1
 net.ipv4.tcp_rmem = 4096 16777216 33554432
 net.ipv4.tcp_wmem = 4096 16777216 33554432
 net.core.optmem_max = 40960
-vm.max_map_count=262144
+fs.file-max = 500000
+vm.max_map_count = 262144
 kernel.sem = 250 1024000 32 4096
 
 EOF
@@ -121,6 +162,7 @@ EOF
 sysctl -p
 
 
+echo "root    hard    nofile  65535" >> /etc/security/limits.conf && echo "root    soft    nofile  65535" >> /etc/security/limits.conf
 
 swapoff -a && sed -i '/ swap / s/^/#/' /etc/fstab
 

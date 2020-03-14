@@ -134,6 +134,9 @@ sed -i -e 's/^notify_only=.$/notify_only=1/' /etc/yum/pluginconf.d/search-disabl
 
 yum install moreutils-parallel -y
 
+
+yum install -y nfs-utils rpcbind zip unzip screen wget perl net-tools
+
 // end Install moreutils on redhat
 
 

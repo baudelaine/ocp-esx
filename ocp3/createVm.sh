@@ -20,7 +20,7 @@ VMDK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
 
 [ ! -f "$VMDK" ] && { echo -e "$RED ERROR: $VMDK not found. Exiting... $NC"; exit 1; }
 
-VMX="/vmfs/volumes/datastore1/vmx/rhel.vmx"
+VMX="/vmfs/volumes/datastore1/vmdk/rhel.vmx"
 
 [ ! -f "$VMX" ] && { echo -e "$RED ERROR: $VMX not found. Exiting... $NC"; exit 1; }
 

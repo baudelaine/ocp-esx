@@ -39,10 +39,10 @@ os_firewall_use_firewalld=True
 # default subdomain to use for exposed routes, you should have wildcard dns
 # for *.apps.test.example.com that points at your infra nodes which will run
 # your router
-openshift_master_default_subdomain=apps-ocp5.iicparis.fr.ibm.com
+openshift_master_default_subdomain=apps.ocp5.iicparis.fr.ibm.com
 
 openshift_console_install=true
-openshift_console_hostname=console.apps-ocp5.iicparis.fr.ibm.com
+openshift_console_hostname=console.apps.ocp5.iicparis.fr.ibm.com
 
 openshift_no_proxy='.iicparis.fr.ibm.com'
 openshift_generate_no_proxy_hosts=true
@@ -61,7 +61,6 @@ lb-ocp5.iicparis.fr.ibm.com
 
 # host group for nodes, includes region info
 [nodes]
-m[1:3]-ocp5.iicparis.fr.ibm.com openshift_node_group_name="node-config-master"
-n[1:3]-ocp5.iicparis.fr.ibm.com openshift_node_group_name="node-config-compute"
-i[1:3]-ocp5.iicparis.fr.ibm.com openshift_node_group_name="node-config-infra"
+m[1:3]-ocp5.iicparis.fr.ibm.com openshift_node_group_name="node-config-master-infra"
+w[1:3]-ocp5.iicparis.fr.ibm.com openshift_node_group_name="node-config-compute"
 

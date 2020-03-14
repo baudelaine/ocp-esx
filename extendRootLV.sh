@@ -30,6 +30,8 @@ echo
 echo w
 ) | fdisk $DISK
 
+sleep 5
+
 ls $PART > /dev/null
 
 if [ $? -ne 0 ]; then

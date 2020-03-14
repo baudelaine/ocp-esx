@@ -61,15 +61,30 @@ for host in lb m1 m2 m3 w1 w2 w3 w4 w5 nfs ctl; do echo -n $host-$OCP "-> "; dig
 dig @localhost +short *.apps.$OCP.$DOMAIN
 ```
 
+### On ESX
+
+```
+wget -c http://web/ocp1/createCtlLbAndNfs.sh
+chmod +x createCtlLbAndNfs.sh
+./createCtlLbAndNfs.sh
+
+wget -c http://web/ocp1/createVm.sh
+chmod +x createVm.sh
+./createVm.sh
+```
+
+
 ### Run on LB
 
 ```
-OCP="ocp1"
+export OCP=ocp1
+export DOMAIN="iicparis.fr.ibm.com"
+
 cd ~
-wget -c http://web/stuff/setHostAndIP.sh
+wget -c http://web/$OCP/setHostAndIP.sh
 
 chmod +x setHostAndIP.sh
-./setHostAndIP.sh ctl-$OCP
+./setHostAndIP.sh lb-$OCP
 systemctl restart network
 ```
 
@@ -82,11 +97,6 @@ sed -i -e 's/^SELINUX=\w*/SELINUX=disabled/' /etc/selinux/config
 
 ```
 yum install haproxy -y
-```
-
-```
-export DOMAIN="iicparis.fr.ibm.com"
-export OCP=ocp1
 ```
 
 :warning: Remove everything after "maxconn                 3000"
@@ -150,19 +160,6 @@ systemctl restart haproxy
 systemctl enable haproxy
 ```
 
-### Run on ESX
-
-```
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
-
-wget -c http://web/stuff/getVMAddress.sh
-chmod +x getVMAddress.sh
-./getVMAddress.sh | grep -e '[mw][1-5]' | tee vms
-export OCP="ocp1"
-scp vms root@ctl-$OCP:/root
-```
-
 ### Run on CTL
 
 ```
@@ -174,13 +171,13 @@ echo "export WORKDIR=~" >> ~/.bashrc
 source ~/.bashrc
 
 cd ~
-wget -c http://web/stuff/setHostAndIP.sh
+wget -c http://web/$OCP/setHostAndIP.sh
 
 chmod +x setHostAndIP.sh
 ./setHostAndIP.sh ctl-$OCP
 systemctl restart network
 
-wget -c http://web/stuff/extendRootLV.sh
+wget -c http://web/$OCP/extendRootLV.sh
 chmod +x extendRootLV.sh
 ./extendRootLV.sh
 
@@ -188,31 +185,84 @@ chmod +x extendRootLV.sh
 
 ```
 
-https://github.com/bpshparis/ocp-esx/blob/master/Build-Cluster.md#copy-extendrootlvsh-and-sethostandipsh-to-cluster-nodes
+### Run on ESX
 
 ```
-yum install epel-release -y
-yum install ansible -y
+export OCP="ocp1"
 
-wget -c http://web/stuff/hosts-cluster
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[wm][1-3]-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+
+wget -c http://web/$OCP/getVMAddress.sh
+chmod +x getVMAddress.sh
+./getVMAddress.sh | grep -e '[mw][1-5]' | tee vms
+scp vms root@ctl-$OCP:/root
+```
+
+### Run on CTL
+
+```
+for ip in $(awk -F ";" '{print $3}' /root/vms); do echo "copy to" $ip; sshpass -e scp -o StrictHostKeyChecking=no $WORKDIR/extendRootLV.sh $WORKDIR/setHostAndIP.sh root@$ip:/root; done
+
+for LINE in $(awk -F ";" '{print $0}' vms); do  HOSTNAME=$(echo $LINE | cut -d ";" -f2); IPADDR=$(echo $LINE | cut -d ";" -f3); echo $HOSTNAME; echo $IPADDR; sshpass -e ssh -o StrictHostKeyChecking=no root@$IPADDR '/root/setHostAndIP.sh '$HOSTNAME; done
+
+for ip in $(awk -F ";" '{print $3}' vms); do sshpass -e ssh -o StrictHostKeyChecking=no root@$ip 'reboot'; done
+
+```
+
+### Run on ESX
+
+```
+find /vmfs/volumes/ -type f -name getVM* -exec '{}' grep -e '[mw][1-5]' \;
+```
+
+### Run on CTL
+
+```
+for node in lb m1 m2 m3 w1 w2 w3; do sshpass -e ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; rm -f /root/.ssh/known_hosts; rm -f /root/.ssh/authorized_keys'; done
+
+yes y | ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
+
+for node in lb m1 m2 m3 w1 w2 w3; do sshpass -e ssh-copy-id -i /root/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@$node-$OCP; done
+
+for node in lb m1 m2 m3 w1 w2 w3; do ssh root@$node-$OCP 'hostname -f; date; timedatectl | grep "Local time"'; done
+
+```
+
+```
+wget -c http://web/ocp1/hosts-cluster
+
+sed 's/\([\.-]\)ocp./\1'$OCP'/g' $WORKDIR/hosts-cluster > /etc/ansible/hosts
+
+grep -e 'ocp[0-9]\{1,\}' /etc/ansible/hosts
+
+for node in m1 m2 m3 w1 w2 w3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; /root/extendRootLV.sh'; done
+
+for node in m1 m2 m3 w1 w2 w3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; lvs'; done
+
+ansible OSEv3 -m ping
+
+
+
 ```
 
 
-https://github.com/bpshparis/ocp-esx/blob/master/Prepare-OCP.md
 
+### Run on ESX
 
 ```
-for node in m1 m2 m3 w1 w2 w3; do ssh -o StrictHostKeyChecking=no root@$node-$OCP 'hostname -f; poweroff'; done
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.shutdown " $1}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
-export SNAPNAME=ReadyForOCPPoweredOff
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
+export SNAPNAME=ReadyForOCP
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 ```
 
 

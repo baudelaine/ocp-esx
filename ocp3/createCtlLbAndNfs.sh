@@ -16,11 +16,15 @@ VMS_PATH="$DATASTORE/$OCP"
 
 [ ! -d "$DATASTORE/$OCP" ] && { echo -e "$RED ERROR: $DATASTORE/$OCP directory not found. Exiting... $NC"; exit 1; }
 
-VMDK="/vmfs/volumes/datastore1/vmdk/centos.vmdk"
+RHEL_VMDK="/vmfs/volumes/datastore1/vmdk/rhel.vmdk"
 
-[ ! -f "$VMDK" ] && { echo -e "$RED ERROR: $VMDK not found. Exiting... $NC"; exit 1; }
+[ ! -f "$RHEL_VMDK" ] && { echo -e "$RED ERROR: $CRHEL_VMDK not found. Exiting... $NC"; exit 1; }
 
-VMX="/vmfs/volumes/datastore1/vmx/centos.vmx"
+CENTOS_VMDK="/vmfs/volumes/datastore1/vmdk/centos.vmdk"
+
+[ ! -f "$CENTOS_VMDK" ] && { echo -e "$RED ERROR: $CENTOS_VMDK not found. Exiting... $NC"; exit 1; }
+
+VMX="/vmfs/volumes/datastore1/vmdk/rhel.vmx"
 
 [ ! -f "$VMX" ] && { echo -e "$RED ERROR: $VMX not found. Exiting... $NC"; exit 1; }
 
@@ -63,7 +67,7 @@ createCtlVmdk (){
 for VM_NAME in $CTL_VM; do
 	echo $VM_NAME
 	if [ $? -eq 0 ]; then
-		vmkfstools -i $VMDK $VMS_PATH/$VM_NAME/root0.vmdk
+		vmkfstools -i $RHEL_VMDK $VMS_PATH/$VM_NAME/root0.vmdk
 		vmkfstools -c $CTL_STORAGE $VMS_PATH/$VM_NAME/root1.vmdk
 	fi
 done
@@ -107,7 +111,7 @@ createLbVmdk (){
 for VM_NAME in $LB_VM; do
 	echo $VM_NAME
 	if [ $? -eq 0 ]; then
-		vmkfstools -i $VMDK $VMS_PATH/$VM_NAME/root0.vmdk
+		vmkfstools -i $RHEL_VMDK $VMS_PATH/$VM_NAME/root0.vmdk
 	fi
 done
 
@@ -150,7 +154,7 @@ createNfsVmdk (){
 for VM_NAME in $NFS_VM; do
 	echo $VM_NAME
 	if [ $? -eq 0 ]; then
-		vmkfstools -i $VMDK $VMS_PATH/$VM_NAME/root0.vmdk
+		vmkfstools -i $CENTOS_VMDK $VMS_PATH/$VM_NAME/root0.vmdk
 		vmkfstools -c $NFS_STORAGE $VMS_PATH/$VM_NAME/root1.vmdk
 	fi
 done

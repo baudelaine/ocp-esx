@@ -180,9 +180,11 @@ systemctl enable haproxy
 :warning: Change CN in -subj with $OCP
 
 ```
-openssl req -x509 -nodes -days 7300 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/private/ctl-$OCP.key -out /etc/pki/tls/certs/ctl-$OCP.crt -subj '/C=FR/L=Bois-Colombes/O=IIC/OU=IIC Paris/CN=ctl-ocp5.iicparis.fr.ibm.com/emailAddress=iic_paris@fr.ibm.com'
+openssl req -x509 -nodes -days 7300 -sha256 -newkey rsa:2048 -keyout /etc/pki/tls/private/$HOSTNAME.key -out /etc/pki/tls/certs/$HOSTNAME.crt -subj "/C=FR/L=Bois-Colombes/O=IIC/OU=IIC Paris/CN=$HOSTNAME/emailAddress=iic_paris@fr.ibm.com"
 
-cp -v /etc/pki/tls/certs/ctl-$OCP.crt /etc/pki/ca-trust/source/anchors/
+openssl x509 -noout -text -in   /etc/pki/tls/certs/$HOSTNAME.crt
+
+cp -v /etc/pki/tls/certs/$HOSTNAME.crt /etc/pki/ca-trust/source/anchors/
 
 update-ca-trust
 
@@ -193,29 +195,29 @@ sed -i '/^http:/,$d' /etc/docker-distribution/registry/config.yml
 
 cat >> /etc/docker-distribution/registry/config.yml << EOF
 http:
-    addr: ctl-$OCP.iicparis.fr.ibm.com:5000
+    addr: $HOSTNAME:5000
     net: tcp
-    host: https://ctl-$OCP.iicparis.fr.ibm.com:5000
+    host: https://$HOSTNAME:5000
     tls:
-         certificate: /etc/pki/tls/certs/ctl-$OCP.crt
-         key: /etc/pki/tls/private/ctl-$OCP.key
+         certificate: /etc/pki/tls/certs/$HOSTNAME.crt
+         key: /etc/pki/tls/private/$HOSTNAME.key
 EOF
 
 systemctl restart docker-distribution
 
-mkdir /etc/docker/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000
+mkdir /etc/docker/certs.d/$HOSTNAME\:5000
 
-yes | cp -v -f /etc/pki/tls/certs/ctl-$OCP.crt /etc/docker/certs.d/ctl-$OCP.iicparis.fr.ibm.com\:5000
+yes | cp -v -f /etc/pki/tls/certs/$HOSTNAME.crt /etc/docker/certs.d/$HOSTNAME\:5000
 
-docker login -u admin -p admin ctl-$OCP.iicparis.fr.ibm.com:5000
+docker login -u admin -p admin $HOSTNAME:5000
 
-wget -c http://web/ocpcli/nfsclient.tar.gz
+wget -c http://web/stuff/nfsclient.tar.gz
 
 docker load < nfsclient.tar.gz
 
-docker tag docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 ctl-$OCP.iicparis.fr.ibm.com:5000/nfsclient:v1
+docker tag docker-registry.iicparis.fr.ibm.com:5000/nfsclient:v1 $HOSTNAME:5000/nfsclient:v1
 
-docker push ctl-ocp5.iicparis.fr.ibm.com:5000/nfsclient:v1
+docker push $HOSTNAME:5000/nfsclient:v1
 
 ```
 

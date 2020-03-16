@@ -1,0 +1,17 @@
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-core:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-meta-couchdb:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-watchdog:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/icp4data-nginx-repo:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-content:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/icpd-requisite:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-core-api:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/icp4d-api:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-data-sorcerer:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-admin:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/cpdoperator:v2.5.0.0-29
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/zen-metastoredb:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/privatecloud-usermgmt:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/cpd-operator-init:v1
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/privatecloud-redis-repo:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/influxdb:v2.5.0.0-210
+docker-registry-default.apps-ocp7.iicparis.fr.ibm.com/cpd/cp4d-tiller:v2.14.3

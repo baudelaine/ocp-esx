@@ -251,19 +251,27 @@ ansible OSEv3 -m ping
 ### Run on ESX
 
 ```
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.shutdown " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.shutdown " $1}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 
-export SNAPNAME=ReadyForOCP
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
+export SNAPNAME=CP4DATAInstalled
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.create " $1 " '$SNAPNAME' "}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1}' | sh
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1}' | sh
 
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
+
+vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
+```
+
+```
+export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}') && echo $SNAPIDS
+export SNAPID=$(echo $SNAPIDS | awk '{print $NF}') && echo $SNAPID
 vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
-vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.getstate " $1}' | sh
 ```
+
 
 
 ```
@@ -274,3 +282,7 @@ systemctl enable docker
 ```
 
 https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md
+
+
+
+cat ~/images | awk -F/ '{print "docker tag nfs-ocp1.iicparis.fr.ibm.com:5000/cpd/" $NF " docker-registry-default.apps.ocp1.iicparis.fr.ibm.com/cpd/" $NF}'

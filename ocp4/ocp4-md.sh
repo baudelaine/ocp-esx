@@ -533,3 +533,20 @@ oc edit sc managed-nfs-storage
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
+
+
+watch -n5 oc get clusteroperators    
+
+#### Head Restarting a pod
+
+oc get deployments -n openshift-console -o wide
+
+oc get pods -n openshift-console -o wide
+
+oc scale --replicas=0 deployment/console -n openshift-console
+
+oc scale --replicas=2 deployment/console -n openshift-console
+
+watch oc get pods -n openshift-console -o wide
+
+#### Tail Restarting a pod

@@ -1,4 +1,6 @@
-### Get Cluster CA from first master
+# Access your private Openshift api server from internet
+
+## Get Cluster CA from first master
 
 > :warning: The only way to connect to cluster nodes is from the computer which installed cluster in **ssh** using **core** user.
 
@@ -8,15 +10,15 @@ OCP="ocp19"
 scp core@m1-$OCP:/etc/kubernetes/ca.crt ~/ca-$OCP.crt
 ```
 
-### Install oc command
+## Install oc command
 
 Follow these [instructions](https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-bare-metal.html#cli-installing-cli_installing-bare-metal) to install  **oc** the Openshift CLI.
 
-### Install ngrok
+## Install ngrok
 
 Follow these [instructions](https://dashboard.ngrok.com/get-started) to install and setup **ngrok** a command for an instant, secure URL to your localhost server through any NAT or firewall.
 
-### Connect to cluster api server via public address
+## Connect to cluster api server via public address
 
 > :warning: You should have both **oc** and **ngrok** copied in your $PATH and the **crt** file copied somewhere on your file system.
 

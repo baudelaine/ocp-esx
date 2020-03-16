@@ -10,7 +10,7 @@ scp core@m1-$OCP:/etc/kubernetes/ca.crt ~/ca-$OCP.crt
 
 ### Install oc command
 
-Follow these [instructions](https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-bare-metal.html#cli-installing-cli_installing-bare-metal) to install the **oc** the Openshift CLI.
+Follow these [instructions](https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-bare-metal.html#cli-installing-cli_installing-bare-metal) to install  **oc** the Openshift CLI.
 
 ### Install ngrok
 

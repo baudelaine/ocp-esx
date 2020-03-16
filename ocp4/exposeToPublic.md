@@ -2,7 +2,7 @@
 
 ## Get Cluster CA from first master
 
-> :warning: The only way to connect to cluster nodes is from the computer which installed cluster in **ssh** using **core** user.
+> :bulb: The only way to connect to cluster nodes is from the computer which installed cluster in **ssh** using **core** user.
 
 > :information_source: From cluster installer
 ```
@@ -25,22 +25,24 @@ Follow these [instructions](https://dashboard.ngrok.com/get-started) to install 
 > :information_source: From your computer
 ```
 OCP="ocp19"
-NGROK_AUTH_TOKEN="1ZDLKSEI6cJnjTN18pkDhkDROvK_6NJoXUwSXxdnH6rNaGqCy"
-CA_CERT="ca-ocp19.crt"
+NGROK_AUTH_TOKEN="1ZDLKSEI6cJnjTN18p..."
+CA_CERT="ca-$OCP.crt"
 
 ngrok authtoken $NGROK_AUTH_TOKEN
 ngrok http https://lb-$OCP.iicparis.fr.ibm.com:6443
 ```
 
+> Output from ngrok ready for connection:
 ![](ngrok0.png)
 
-> :warning:  Leave terminal above opened and keep an eye on it.
+> :bulb:  Leave terminal above opened and keep an eye on it.
 
 > :information_source: From your computer
 ```
 oc login -u admin -p admin https://4f76e0c6.ngrok.io --certificate-authority=$CA_CERT --insecure-skip-tls-verify=true
 ```
 
+> Output from ngrok handling HTTP Requests:
 ![](ngrok1.png)
 
 

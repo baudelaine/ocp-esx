@@ -146,7 +146,7 @@ bin/cpd-linux \
 --assembly lite \
 --namespace $PROJECT \
 --storageclass managed-nfs-storage \
---transfer-image-to docker-registry-default.apps-$OCP.iicparis.fr.ibm.com/$PROJECT \
+--transfer-image-to docker-registry-default.apps.$OCP.iicparis.fr.ibm.com/$PROJECT \
 --target-registry-password $(oc whoami -t) \
 --target-registry-username $(oc whoami) \
 --cluster-pull-prefix docker-registry.default.svc:5000/$PROJECT
@@ -171,3 +171,25 @@ bin/cpd-linux \
 <br>
 
 [Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)
+
+<!-- 
+https://blog.openshift.com/getting-started-helm-openshift/
+
+
+oc label node w1-ocp1.iicparis.fr.ibm.com node-role.kubernetes.io/worker=true
+oc label node w1-ocp1.iicparis.fr.ibm.com node-role.kubernetes.io/worker-
+
+# Considerations for DEV clusters having less then 5 nodes.
+#    In such a case you have to provide the list of 5 nodes as a parameter, but you can specify a node multiple times in the list.
+#      e.g., --nodeAffinities node1,node2,node1,node2
+#    Notice that for such a cluster you have to set --values global.podAntiAffinity=Disable
+
+./createLocalVolumePV.sh --release my-141-wa --path /mnt/local-storage/storage/watson/assistant --nodeAffinities w1-ocp1.iicparis.fr.ibm.com,w2-ocp1.iicparis.fr.ibm.com,w3-ocp1.iicparis.fr.ibm.com,w1-ocp1.iicparis.fr.ibm.com,w2-ocp1.iicparis.fr.ibm.com,w3-ocp1.iicparis.fr.ibm.com --values global.podAntiAffinity=Disable
+
+kubectl get persistentvolumes -l release=my-141-wa
+
+helm install charts/ibm-watson-assistant-prod --tls --set master.slad.dockerRegistryPullSecret=default-dockercfg-76hk2 --values charts/ibm-watson-assistant-prod/values-override.yaml --namespace cpd --name my-141-wa --values charts/ibm-watson-assistant-prod/ibm_cloud_pak/pak_extensions/pre-install/clusterAdministration/wa-persistence.yaml --tiller-namespace cpd
+
+helm status --tls my-141-wa --tiller-namespace cpd
+
+-->

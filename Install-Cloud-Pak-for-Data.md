@@ -174,23 +174,27 @@ bin/cpd-linux \
 
 <!-- 
 
-oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n cpd
+PROJECT="cpd"
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n $PROJECT
 
 docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry-default.apps.$OCP.iicparis.fr.ibm.com 
 
 https://blog.openshift.com/getting-started-helm-openshift/
 
 
-curl -LO https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz | tar xvzf -C $(echo $PATH | cut -d':' -f1)
+curl -LO https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz 
 
-echo $PATH | cut -d':' -f1
+tar xvzf helm-v2.14.3-linux-amd64.tar.gz -C $(echo $PATH | cut -d':' -f1)
 
+:bulb: Toggle label
 oc label node w1-ocp1.iicparis.fr.ibm.com node-role.kubernetes.io/worker=true
 oc label node w1-ocp1.iicparis.fr.ibm.com node-role.kubernetes.io/worker-
 
+REG=$(oc get routes -n default | awk '$1 ~ "registry-console" {print $2}')
 
 cd ~/cpd/charts/ibm-watson-assistant-prod/ibm_cloud_pak/pak_extensions/pre-install/clusterAdministration
-./loadImagesOpenShift.sh --path ~/cpd --namespace cpd --registry docker-registry-default.apps.ocp1.iicparis.fr.ibm.com
+./loadImagesOpenShift.sh --path ~/cpd --namespace $PROJECT --registry $REG
 
 
 # Considerations for DEV clusters having less then 5 nodes.
@@ -202,18 +206,18 @@ cd ~/cpd/charts/ibm-watson-assistant-prod/ibm_cloud_pak/pak_extensions/pre-insta
 
 kubectl get persistentvolumes -l release=my-141-wa --show-labels
 
-./labelNamespace.sh cpd
+./labelNamespace.sh $PROJECT
 
 
 cd ~/cpd
 
-oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n cpd
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n $PROJECT
 
 docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry-default.apps.$OCP.iicparis.fr.ibm.com 
 
-oc adm policy add-scc-to-group restricted system:serviceaccounts:cpd
+oc adm policy add-scc-to-group restricted system:serviceaccounts:$PROJECT
 
-export TILLER_NAMESPACE=cpd
+export TILLER_NAMESPACE=$PROJECT
 
 oc get secret helm-secret -n $TILLER_NAMESPACE -o yaml|grep -A3 '^data:'|tail -3 | awk -F: '{system("echo "$2" |base64 --decode > "$1)}'
 export HELM_TLS_CA_CERT=$PWD/ca.cert.pem
@@ -222,6 +226,25 @@ export HELM_TLS_KEY=$PWD/helm.key.pem
 helm version  --tls
 
 vi ~/cpd/charts/ibm-watson-assistant-prod/values-override.yaml
+
+'{"global":{"podAntiAffinity":"Disable"}}'
+
+INT_REG=$(oc -n default get dc docker-registry -o jsonpath='{.spec.template.spec.containers[].env[?(@.name=="REGISTRY_OPENSHIFT_SERVER_ADDR")].value}{"\n"}')
+'{"global": "image":{{"repository":"$INT_REG"}}}'
+
+'{"global": "icp":{{"proxyHostname":""}}}'
+
+'{"global":{"languages":{"french":true}}}'
+
+'{"global":{"zenNamespace":"$PROJECT"}}'
+
+'{"global":{"license":"accept"}}'
+
+
+sshpass -e scp -o StrictHostKeyChecking=no ~/cpd/charts/ibm-watson-assistant-prod/values-override.yaml root@web:/mnt/iicbackup/produits/ocp/$OCP/wa-values-override.yaml
+
+sshpass -e ssh -o StrictHostKeyChecking=no root@web "chmod -R +r /mnt/iicbackup/produits/ocp"
+
 
 cd ~/cpd
 

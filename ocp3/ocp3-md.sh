@@ -266,8 +266,11 @@ vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "v
 ```
 
 ```
-export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "m1-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}') && echo $SNAPIDS
+export SNAPIDS=$(vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb|nfs" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.get " $1 }' | sh | awk -F' : ' '$1 ~ "--Snapshot Id " {print $2}') && echo $SNAPIDS
 export SNAPID=$(echo $SNAPIDS | awk '{print $NF}') && echo $SNAPID
+
+vim-cmd vmsvc/getallvms | awk '$2 !~ "ctl-ocp" && $1 !~ "Vmid" {print "vim-cmd vmsvc/snapshot.revert " $1 " " '$SNAPID' " suppressPowerOn" }' | sh
+
 vim-cmd vmsvc/getallvms | awk '$2 ~ "[mw][1-5]|lb" && $1 !~ "Vmid" {print "vim-cmd vmsvc/power.on " $1}' | sh
 
 ```

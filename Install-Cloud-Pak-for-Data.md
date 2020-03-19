@@ -173,23 +173,93 @@ bin/cpd-linux \
 [Save your work](https://github.com/bpshparis/ocp-esx/blob/master/Install-OCP.md#Make-a-snapshot)
 
 <!-- 
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n cpd
+
+docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry-default.apps.$OCP.iicparis.fr.ibm.com 
+
 https://blog.openshift.com/getting-started-helm-openshift/
 
 
+curl -LO https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz | tar xvzf -C $(echo $PATH | cut -d':' -f1)
+
+echo $PATH | cut -d':' -f1
+
 oc label node w1-ocp1.iicparis.fr.ibm.com node-role.kubernetes.io/worker=true
 oc label node w1-ocp1.iicparis.fr.ibm.com node-role.kubernetes.io/worker-
+
+
+cd ~/cpd/charts/ibm-watson-assistant-prod/ibm_cloud_pak/pak_extensions/pre-install/clusterAdministration
+./loadImagesOpenShift.sh --path ~/cpd --namespace cpd --registry docker-registry-default.apps.ocp1.iicparis.fr.ibm.com
+
 
 # Considerations for DEV clusters having less then 5 nodes.
 #    In such a case you have to provide the list of 5 nodes as a parameter, but you can specify a node multiple times in the list.
 #      e.g., --nodeAffinities node1,node2,node1,node2
 #    Notice that for such a cluster you have to set --values global.podAntiAffinity=Disable
 
-./createLocalVolumePV.sh --release my-141-wa --path /mnt/local-storage/storage/watson/assistant --nodeAffinities w1-ocp1.iicparis.fr.ibm.com,w2-ocp1.iicparis.fr.ibm.com,w3-ocp1.iicparis.fr.ibm.com,w1-ocp1.iicparis.fr.ibm.com,w2-ocp1.iicparis.fr.ibm.com,w3-ocp1.iicparis.fr.ibm.com --values global.podAntiAffinity=Disable
+./createLocalVolumePV.sh --release my-141-wa --path /mnt/local-storage/storage/watson/assistant --nodeAffinities w1-ocp1.iicparis.fr.ibm.com,w2-ocp1.iicparis.fr.ibm.com,w3-ocp1.iicparis.fr.ibm.com,w1-ocp1.iicparis.fr.ibm.com,w2-ocp1.iicparis.fr.ibm.com,w3-ocp1.iicparis.fr.ibm.com 
 
-kubectl get persistentvolumes -l release=my-141-wa
+kubectl get persistentvolumes -l release=my-141-wa --show-labels
+
+./labelNamespace.sh cpd
+
+
+cd ~/cpd
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n cpd
+
+docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry-default.apps.$OCP.iicparis.fr.ibm.com 
+
+oc adm policy add-scc-to-group restricted system:serviceaccounts:cpd
+
+export TILLER_NAMESPACE=cpd
+
+oc get secret helm-secret -n $TILLER_NAMESPACE -o yaml|grep -A3 '^data:'|tail -3 | awk -F: '{system("echo "$2" |base64 --decode > "$1)}'
+export HELM_TLS_CA_CERT=$PWD/ca.cert.pem
+export HELM_TLS_CERT=$PWD/helm.cert.pem
+export HELM_TLS_KEY=$PWD/helm.key.pem
+helm version  --tls
+
+vi ~/cpd/charts/ibm-watson-assistant-prod/values-override.yaml
+
+cd ~/cpd
+
+oc get secrets | grep default-dockercfg
 
 helm install charts/ibm-watson-assistant-prod --tls --set master.slad.dockerRegistryPullSecret=default-dockercfg-76hk2 --values charts/ibm-watson-assistant-prod/values-override.yaml --namespace cpd --name my-141-wa --values charts/ibm-watson-assistant-prod/ibm_cloud_pak/pak_extensions/pre-install/clusterAdministration/wa-persistence.yaml --tiller-namespace cpd
 
+watch kubectl get job,pod,svc,secret,cm,pvc --namespace cpd
+
 helm status --tls my-141-wa --tiller-namespace cpd
+
+
+NOTES:
+
+If IBM Watson Assistant in IBM Cloud Pak for Data was successfully installed:
+
+Create a Watson Assistant instance at the following CP4D web UI (typically at https://cpd-cpd-cpd.apps./zen/#/addons
+   Select the "Watson Assistant" Add-on.
+   Click "Provision Instance".
+   Give the instance a name and click "Create".
+
+To find API URL and token:
+   Go to CP4D web UI (typically at https://cpd-cpd-cpd.apps./zen/#/myInstances ).
+   Select "My Instances" from the [=] Navigation Menu, if not in the "My Instances" page.
+   Select "View details" from the "..." menu for the Watson Assistant instance.
+   Find the URL and "Bearer token" in "Connection details".
+   Set TOKEN variable same as "Bearer token".
+   Set API_URL variable same as Url.
+
+To list workspaces:
+   curl $API_URL/v1/workspaces?version=2018-09-20 -H "Authorization: Bearer $TOKEN" -k
+
+To access tooling (UI):
+   Select "View Details" from the "..." menu for the Watson Assistant instance: https://cpd-cpd-cpd.apps./zen/#/myInstances
+   Click "Open Watson Assistant".
+
+
+Note: The syntax of the URL for the IBM Cloud Pak for Data user interface has changed with V2.5. If you are using an older version of IBM Cloud Pak for Data, check for the appropriate URL syntax and use that in place of https://cpd-cpd-cpd.apps..
+
 
 -->

@@ -1,0 +1,6 @@
+{
+"input":{
+"text": "blablabla."
+},
+"context": {"conversation_id":"dd0eeda2-b91b-44c8-984a-245279ea33aa","system":{"initialized":true,"dialog_stack":[{"dialog_node":"root"}],"dialog_turn_counter":1,"dialog_request_counter":1,"_node_output_map":{"En otras cosas":{"0":[0]}},"branch_exited":true,"branch_exited_reason":"completed"}}
+}

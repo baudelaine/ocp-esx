@@ -287,6 +287,8 @@ To access tooling (UI):
 
 Note: The syntax of the URL for the IBM Cloud Pak for Data user interface has changed with V2.5. If you are using an older version of IBM Cloud Pak for Data, check for the appropriate URL syntax and use that in place of https://cpd-cpd-cpd.apps..
 
+// Test Assistant
+// !!! Need jq commands installed to run
 
 URL="https://cpd-cpd-cpd.apps.ocp1.iicparis.fr.ibm.com/assistant/my-141-wa/instances/1584555597793/api"
 BEARER="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpc3MiOiJLTk9YU1NPIiwiYXVkIjoiRFNYIiwicm9sZSI6IkFkbWluIiwicGVybWlzc2lvbnMiOltdLCJ1aWQiOiIxMDAwMzMwOTk5IiwiaWF0IjoxNTg0OTY0ODUzfQ.E0JLYWpp_PdANbEz19g3BJddDnpwYvkEJ0txALJrJ-BSfzh4vw5FqNhtC5n_j-0TphyRKKDjdoaYqW71X6NjF1fXIw0zSZMp46MQmMJaw6vJJlHueDNLrAB5kTOwvgYI9A_fxyqIGmk1Y8SnWGbi2moSFQ4MZHqNhDJMKYdBM6JevGAkku4nIy6JDIrdPPWlIGRAEHNQYx0nvOeUEcbNitT7qMG0nP4ActguTK3ZKHyS7XLDYeqKnvjOfbiZu3EL0EGXjXQqQwQuqBNMDWTUwgDKKIvGsAvFe_HX3VzOf7y7w6drix3L7cIBTs8Sb5NIsAFr8Ezhiky8qnA2UQ888g"
@@ -298,7 +300,8 @@ VERSION="2019-02-28"
 SKILL_ID="6a570077-a4c7-41bf-bb74-789c3752b6a5"
 
 MESSAGE="blablabla."
-FILE="message"
+FILE="message.json"
+
 cat > $FILE << EOF
 {
 	"input":{
@@ -306,6 +309,7 @@ cat > $FILE << EOF
 	}
 }
 EOF
+
 jq . $FILE
 
 OUTPUT=$(curl -k -H "Authorization: Bearer $BEARER" -X POST -H 'Content-Type:application/json' -d @$FILE $URL/v1/workspaces/$SKILL_ID/message?version=$VERSION)
@@ -467,7 +471,7 @@ cd ~/cpd/charts/ibm-watson-speech-prod
 cp -v values.yaml values-copy.yaml
 
 PROJECT="cpd"
-INT_REG=$(oc -n default get dc docker-registry -o jsonpath='{.spec.template.spec.containers[].env[?(@.name=="REGISTRY_OPENSHIFT_SERVER_ADDR")].value}{"\n"}') && echo 
+INT_REG=$(oc -n default get dc docker-registry -o jsonpath='{.spec.template.spec.containers[].env[?(@.name=="REGISTRY_OPENSHIFT_SERVER_ADDR")].value}{"\n"}') && echo $INT_REG
 SECRET=$(oc get secrets | grep default-dockercfg | awk '{print $1}') && echo $SECRET
 
 sed -i -e "s/\(^    zenNamespace:\) zen$/\1 $PROJECT/g"  values.yaml
@@ -514,6 +518,9 @@ helm del --purge my-111-speech --tiller-namespace $PROJECT
 
 oc delete role my-111-speech-speech-to-text-gw-role
 
+// Test STT
+// !!! Need jq and tee commands to run
+
 BEARER="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwic3ViIjoiYWRtaW4iLCJpc3MiOiJLTk9YU1NPIiwiYXVkIjoiRFNYIiwicm9sZSI6IkFkbWluIiwicGVybWlzc2lvbnMiOltdLCJ1aWQiOiIxMDAwMzMwOTk5IiwiaWF0IjoxNTg0OTA4NDIyfQ.w40DIWPDsoywkeO1YMUE0Q37GOa9GDSG-LGyG5pVSmzbWdX6eQtygaT_S7VVMiGmJJXZvf6t7LaFl1aS48Fn05WzXe1K42neKFvhD1Gzt0ILDAW0TjO2GSHaewYmKUIH3sUEWagw3gC3LMbtAqDWBuf3JRH3wXJ95dqdY83YWWiW2VmZHodjQilJRYybAi1khau8tjX1R2aTz8HfRBSxy673E-6aTCfr6vWBOVyMkfXtM89jBE3aStzKeVEs1jcv3O_t23EgGbm4n6tWNLKr_ZTz-TkIPWeSxehhnIqc5x5ZBZSk7Lrglp5XWjdfxpWHOIzy0iEs_3TQmnYTeCQZLA"
 URL="https://cpd-cpd-cpd.apps.ocp1.iicparis.fr.ibm.com/speech-to-text/my-111-speech/instances/1584904929592/api"
 METHOD="/v1/recognize"
@@ -523,7 +530,10 @@ SOUND="es.mp3"
 RESP="stt-es.json"
 curl -k -X POST -H "Authorization: Bearer $BEARER" --header 'Content-Type: audio/mp3' --header 'Transfer-Encoding: chunked' --data-binary @${SOUND} ${URL}${METHOD}'?model='${MODEL} | tee $RESP
 
-TRANSCRIPT=$(jq -c -r '[.results[].alternatives[].transcript | rtrimstr(" ")] | join(". ")' $RESP)echo $TRANSCRIPT
+TRANSCRIPT=$(jq -c -r '[.results[].alternatives[].transcript | rtrimstr(" ")] | join(". ")' $RESP) && echo $TRANSCRIPT
+
+// Test TTS
+// !!! Need jq and sponge commands to run
 
 REQ="tts-es.json"
 
@@ -546,6 +556,103 @@ SPEECH="tts-es.mp3"
 
 curl -k -X POST -H "Authorization: Bearer $BEARER" -H 'Content-Type: application/json' -H 'Accept: audio/mp3' --output $SPEECH -d @${REQ} ${URL}${METHOD}'?voice='${VOICE}
 
+
+### Discovery
+
+Flags:
+  -h, --help                  Display this message
+  -c, --cluster-host          The hostname of the master node of the targeted
+                              cluster. Discovery needs this to make API calls
+                              to schedule training jobs.
+  -C, --cp4d-namespace        The Kubernetes namespace that the CP4D
+                              application is running in
+  -d, --module                Path to the module directory, or a module tar
+                              archive
+  -e, --release-name          The Helm release name to use
+                              (default: '${default_name}')
+  -i, --interactive           Interactive installation. Use 'true' or 1 to run
+                              in interactive mode. Use 'false' or 0 to run in
+                              non-interactive mode.
+  -I, --cluster-ip            The IPv4 address of the node specified using
+                              '--cluster-host' must also be provided. If the
+                              node's hostname is not accessible by services
+                              running within the cluster Watson Discovery will
+                              fallback to this IP address. As such, you must
+                              ensure this address can be accessed by pods running
+                              in the cluster's Kubernetes environment.
+  -l, --log-file              The file to write logs to
+                              (default: '${default_log_file}")
+  -n, --namespace             The namespace to install to
+  -o, --openshift             Specify 'true' or 1 to do an OpenShift installation,
+                              and 'false' or 0 for an IBM Cloud Private Foundations
+                              installation.
+  -O, --overwrite-yaml        The name of a Helm values override file to apply
+                              when installing modules.
+  -r, --registry-pull-prefix  The Docker image prefix for Kubernetes to use to
+                              pull images from the cluster's Docker registry.
+  -R, --registry-push-prefix  The Docker image prefix to tag images with to
+                              push them into the cluster's Docker registry.
+  -s, --storage-class         The Kubernetes StorageClass to use for Persistent
+                              Volumes
+  -S, --shared-storage-class  Specify a separate StorageClass for Persistent
+                              Volumes that require the ReadWriteMany access
+                              mode.
+  -t, --timeout               The timeout to use for install steps
+                              (default: '${default_timeout}')
+  -w, --tiller-namespace      The namespace Tiller is running in
+
+
+cd ~/cpd/deploy
+./deploy.sh -d ~/cpd/ibm-watson-discovery -s managed-nfs-storage -S managed-nfs-storage -R docker-registry-default.apps.ocp1.iicparis.fr.ibm.com -r docker-registry.default.svc:5000 -n cpd -o true -e my-211-disco -C cpd -w tiller -c lb-ocp1.iicparis.fr.ibm.com -I 172.16.187.10 -i false
+
+
+
+kubectl create -f - << EOF
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: ibm-discovery-prod-scc
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegedContainer: false
+allowPrivilegeEscalation: false
+allowedCapabilities: []
+allowedFlexVolumes: []
+allowedUnsafeSysctls: []
+defaultAddCapabilities: []
+forbiddenSysctls:
+- "*"
+fsGroup:
+  type: MustRunAs
+  ranges:
+    - max: 65535
+      min: 1
+readOnlyRootFilesystem: false
+requiredDropCapabilities:
+- ALL
+runAsUser:
+  type: MustRunAsNonRoot
+seccompProfiles:
+  - docker/default
+seLinuxContext:
+  type: RunAsAny
+supplementalGroups:
+  type: MustRunAs
+  ranges:
+  - max: 65535
+    min: 1
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- persistentVolumeClaim
+- projected
+- secret
+priority: 0
+EOF
 
 
 #### Head Restarting a pod

@@ -1,0 +1,23 @@
+{
+   "results": [
+      {
+         "alternatives": [
+            {
+               "confidence": 0.24, 
+               "transcript": "trazado "
+            }
+         ], 
+         "final": true
+      }, 
+      {
+         "alternatives": [
+            {
+               "confidence": 0.99, 
+               "transcript": "yo juan gallo de andrada escribano de cámara del rey nuestro señor "
+            }
+         ], 
+         "final": true
+      }
+   ], 
+   "result_index": 0
+}

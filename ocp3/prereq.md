@@ -102,7 +102,7 @@ Download **IBM Watson Assistant for IBM Cloud Pak for Data 1.4.1 Linux English**
 
 > :information_source: Run this on installer
 
-Download **IBM Watson Speech Services 1.1.1 Linux English**  part number **CC5F7EN**  from [IBM Passport Advantage] (https://www.ibm.com/software/passportadvantage/pao_customer.html).
+Download **IBM Watson Speech Services 1.1.1 Linux English**  part number **CC5F7EN**  from [IBM Passport Advantage](https://www.ibm.com/software/passportadvantage/pao_customer.html).
 
 
 

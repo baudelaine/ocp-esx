@@ -74,6 +74,8 @@ export APIKEY="myEntitlementKey"
 
 #### Test your entitlement key against cp.icr.io registry
 
+##### Login registry
+
 > :information_source: Run this on installer
 
 ```

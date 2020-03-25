@@ -1,0 +1,108 @@
+Name:               disco-211-watson-discovery-etcd-creds-gen-job-grvpm
+Namespace:          cpd
+Priority:           0
+PriorityClassName:  <none>
+Node:               w1-ocp1.iicparis.fr.ibm.com/172.16.187.14
+Start Time:         Wed, 25 Mar 2020 13:01:30 +0100
+Labels:             app.kubernetes.io/component=creds-gen-job
+                    app.kubernetes.io/instance=disco-211
+                    app.kubernetes.io/managed-by=Tiller
+                    app.kubernetes.io/name=watson-discovery-etcd
+                    controller-uid=5d3aded0-6e90-11ea-bc00-000c29ce0a06
+                    helm.sh/chart=etcd
+                    job-name=disco-211-watson-discovery-etcd-creds-gen-job
+                    release=disco-211
+Annotations:        openshift.io/scc=restricted
+Status:             Pending
+IP:                 10.131.1.126
+Controlled By:      Job/disco-211-watson-discovery-etcd-creds-gen-job
+Containers:
+  cred-gen:
+    Container ID:  
+    Image:         opencontent-icp-cert-gen-1:1.1.2
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /bin/bash
+      -c
+      openssl genrsa -out ca.key 2048
+openssl req -x509 -new -nodes -key ca.key -subj "/CN=disco-211-watson-discovery-etcd" -days 3650 -reqexts v3_req -extensions v3_ca -out ca.crt
+
+cat >openssl.cnf <<EOL
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = disco-211-watson-discovery-etcd
+DNS.2 = disco-211-watson-discovery-etcd.cpd.svc.cluster.local
+DNS.3 = *.disco-211-watson-discovery-etcd.cpd.svc.cluster.local
+DNS.4 = localhost
+DNS.5 = 127.0.0.1
+EOL
+
+openssl genrsa -out etcd.key 2048
+openssl req -new -key etcd.key -out etcd.csr -subj "/CN=disco-211-watson-discovery-etcd" -config openssl.cnf
+openssl x509 -req -in etcd.csr \
+  -CA ca.crt -CAkey ca.key -CAcreateserial \
+  -out etcd.crt -days 3650 -extensions v3_req -extfile openssl.cnf
+
+cat <<EOF | kubectl create -n cpd -f -
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  labels:
+    app.kubernetes.io/name: "watson-discovery-etcd"
+    helm.sh/chart: "etcd"
+    app.kubernetes.io/managed-by: "Tiller"
+    app.kubernetes.io/instance: "disco-211"
+    release: "disco-211"
+  name: disco-211-watson-discovery-etcd-root
+data:
+  username: $(echo -n "root" | base64 | tr -d '\n')
+  password: $(openssl rand -hex 20 | tr -d '\n' | base64 | tr -d '\n')
+EOF
+
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      cpu:     2
+      memory:  4Gi
+    Requests:
+      cpu:        1
+      memory:     2Gi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from disco-211-watson-discovery-etcd-serviceaccount-token-67m9b (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  disco-211-watson-discovery-etcd-serviceaccount-token-67m9b:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  disco-211-watson-discovery-etcd-serviceaccount-token-67m9b
+    Optional:    false
+QoS Class:       Burstable
+Node-Selectors:  node-role.kubernetes.io/compute=true
+Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule
+Events:
+  Type     Reason          Age              From                                  Message
+  ----     ------          ----             ----                                  -------
+  Normal   Scheduled       4m               default-scheduler                     Successfully assigned cpd/disco-211-watson-discovery-etcd-creds-gen-job-grvpm to w1-ocp1.iicparis.fr.ibm.com
+  Normal   SandboxChanged  4m (x6 over 4m)  kubelet, w1-ocp1.iicparis.fr.ibm.com  Pod sandbox changed, it will be killed and re-created.
+  Warning  Failed          2m (x3 over 3m)  kubelet, w1-ocp1.iicparis.fr.ibm.com  Error: ImagePullBackOff
+  Normal   Pulling         2m (x4 over 4m)  kubelet, w1-ocp1.iicparis.fr.ibm.com  pulling image "opencontent-icp-cert-gen-1:1.1.2"
+  Warning  Failed          2m (x4 over 4m)  kubelet, w1-ocp1.iicparis.fr.ibm.com  Failed to pull image "opencontent-icp-cert-gen-1:1.1.2": rpc error: code = Unknown desc = repository docker.io/opencontent-icp-cert-gen-1 not found: does not exist or no pull access
+  Warning  Failed          2m (x4 over 4m)  kubelet, w1-ocp1.iicparis.fr.ibm.com  Error: ErrImagePull
+  Normal   BackOff         2m (x4 over 3m)  kubelet, w1-ocp1.iicparis.fr.ibm.com  Back-off pulling image "opencontent-icp-cert-gen-1:1.1.2"

@@ -509,6 +509,8 @@ cd ~/cpd
 
 helm install charts/ibm-watson-speech-prod --namespace $PROJECT --name my-111-speech --tiller-namespace $PROJECT --tls
 
+helm install charts/ibm-watson-speech-prod --namespace $PROJECT --name my-111-speech --tiller-namespace $PROJECT --tls
+
 watch kubectl get job,pod,svc,secret,cm,pvc --namespace cpd
 watch kubectl get pod,job,svc,secret,cm,pvc --namespace cpd
 
@@ -654,6 +656,52 @@ volumes:
 priority: 0
 EOF
 
+
+cd ~/cpd/ibm-watson-discovery/images
+
+docker load < images.tar
+
+docker images | awk 'NR>1 && $1 !~ "/" {print "docker tag " $1 ":" $2 " docker-registry-default.apps.ocp1.iicparis.fr.ibm.com/cpd/" $1 ":" $2}' | sh
+
+docker images | awk 'NR>1 && $1 ~ "docker-registry-default.apps.ocp1.iicparis.fr.ibm.com/cpd/" {print "docker push " $1 ":" $2 }'  | sh
+
+
+screen -mdS ADM && screen -r ADM
+
+PROJECT="cpd"
+
+oc login https://lb-$OCP:8443 -u admin -p admin --insecure-skip-tls-verify=true -n $PROJECT
+
+REG=$(oc get routes -n default | awk '$1 ~ "docker-registry" {print $2}') && echo $REG
+
+docker login -u $(oc whoami) -p $(oc whoami -t) $REG
+
+cd ~/cpd
+
+helm version --tiller-namespace tiller 
+
+helm install charts/ibm-watson-discovery-prod --namespace cpd --name disco-211 --tiller-namespace cpd --tls
+
+watch kubectl get job,pod,svc,secret,cm,pvc --namespace cpd
+watch kubectl get pod,job,svc,secret,cm,pvc --namespace cpd
+
+helm status --tls my-111-speech --tiller-namespace $PROJECT
+
+helm del --purge my-111-speech --tiller-namespace $PROJECT
+
+oc delete role my-111-speech-speech-to-text-gw-role
+
+
+oc get job -n cpd | awk 'NR>1 && $1 ~ "^disco" {print "oc delete job " $1 }' | sh
+
+oc get pod -n cpd | awk 'NR>1 && $1 ~ "^disco" {print "oc delete pod " $1 }' | sh
+
+oc get secret -n cpd | awk '$1 ~ "^disco" {print "oc delete secret " $1 }' | sh
+
+
+
+
+opencontent-icp-cert-gen-1:1.1.2
 
 #### Head Restarting a pod
 
